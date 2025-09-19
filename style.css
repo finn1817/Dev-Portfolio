@@ -19,7 +19,7 @@
     --card-bg: #ffffff;
 }
 
-[data-theme="dark"] {
+html[data-theme="dark"] {
     /* Dark mode colors */
     --bg-primary: #1f2937;
     --bg-secondary: rgba(31, 41, 55, 0.8);
@@ -47,13 +47,13 @@ body {
 }
 
 /* Theme-specific body backgrounds (makes dark/light visually distinct) */
-:root[data-theme="light"] body,
-[data-theme="light"] body {
+html[data-theme="light"] body,
+html[data-theme="light"] {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-:root[data-theme="dark"] body,
-[data-theme="dark"] body {
+html[data-theme="dark"] body,
+html[data-theme="dark"] {
     background: linear-gradient(135deg, #0f172a 0%, #111827 100%);
 }
 
@@ -153,6 +153,7 @@ nav {
     background-clip: text;
     -webkit-text-fill-color: transparent;
     animation: rainbow 2s ease-in-out infinite;
+
 }
 
 @keyframes rainbow {
