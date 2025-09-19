@@ -4,141 +4,311 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dan Finn - Portfolio</title>
-    <!-- Easter Egg #1: Hidden message in meta tags -->
-    <meta name="secret" content="🎉 You found the first easter egg! Check the console for more surprises!">
-    <meta name="author" content="Detective Developer - Keep digging!">
-    <meta name="hidden-message" content="The cake is a lie, but the code is real!">
-    
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Dan Finn - Portfolio (Inline)</title>
+        <meta name="secret" content="🎉 You found the first easter egg! Check the console for more surprises!" />
+        <meta name="author" content="Detective Developer - Keep digging!" />
+        <meta name="hidden-message" content="The cake is a lie, but the code is real!" />
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCejm0Ry18S1mlqYpnMRuIJGnQ-iDvu3EU",
-            authDomain: "custom-messages-84ec4.firebaseapp.com",
-            projectId: "custom-messages-84ec4",
-            storageBucket: "custom-messages-84ec4.firebasestorage.app",
-            messagingSenderId: "1079020496100",
-            appId: "1:1079020496100:web:d21ec1428327515e3df8f1"
-        };
+        <!-- Firebase SDK: keep exactly the same config and usage -->
+        <script type="module">
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+            import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        
-        // Make Firebase available globally
-        window.firebaseDB = db;
-        window.firebaseAddDoc = addDoc;
-        window.firebaseCollection = collection;
-        window.firebaseServerTimestamp = serverTimestamp;
-        
-        console.log("🔥 Firebase initialized successfully!");
-    </script>
-    
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <!-- Easter Egg #2: Hidden HTML comments throughout -->
-    <!-- 🕵️ Welcome, fellow code inspector! You're on the right track... -->
-    
-    <div class="container">
-        <header>
-            <nav>
-                <div class="logo">
-                    <!-- Easter Egg #3: Logo clicks trigger something special -->
-                    <span id="secret-logo">DF</span>
-                </div>
-                <ul>
-                    <li><a href="#home">Home</a></li>
-                    <li><a href="#about">About</a></li>
-                    <li><a href="#projects">Projects</a></li>
-                    <!-- Easter Egg #4: Hidden nav item appears after specific actions -->
-                    <li><a href="#secret" id="secret-nav" style="display: none;">🎮 Secret</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                    <!-- Dark Mode Toggle -->
-                    <li>
-                        <div class="theme-toggle-container">
-                            <span class="light-label">Light</span>
-                            <div class="theme-slider" id="theme-slider"></div>
-                            <span class="dark-label">Dark</span>
+            const firebaseConfig = {
+                apiKey: "AIzaSyCejm0Ry18S1mlqYpnMRuIJGnQ-iDvu3EU",
+                authDomain: "custom-messages-84ec4.firebaseapp.com",
+                projectId: "custom-messages-84ec4",
+                storageBucket: "custom-messages-84ec4.firebasestorage.app",
+                messagingSenderId: "1079020496100",
+                appId: "1:1079020496100:web:d21ec1428327515e3df8f1",
+            };
+
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            window.firebaseDB = db;
+            window.firebaseAddDoc = addDoc;
+            window.firebaseCollection = collection;
+            window.firebaseServerTimestamp = serverTimestamp;
+            console.log("🔥 Firebase initialized successfully!");
+        </script>
+
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+            :root { --primary:#6366f1; --secondary:#8b5cf6; --accent:#f59e0b; --dark:#1f2937; --light:#f8fafc; --secret-color:#ff69b4; --bg-primary:#ffffff; --bg-secondary:rgba(248,250,252,0.5); --text-primary:#1f2937; --text-secondary:#6b7280; --nav-bg:rgba(255,255,255,0.9); --container-bg:rgba(255,255,255,0.95); --card-bg:#ffffff; }
+            html[data-theme="dark"], :root[data-theme="dark"] { --bg-primary:#1f2937; --bg-secondary:rgba(31,41,55,0.8); --text-primary:#f8fafc; --text-secondary:#d1d5db; --nav-bg:rgba(31,41,55,0.9); --container-bg:rgba(31,41,55,0.95); --card-bg:#374151; }
+            *{margin:0;padding:0;box-sizing:border-box}
+            body{font-family:'Inter',sans-serif;line-height:1.6;color:var(--text-primary);min-height:100vh;position:relative;transition:background .3s ease,color .3s ease}
+            html[data-theme="light"] body, body { background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); }
+            html[data-theme="dark"] body { background: linear-gradient(135deg,#0f172a 0%,#111827 100%) !important; }
+            .dark-mode-flash { animation: darkModeFlash 6s ease-in-out; }
+            @keyframes darkModeFlash{0%,100%{filter:brightness(1)}10%,30%,50%,70%,90%{filter:brightness(1.3) hue-rotate(45deg)}20%,40%,60%,80%{filter:brightness(.7) hue-rotate(-45deg)}}
+            .cursor-trail{position:fixed;width:6px;height:6px;background:var(--secret-color);border-radius:50%;pointer-events:none;z-index:9999;animation:fadeOut 1s ease-out forwards}
+            @keyframes fadeOut{to{opacity:0;transform:scale(0)}}
+            .container{max-width:1200px;margin:0 auto;background:var(--container-bg);min-height:100vh;box-shadow:0 0 50px rgba(0,0,0,.1);backdrop-filter:blur(10px);transition:background .3s ease}
+            nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;background:var(--nav-bg);backdrop-filter:blur(10px);border-bottom:1px solid rgba(0,0,0,.1);position:sticky;top:0;z-index:100;transition:background .3s ease}
+            .logo{font-size:1.5rem;font-weight:700;color:var(--primary);cursor:pointer;transition:all .3s ease}
+            .logo:hover{transform:rotate(360deg);color:var(--secret-color)}
+            .logo.rainbow{background:linear-gradient(45deg,#ff0000,#ff7f00,#ffff00,#00ff00,#0000ff,#4b0082,#9400d3);background-size:400% 400%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:rainbow 2s ease-in-out infinite}
+            @keyframes rainbow{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+            nav ul{display:flex;list-style:none;gap:2rem;align-items:center}
+            nav a{text-decoration:none;color:var(--text-primary);font-weight:500;transition:color .3s ease;position:relative}
+            nav a:hover{color:var(--primary)}
+            .theme-toggle-container{display:flex;align-items:center;gap:.5rem;font-size:.9rem;font-weight:500;color:var(--text-primary)}
+            .theme-toggle-container .light-label,.theme-toggle-container .dark-label{color:var(--text-secondary);transition:color .3s ease}
+            html[data-theme="light"] .light-label{color:var(--primary);font-weight:600}
+            html[data-theme="dark"] .dark-label{color:var(--primary);font-weight:600}
+            .theme-slider{position:relative;width:50px;height:25px;background:#4ade80;border-radius:25px;cursor:pointer;transition:background-color .3s ease;border:2px solid var(--primary);flex-shrink:0}
+            .theme-slider.dark{background:#ef4444}
+            .theme-slider::before{content:'';position:absolute;top:2px;left:2px;width:17px;height:17px;background:#fff;border-radius:50%;transition:transform .3s ease;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+            .theme-slider.dark::before{transform:translateX(23px)}
+            .hero{display:grid;grid-template-columns:1fr 1fr;gap:4rem;padding:4rem 2rem;align-items:center}
+            .hero h1{font-size:3rem;font-weight:700;margin-bottom:1rem;line-height:1.2;color:var(--text-primary)}
+            .highlight{color:var(--primary);position:relative;cursor:pointer}
+            .highlight.glitch{animation:glitch .5s}
+            @keyframes glitch{0%,100%{transform:translate(0)}10%{transform:translate(-2px,2px)}20%{transform:translate(-2px,-2px)}30%{transform:translate(2px,2px)}40%{transform:translate(2px,-2px)}50%{transform:translate(-2px,2px)}60%{transform:translate(-2px,-2px)}70%{transform:translate(2px,2px)}80%{transform:translate(-2px,-2px)}90%{transform:translate(2px,2px)}}
+            .hero p{font-size:1.2rem;color:var(--text-secondary);margin-bottom:2rem}
+            .cta-button{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;border:none;padding:1rem 2rem;border-radius:50px;font-size:1.1rem;font-weight:600;cursor:pointer;transition:all .3s ease;position:relative;overflow:hidden}
+            .cta-button:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(99,102,241,.3)}
+            .cta-button.magic{animation:magic-sparkle 1s ease-in-out}
+            @keyframes magic-sparkle{0%,100%{transform:scale(1) rotate(0)}25%{transform:scale(1.1) rotate(5deg)}50%{transform:scale(1.2) rotate(-5deg)}75%{transform:scale(1.1) rotate(5deg)}}
+            .avatar{width:200px;height:200px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;font-size:4rem;cursor:pointer;transition:all .3s ease;margin:0 auto;position:relative}
+            .avatar:hover{transform:rotate(10deg) scale(1.1)}
+            .avatar.spin{animation:spin 2s linear infinite}
+            .avatar.bounce{animation:bounce 1s ease-in-out infinite}
+            @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+            @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-20px)}}
+            .matrix-section{background:#000;color:#00ff00;padding:4rem 2rem;text-align:center;position:relative;overflow:hidden}
+            .matrix-rain{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;background:repeating-linear-gradient(90deg,transparent,transparent 98px,rgba(0,255,0,.1) 100px);animation:matrix-fall 5s linear infinite}
+            @keyframes matrix-fall{from{transform:translateY(-100%)}to{transform:translateY(100%)}}
+            .about{padding:4rem 2rem;background:var(--bg-secondary);transition:background .3s ease}
+            .about h2{font-size:2.5rem;text-align:center;margin-bottom:2rem;color:var(--text-primary)}
+            #about-text{font-size:1.2rem;text-align:center;max-width:600px;margin:0 auto 3rem;color:var(--text-primary)}
+            .secret-hover{opacity:0;transition:opacity .3s ease;color:var(--secret-color);font-weight:700}
+            #about-text:hover .secret-hover{opacity:1}
+            .skills{max-width:800px;margin:0 auto}
+            .skills h3{font-size:1.8rem;text-align:center;margin-bottom:2rem;color:var(--text-primary)}
+            .skill-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem}
+            .skill-item{background:var(--card-bg);padding:1.5rem;border-radius:10px;text-align:center;font-weight:600;cursor:pointer;transition:all .3s ease;box-shadow:0 5px 15px rgba(0,0,0,.1);position:relative;color:var(--text-primary)}
+            .skill-item:hover{transform:translateY(-5px);box-shadow:0 10px 25px rgba(0,0,0,.15)}
+            .click-counter{position:absolute;top:-10px;right:-10px;background:var(--secret-color);color:#fff;border-radius:50%;width:25px;height:25px;display:flex;align-items:center;justify-content:center;font-size:.8rem;opacity:0;transition:opacity .3s ease}
+            .skill-item.clicked .click-counter{opacity:1}
+            .projects{padding:4rem 2rem}
+            .projects h2{font-size:2.5rem;text-align:center;margin-bottom:3rem;color:var(--text-primary)}
+            .project-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem;max-width:1000px;margin:0 auto}
+            .project-card{background:var(--card-bg);padding:2rem;border-radius:15px;box-shadow:0 10px 30px rgba(0,0,0,.1);transition:all .3s ease;cursor:pointer;color:var(--text-primary)}
+            .project-card:hover{transform:translateY(-10px);box-shadow:0 20px 40px rgba(0,0,0,.15)}
+            .project-card.secret-revealed{background:linear-gradient(135deg,var(--secret-color),var(--primary));color:#fff;transform:scale(1.05) rotate(2deg)}
+            .secret-text{opacity:0;transition:opacity .3s ease}
+            .project-card.secret-revealed .secret-text{opacity:1;font-weight:700}
+            .terminal{position:fixed;bottom:20px;right:20px;width:400px;height:300px;background:#1a1a1a;border-radius:10px;border:1px solid #333;z-index:1000;font-family:'Courier New',monospace;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+            .terminal-header{background:#333;color:#fff;padding:.5rem 1rem;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #555}
+            .terminal-body{height:calc(100% - 40px);display:flex;flex-direction:column}
+            #terminal-output{flex:1;padding:1rem;color:#00ff00;font-size:.9rem;overflow-y:auto}
+            .terminal-input{padding:.5rem 1rem;border-top:1px solid #555;display:flex;align-items:center;color:#00ff00}
+            #terminal-cmd{background:transparent;border:none;color:#00ff00;outline:none;flex:1;font-family:inherit;font-size:.9rem}
+            #close-terminal{background:#ff5555;border:none;color:#fff;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:12px}
+            .contact{padding:4rem 2rem;background:rgba(99,102,241,.1);text-align:center}
+            .contact h2{font-size:2.5rem;margin-bottom:1rem;color:var(--text-primary)}
+            .contact p{color:var(--text-secondary)}
+            #contact-form{max-width:500px;margin:2rem auto 0;display:flex;flex-direction:column;gap:1rem}
+            #contact-form input,#contact-form textarea{padding:1rem;border:1px solid #ddd;border-radius:10px;font-size:1rem;transition:border-color .3s ease;background:var(--card-bg);color:var(--text-primary)}
+            #contact-form input:focus,#contact-form textarea:focus{outline:none;border-color:var(--primary)}
+            .char-counter{font-size:.8rem;color:var(--text-secondary);text-align:right;margin-top:-.5rem}
+            .char-counter.warning{color:#f59e0b}
+            .char-counter.danger{color:#ef4444}
+            #contact-form button{background:var(--primary);color:#fff;border:none;padding:1rem;border-radius:10px;font-size:1rem;font-weight:600;cursor:pointer;transition:all .3s ease;position:relative;min-height:50px}
+            #contact-form button:hover:not(:disabled){background:var(--secondary)}
+            #contact-form button:disabled{opacity:.7;cursor:not-allowed}
+            .spinner{width:20px;height:20px;border:2px solid transparent;border-top:2px solid #fff;border-radius:50%;animation:spin-loader 1s linear infinite;display:inline-block;margin-right:.5rem}
+            @keyframes spin-loader{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+            .rate-limit-info{margin-top:1rem;padding:.5rem;background:rgba(245,158,11,.1);border:1px solid #f59e0b;border-radius:5px;font-size:.9rem;color:#f59e0b}
+            footer{background:var(--dark);color:#fff;text-align:center;padding:2rem}
+            #footer-secret{cursor:pointer;transition:color .3s ease}
+            #footer-secret:hover{color:var(--secret-color)}
+            @media (max-width:768px){.hero{grid-template-columns:1fr;text-align:center}.hero h1{font-size:2rem}nav ul{gap:1rem}.terminal{width:90%;right:5%}}
+            .konami-activated{animation:rainbow-bg 3s ease-in-out infinite}
+            @keyframes rainbow-bg{0%,100%{filter:hue-rotate(0)}50%{filter:hue-rotate(180deg)}}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <header>
+                <nav>
+                    <div class="logo"><span id="secret-logo">DF</span></div>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#projects">Projects</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="demo.html">Demo</a></li>
+                        <li>
+                            <div class="theme-toggle-container">
+                                <span class="light-label">Light</span>
+                                <div class="theme-slider" id="theme-slider"></div>
+                                <span class="dark-label">Dark</span>
+                            </div>
+                        </li>
+                        <li><a href="#secret" id="secret-nav" style="display:none;">🎮 Secret</a></li>
+                    </ul>
+                </nav>
+            </header>
+
+            <main>
+                <section id="home" class="hero">
+                    <div class="hero-content">
+                        <h1>Hi, I'm <span class="highlight" id="name-span">Dan Finn</span></h1>
+                        <p>Student Developer & <span id="secret-title">Code Wizard</span></p>
+                        <button class="cta-button" id="magic-button">View My Work ✨</button>
+                    </div>
+                    <div class="hero-image">
+                        <div class="avatar" id="avatar"><div class="avatar-face">👨‍💻</div></div>
+                    </div>
+                </section>
+
+                <section id="matrix" class="matrix-section" style="display:none;">
+                    <div class="matrix-rain"></div>
+                    <h2>🎊 CONGRATULATIONS! 🎊</h2>
+                    <p>You've unlocked the Matrix! You might actually be a detective...</p>
+                    <button id="exit-matrix">Exit Matrix</button>
+                </section>
+
+                <section id="about" class="about">
+                    <h2>About Me</h2>
+                    <p id="about-text">I'm a Student developer who is always creating different web projects. I believe in clean code, user-friendly design, and... <span class="secret-hover">🎯 lots of hidden surprises</span>!</p>
+                    <div class="skills">
+                        <h3>Skills</h3>
+                        <div class="skill-grid">
+                            <div class="skill-item" data-skill="javascript">JavaScript <span class="click-counter">0</span></div>
+                            <div class="skill-item" data-skill="react">React <span class="click-counter">0</span></div>
+                            <div class="skill-item" data-skill="node">Node.js <span class="click-counter">0</span></div>
+                            <div class="skill-item" data-skill="python">Python <span class="click-counter">0</span></div>
                         </div>
-                    </li>
-                </ul>
-            </nav>
-        </header>
+                    </div>
+                </section>
 
-        <main>
-            <section id="home" class="hero">
-                <div class="hero-content">
-                    <h1>Hi, I'm <span class="highlight" id="name-span">Dan Finn</span></h1>
-                    <!-- Easter Egg #5: Try typing 'konami' when on this page -->
-                    <p>Student Developer & <span id="secret-title">Code Wizard</span></p>
-                    <button class="cta-button" id="magic-button">View My Work ✨</button>
-                </div>
-                <div class="hero-image">
-                    <!-- Easter Egg #6: Developer avatar has multiple click states -->
-                    <div class="avatar" id="avatar">
-                        <div class="avatar-face">🧑‍💻</div>
+                <section id="projects" class="projects">
+                    <h2>My Projects</h2>
+                    <div class="project-grid">
+                        <div class="project-card">
+                            <h3>🎮 Secret Game Project</h3>
+                            <p>A mysterious project that... <span class="secret-text">only appears when you solve the puzzle</span></p>
+                            <button class="project-btn" data-clicks="0">Learn More</button>
+                        </div>
+                        <div class="project-card">
+                            <h3>💻 Code Inspector Tool</h3>
+                            <p>Perfect for developers who love to peek behind the curtain!</p>
+                            <button class="project-btn">View Project</button>
+                        </div>
+                        <div class="project-card">
+                            <h3>🔍 Easter Egg Hunter</h3>
+                            <p>A tool for finding hidden gems in websites... just like this one!</p>
+                            <button class="project-btn">Explore</button>
+                        </div>
+                    </div>
+                </section>
+
+                <div id="terminal" class="terminal" style="display:none;">
+                    <div class="terminal-header">
+                        <span>Terminal - Easter Egg Console</span>
+                        <button id="close-terminal">×</button>
+                    </div>
+                    <div class="terminal-body">
+                        <div id="terminal-output">
+                            <p>🎯 EASTER EGG TERMINAL ACTIVATED!</p>
+                            <p>Available commands: help, matrix, joke, secret</p>
+                        </div>
+                        <div class="terminal-input">
+                            <span>user@portfolio:~$ </span>
+                            <input type="text" id="terminal-cmd" placeholder="Type a command..." />
+                        </div>
                     </div>
                 </div>
-            </section>
 
-            <!-- Easter Egg #7: Hidden section that appears with special key combo -->
-            <section id="matrix" class="matrix-section" style="display: none;">
-                <div class="matrix-rain"></div>
-                <h2>🎊 CONGRATULATIONS! 🎊</h2>
-                <p>You've unlocked the Matrix! You might actually be a detective...</p>
-                <button id="exit-matrix">Exit Matrix</button>
-            </section>
+                <section id="contact" class="contact">
+                    <h2>Get In Touch</h2>
+                    <p>Found all the easter eggs? Send me a message!</p>
+                    <form id="contact-form">
+                        <input type="text" name="name" id="name-field" placeholder="Your name (optional)" />
+                        <input type="email" name="email" id="email-field" placeholder="Your email *" required />
+                        <textarea name="message" id="message-field" placeholder="Your message... *" required maxlength="2000"></textarea>
+                        <div class="char-counter"><span id="char-count">0</span>/2000 characters</div>
+                        <button type="submit" id="submit-btn">Send Message</button>
+                    </form>
+                    <div id="rate-limit-warning" class="rate-limit-info" style="display:none;">⏰ Rate limit: <span id="submissions-count">0</span>/5 submissions in the last 2 minutes</div>
+                </section>
+            </main>
 
-            <section id="about" class="about">
-                <h2>About Me</h2>
-                <!-- Easter Egg #8: Hover over this paragraph for a surprise -->
-                <p id="about-text">I'm a Student developer who is always creating different web projects. I believe in clean code, user-friendly design, and... <span class="secret-hover">🎯 lots of hidden surprises</span>!</p>
-                
-                <div class="skills">
-                    <h3>Skills</h3>
-                    <div class="skill-grid">
-                        <!-- Easter Egg #9: Each skill has a secret click counter -->
-                        <div class="skill-item" data-skill="javascript">JavaScript <span class="click-counter">0</span></div>
-                        <div class="skill-item" data-skill="react">React <span class="click-counter">0</span></div>
-                        <div class="skill-item" data-skill="node">Node.js <span class="click-counter">0</span></div>
-                        <div class="skill-item" data-skill="python">Python <span class="click-counter">0</span></div>
-                    </div>
-                </div>
-            </section>
+            <footer>
+                <p>&copy; 2024 Dan Finn. Made with ❤️ and lots of <span id="footer-secret">easter eggs</span>!</p>
+                <!--
+                ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+                ░░█▀▀░█▀█░█▀▀░▀█▀░█▀▀░█▀▄░░█▀▀░█▀▀░█▀▀░
+                ░░█▀▀░█▀█░▀▀█░░█░░█▀▀░█▀▄░░█▀▀░█░█░█░█░
+                ░░▀▀▀░▀░▀░▀▀▀░░▀░░▀▀▀░▀░▀░░▀▀▀░▀▀▀░▀▀▀░
+                ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+                -->
+            </footer>
+        </div>
 
-            <section id="projects" class="projects">
-                <h2>My Projects</h2>
-                <div class="project-grid">
-                    <div class="project-card">
-                        <h3>🎮 Secret Game Project</h3>
-                        <p>A mysterious project that... <span class="secret-text">only appears when you solve the puzzle</span></p>
-                        <!-- Easter Egg #10: Project card transforms when clicked 5 times -->
-                        <button class="project-btn" data-clicks="0">Learn More</button>
-                    </div>
-                    <div class="project-card">
-                        <h3>💻 Code Inspector Tool</h3>
-                        <p>Perfect for developers who love to peek behind the curtain!</p>
-                        <button class="project-btn">View Project</button>
-                    </div>
-                    <div class="project-card">
-                        <h3>🔍 Easter Egg Hunter</h3>
-                        <p>A tool for finding hidden gems in websites... just like this one!</p>
-                        <button class="project-btn">Explore</button>
-                    </div>
-                </div>
-            </section>
+        <div class="theme-toggle-container" id="floating-theme-toggle" style="position:fixed;bottom:20px;left:20px;z-index:1500;background:var(--card-bg);padding:.5rem;border-radius:25px;box-shadow:0 4px 12px rgba(0,0,0,.15);">
+            <span class="light-label">Light</span>
+            <div class="theme-slider" id="floating-theme-slider"></div>
+            <span class="dark-label">Dark</span>
+        </div>
 
-            <!-- Easter Egg #11: Hidden terminal that can be activated -->
-            <div id="terminal" class="terminal" style="display: none;">
-                <div class="terminal-header">
-                    <span>Terminal - Easter Egg Console</span>
-                    <button id="close-terminal">×</button>
-                </div>
-                <div class="terminal-body">
-                    <div id="terminal-output">
-                        <p>🎯 EASTER EGG TERMINAL ACTIVATED!</p>
+        <audio id="secret-sound" preload="auto">
+            <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEaATOH0fTHdSUFKHzK7+GMOA0Ve7Dp46BLDww+ltryxnkpBSl+zPLaizsIGGS57OWYTgwKUKPh8bllHgg2jdT0y3koBCJ7yO/eizELFGiz6+ibURELTKXh8bZeGQU2iM/zzn0rBSh+zfHbizwJFlq16uedUgwJVKDg8sB+JAI=" type="audio/wav" />
+        </audio>
+
+        <script>
+            console.log('🚀 SCRIPT STARTED LOADING...');
+            console.log(`\n🎉 WELCOME TO THE EASTER EGG HUNT! 🎉\n`);
+            window.secretMessage = "🎯 You're getting warmer! Keep exploring!";
+            window.easterEggCount = 0; window.foundEggs = [];
+            window.showHint = () => console.log("💡 Hint: Try clicking on different elements multiple times!");
+            window.revealSecret = () => console.log("🔍 Secret: The Konami code is ↑↑↓↓←→←→BA");
+            window.easterEggList = () => console.log("🥚 Found eggs:", window.foundEggs);
+
+            class EasterEggHunt {
+                constructor(){ this.logoClicks=0; this.avatarClicks=0; this.konamiCode=['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','KeyB','KeyA']; this.konamiProgress=0; this.terminalCommands={help:"Available commands: matrix, joke, secret, clear, hint",matrix:"🔴💊 You take the red pill... Welcome to the Matrix!",joke:"Why do programmers prefer dark mode? Because light attracts bugs! 🐛",secret:"🎉 The secret is... you're awesome for finding this!",clear:"clear",hint:"💡 Try typing 'konami' on the main page!"}; this.init(); }
+                init(){ this.setupLogoClicks(); this.setupAvatarClicks(); this.setupKonamiCode(); this.setupSecretKeyword(); this.setupSkillCounters(); this.setupProjectCards(); this.setupCursorTrail(); this.setupTerminal(); this.setupMagicButton(); this.setupSecretHovers(); this.setupNameGlitch(); this.setupDarkMode(); this.setupContactForm(); this.addEasterEgg("Console Detective"); }
+                setupLogoClicks(){ const logo=document.getElementById('secret-logo'); logo.addEventListener('click',()=>{ this.logoClicks++; console.log(`🥚 Logo clicked ${this.logoClicks} times!`); if(this.logoClicks===3){ logo.classList.add('rainbow'); this.addEasterEgg("Rainbow Logo"); } if(this.logoClicks===5){ document.getElementById('secret-nav').style.display='block'; this.addEasterEgg("Secret Navigation"); this.playSecretSound(); } if(this.logoClicks===10){ this.showTerminal(); this.addEasterEgg("Terminal Access"); } }); }
+                setupAvatarClicks(){ const a=document.getElementById('avatar'); const faces=['👨‍💻','😎','🤖','👨‍🚀','🧙‍♂️','🎉']; a.addEventListener('click',()=>{ this.avatarClicks++; const f=a.querySelector('.avatar-face'); if(this.avatarClicks%2===0){ a.classList.add('spin'); setTimeout(()=>a.classList.remove('spin'),2000);} else { a.classList.add('bounce'); setTimeout(()=>a.classList.remove('bounce'),1000);} f.textContent=faces[this.avatarClicks%faces.length]; if(this.avatarClicks===6){ this.addEasterEgg("Avatar Master"); console.log("🎭 You've unlocked all avatar faces!"); } }); }
+                setupKonamiCode(){ document.addEventListener('keydown',(e)=>{ if(e.code===this.konamiCode[this.konamiProgress]){ this.konamiProgress++; if(this.konamiProgress===this.konamiCode.length){ this.activateMatrix(); this.konamiProgress=0; } } else { this.konamiProgress=0; } }); }
+                setupSecretKeyword(){ let t=''; document.addEventListener('keypress',(e)=>{ t+=e.key.toLowerCase(); if(t.length>6) t=t.slice(-6); if(t==='konami'){ document.body.classList.add('konami-activated'); this.addEasterEgg("Secret Keyword"); setTimeout(()=>document.body.classList.remove('konami-activated'),3000);} }); }
+                setupSkillCounters(){ document.querySelectorAll('.skill-item').forEach(s=>{ let c=0; s.addEventListener('click',()=>{ c++; s.classList.add('clicked'); s.querySelector('.click-counter').textContent=c; if(c===5){ s.style.background='linear-gradient(135deg,#ff69b4,#8b5cf6)'; s.style.color='#fff'; this.addEasterEgg(`${s.dataset.skill} Master`);} }); }); }
+                setupProjectCards(){ document.querySelectorAll('.project-btn').forEach(b=>{ b.addEventListener('click',()=>{ let c=parseInt(b.dataset.clicks)||0; c++; b.dataset.clicks=c; if(c===5){ const card=b.closest('.project-card'); card.classList.add('secret-revealed'); this.addEasterEgg("Secret Project Revealed"); } }); }); }
+                setupCursorTrail(){ let on=false; document.addEventListener('click',(e)=>{ if(e.ctrlKey){ on=!on; if(on) this.addEasterEgg("Cursor Trail"); } }); document.addEventListener('mousemove',(e)=>{ if(on){ const d=document.createElement('div'); d.className='cursor-trail'; d.style.left=e.clientX+'px'; d.style.top=e.clientY+'px'; document.body.appendChild(d); setTimeout(()=>d.remove(),1000);} }); }
+                setupTerminal(){ const cmd=document.getElementById('terminal-cmd'); const out=document.getElementById('terminal-output'); const close=document.getElementById('close-terminal'); document.addEventListener('keydown',(e)=>{ if(e.ctrlKey&&e.key==='t'){ e.preventDefault(); this.showTerminal(); } }); cmd.addEventListener('keypress',(e)=>{ if(e.key==='Enter'){ const c=e.target.value.toLowerCase().trim(); this.executeTerminalCommand(c,out); e.target.value=''; } }); close.addEventListener('click',()=>{ document.getElementById('terminal').style.display='none'; }); }
+                executeTerminalCommand(c,out){ const r=this.terminalCommands[c]||`Command not found: ${c}`; if(c==='clear'){ out.innerHTML='<p>🎯 EASTER EGG TERMINAL ACTIVATED!</p><p>Available commands: help, matrix, joke, secret</p>'; } else if(c==='matrix'){ this.activateMatrix(); } else { out.innerHTML+=`<p>user@portfolio:~$ ${c}</p><p>${r}</p>`; } out.scrollTop=out.scrollHeight; if(c in this.terminalCommands){ this.addEasterEgg(`Terminal Command: ${c}`);} }
+                showTerminal(){ document.getElementById('terminal').style.display='block'; document.getElementById('terminal-cmd').focus(); }
+                setupMagicButton(){ const btn=document.getElementById('magic-button'); btn.addEventListener('click',()=>{ btn.classList.add('magic'); setTimeout(()=>btn.classList.remove('magic'),1000); this.addEasterEgg("Magic Button"); for(let i=0;i<10;i++){ setTimeout(()=>{ const s=document.createElement('div'); s.innerHTML='✨'; s.style.position='absolute'; s.style.pointerEvents='none'; s.style.fontSize='20px'; s.style.zIndex='9999'; const r=btn.getBoundingClientRect(); s.style.left=(r.left+Math.random()*r.width)+'px'; s.style.top=(r.top+Math.random()*r.height)+'px'; document.body.appendChild(s); s.animate([{transform:'translateY(0px)',opacity:1},{transform:'translateY(-50px)',opacity:0}],{duration:1000,easing:'ease-out'}).onfinish=()=>s.remove(); }, i*100);} }); }
+                setupSecretHovers(){ const t=document.getElementById('secret-title'); const f=document.getElementById('footer-secret'); t.addEventListener('mouseenter',()=>{ t.textContent='🧙‍♂️ Easter Egg Hunter'; this.addEasterEgg("Secret Title"); }); f.addEventListener('click',()=>{ f.textContent='🥚 hidden treasures'; this.addEasterEgg("Footer Secret"); }); }
+                setupNameGlitch(){ const n=document.getElementById('name-span'); n.addEventListener('click',()=>{ n.classList.add('glitch'); setTimeout(()=>n.classList.remove('glitch'),500); this.addEasterEgg("Name Glitch"); }); }
+                setupDarkMode(){ const sliders=document.querySelectorAll('.theme-slider'); const saved=localStorage.getItem('theme')||'light'; this.applyTheme(saved); sliders.forEach(s=>{ s.addEventListener('click',()=>{ const current=document.documentElement.getAttribute('data-theme')||'light'; const next=current==='dark'?'light':'dark'; this.applyTheme(next); localStorage.setItem('theme',next); document.body.classList.add('dark-mode-flash'); setTimeout(()=>document.body.classList.remove('dark-mode-flash'),1500); this.addEasterEgg("Theme Toggle"); }); }); }
+                applyTheme(theme){ document.documentElement.setAttribute('data-theme',theme); document.body.setAttribute('data-theme',theme); document.querySelectorAll('.theme-slider').forEach(s=>s.classList.toggle('dark', theme==='dark')); if(theme==='dark'){ document.body.style.setProperty('background','linear-gradient(135deg,#0f172a 0%,#111827 100%)','important'); document.documentElement.style.setProperty('--bg-primary','#1f2937'); document.documentElement.style.setProperty('--text-primary','#f8fafc'); document.documentElement.style.setProperty('--container-bg','rgba(31,41,55,0.95)'); document.documentElement.style.setProperty('--card-bg','#374151'); } else { document.body.style.setProperty('background','linear-gradient(135deg,#667eea 0%,#764ba2 100%)','important'); document.documentElement.style.setProperty('--bg-primary','#ffffff'); document.documentElement.style.setProperty('--text-primary','#1f2937'); document.documentElement.style.setProperty('--container-bg','rgba(255,255,255,0.95)'); document.documentElement.style.setProperty('--card-bg','#ffffff'); } }
+                setupContactForm(){ const form=document.getElementById('contact-form'); const email=document.getElementById('email-field'); const message=document.getElementById('message-field'); const char=document.getElementById('char-count'); const btn=document.getElementById('submit-btn'); const warn=document.getElementById('rate-limit-warning'); const num=document.getElementById('submissions-count'); message.addEventListener('input',()=>{ const l=message.value.length; char.textContent=l; const c=char.parentElement; c.classList.remove('warning','danger'); if(l>1800)c.classList.add('danger'); else if(l>1500)c.classList.add('warning'); }); email.addEventListener('input',(e)=>{ const v=e.target.value.toLowerCase(); if(v.includes('easter')||v.includes('egg')){ message.placeholder='🥚 I see you\'re an easter egg hunter! Tell me about your discoveries...'; this.addEasterEgg("Easter Email"); } else if(v.includes('dan')) { message.placeholder='👋 Hey there! Dan here - tell me what you think of the site!'; this.addEasterEgg("Developer Email"); } }); this.updateRateLimitDisplay(); form.addEventListener('submit',async (e)=>{ e.preventDefault(); if(!this.checkRateLimit()){ this.showErrorModal('Rate limit exceeded! Please wait before sending another message.'); return; } const data={ name:(new FormData(form)).get('name')||'', email:(new FormData(form)).get('email'), message:(new FormData(form)).get('message'), serverTimestamp:window.firebaseServerTimestamp(), clientTimestamp:new Date().toISOString() }; const re=/^[^\s@]+@[^\s@]+\.[^\s@]+$/; if(!re.test(data.email)){ this.showErrorModal('Please enter a valid email address.'); return; } if(data.message.length<10){ this.showErrorModal('Message must be at least 10 characters long.'); return; } btn.disabled=true; btn.innerHTML='<span class="spinner"></span>Sending...'; try { const rnd=Math.floor(1000+Math.random()*9000); const t=new Date(); const id=`${rnd}-${t.getFullYear()}-${t.getMonth()+1}-${t.getDate()}`; await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDB,'Messages'),{id,...data}); this.trackSubmission(); this.showSuccessMessage(); form.reset(); char.textContent='0'; this.addEasterEgg("Message Sent"); this.triggerDarkModeFlash(); } catch(err){ console.error('❌ Firebase Error:',err); this.showErrorModal('Failed to send message. Please try again later.'); } finally { btn.disabled=false; btn.innerHTML='Send Message'; } }); }
+                checkRateLimit(){ const s=this.getSubmissions(); const two=Date.now()-(2*60*1000); const r=s.filter(t=>t>two); return r.length<5; }
+                trackSubmission(){ const s=this.getSubmissions(); s.push(Date.now()); localStorage.setItem('formSubmissions',JSON.stringify(s)); this.updateRateLimitDisplay(); }
+                getSubmissions(){ try{return JSON.parse(localStorage.getItem('formSubmissions')||'[]')}catch{return []} }
+                updateRateLimitDisplay(){ const s=this.getSubmissions(); const two=Date.now()-(2*60*1000); const r=s.filter(t=>t>two); const count=document.getElementById('submissions-count'); const w=document.getElementById('rate-limit-warning'); if(count) count.textContent=r.length; if(w) w.style.display=r.length>0?'block':'none'; }
+                showSuccessMessage(){ const f=document.getElementById('contact-form'); const box=document.createElement('div'); box.style.cssText='background:linear-gradient(135deg,#10b981,#34d399);color:white;padding:1.5rem;border-radius:10px;margin-top:1rem;text-align:center;animation:slideIn .5s ease-out;'; box.innerHTML='<h3>✅ Message Sent Successfully!</h3><p>Thanks for reaching out! I\'ll get back to you soon.</p><small>This message was saved to Firebase with real-time timestamp!</small>'; f.appendChild(box); setTimeout(()=>box.remove(),5000); }
+                showErrorModal(m){ const modal=document.createElement('div'); modal.className='error-modal'; modal.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:10000;'; modal.innerHTML=`<div style="background:white;padding:2rem;border-radius:15px;text-align:center;max-width:400px;margin:1rem;"><h3 style="color:#ef4444;margin-bottom:1rem;">❌ Error</h3><p style="margin-bottom:1.5rem;color:#1f2937;">${m}</p><button onclick=\"this.closest('.error-modal').remove()\" style="background:#ef4444;color:white;border:none;padding:.5rem 1.5rem;border-radius:8px;cursor:pointer;font-weight:600;">OK</button></div>`; document.body.appendChild(modal); setTimeout(()=>{ if(modal.parentNode) modal.remove(); },5000); }
+                activateMatrix(){ document.getElementById('matrix').style.display='block'; this.addEasterEgg("Matrix Mode"); document.getElementById('exit-matrix').addEventListener('click',()=>{ document.getElementById('matrix').style.display='none'; }); }
+                playSecretSound(){ const a=document.getElementById('secret-sound'); a.play().catch(()=>console.log('🔇 Audio play blocked by browser')); }
+                addEasterEgg(n){ if(!window.foundEggs.includes(n)){ window.foundEggs.push(n); window.easterEggCount++; console.log(`🥚 Easter Egg Found: ${n} (${window.easterEggCount} total)`); if(window.easterEggCount===15){ this.showVictoryMessage(); } } }
+                showVictoryMessage(){ const v=document.createElement('div'); v.innerHTML=`<div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#ff69b4,#8b5cf6);color:white;padding:2rem;border-radius:20px;text-align:center;z-index:10000;box-shadow:0 20px 50px rgba(0,0,0,.3);"><h2>🏆 EASTER EGG MASTER! 🏆</h2><p>You found ${window.easterEggCount} easter eggs!</p><p>🔥 Including the Firebase-powered contact form!</p><button onclick="this.parentElement.parentElement.remove()" style="background:white;color:#8b5cf6;border:none;padding:.5rem 1rem;border-radius:10px;margin-top:1rem;cursor:pointer;font-weight:bold;">Amazing! 🎉</button></div>`; document.body.appendChild(v); }
+            }
+            console.log("🎮 Available secret functions:\n• showHint() - Get a hint\n• revealSecret() - Reveal a secret\n• easterEggList() - Show found eggs");
+            document.addEventListener('DOMContentLoaded',()=>{ new EasterEggHunt(); console.log('🥳 Easter egg hunt initialized! Start exploring!'); });
+        </script>
+    </body>
+    </html>
                         <p>Available commands: help, matrix, joke, secret</p>
                     </div>
                     <div class="terminal-input">

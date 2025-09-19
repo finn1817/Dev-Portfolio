@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact - Inline</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    const firebaseConfig = {
+      apiKey: "AIzaSyCejm0Ry18S1mlqYpnMRuIJGnQ-iDvu3EU",
+      authDomain: "custom-messages-84ec4.firebaseapp.com",
+      projectId: "custom-messages-84ec4",
+      storageBucket: "custom-messages-84ec4.firebasestorage.app",
+      messagingSenderId: "1079020496100",
+      appId: "1:1079020496100:web:d21ec1428327515e3df8f1",
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    window.firebaseDB = db;
+    window.firebaseAddDoc = addDoc;
+    window.firebaseCollection = collection;
+    window.firebaseServerTimestamp = serverTimestamp;
+    console.log("🔥 Firebase initialized on Contact page");
+  </script>
+  <style>
+    :root{--primary:#6366f1;--secondary:#8b5cf6;--text:#111;--bg:#fff;--card:#fff}
+    [data-theme="dark"]{--text:#f8fafc;--bg:#111827;--card:#1f2937}
+    *{box-sizing:border-box} body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,Arial;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%)}
+    [data-theme="dark"] body{background:linear-gradient(135deg,#0f172a 0%,#111827 100%)}
+    .wrap{background:var(--card);color:var(--text);padding:2rem;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.2);width:min(680px,92%)}
+    .row{display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1rem}
+    .theme-slider{position:relative;width:52px;height:26px;background:#4ade80;border-radius:26px;cursor:pointer;border:2px solid var(--primary)}
+    .theme-slider::before{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform .25s ease}
+    .theme-slider.dark{background:#ef4444}
+    .theme-slider.dark::before{transform:translateX(24px)}
+    a{color:var(--primary);text-decoration:none;font-weight:600}
+    form{display:grid;gap:1rem;margin-top:1rem}
+    input,textarea{padding:1rem;border:1px solid #ddd;border-radius:10px;background:var(--card);color:var(--text)}
+    input:focus,textarea:focus{outline:none;border-color:var(--primary)}
+    .btn{background:var(--primary);color:#fff;border:none;padding:1rem;border-radius:10px;font-weight:700;cursor:pointer}
+    .counter{font-size:.85rem;color:#6b7280;text-align:right;margin-top:-.5rem}
+    .counter.warn{color:#f59e0b}.counter.danger{color:#ef4444}
+    .note{background:rgba(245,158,11,.1);border:1px solid #f59e0b;border-radius:8px;padding:.5rem 1rem;color:#8a5800;margin-top:.5rem;display:none}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="row">
+      <a href="index.html">← Back to portfolio</a>
+      <div class="row"><span>Light</span><div id="theme-slider" class="theme-slider"></div><span>Dark</span></div>
+    </div>
+    <h1>Contact</h1>
+    <p>Drop me a message below. Writes to the same Firebase collection as the main page.</p>
+    <form id="contact-form">
+      <input type="text" name="name" placeholder="Your name (optional)" />
+      <input type="email" name="email" id="email" placeholder="Your email *" required />
+      <textarea name="message" id="message" rows="6" placeholder="Your message... *" maxlength="2000" required></textarea>
+      <div class="counter"><span id="chars">0</span>/2000</div>
+      <button class="btn" id="send" type="submit">Send</button>
+      <div id="note" class="note">Rate limit: <span id="count">0</span>/5 in the last 2 minutes</div>
+    </form>
+  </div>
+  <script>
+    const applyTheme=(t)=>{document.documentElement.setAttribute('data-theme',t);document.body.setAttribute('data-theme',t);document.querySelectorAll('.theme-slider').forEach(s=>s.classList.toggle('dark',t==='dark'));};
+    const saved=localStorage.getItem('theme')||'light';applyTheme(saved);
+    document.getElementById('theme-slider').addEventListener('click',()=>{const next=(document.documentElement.getAttribute('data-theme')||'light')==='dark'?'light':'dark';applyTheme(next);localStorage.setItem('theme',next);});
+
+    const form=document.getElementById('contact-form');
+    const email=document.getElementById('email');
+    const message=document.getElementById('message');
+    const chars=document.getElementById('chars');
+    const note=document.getElementById('note');
+    const count=document.getElementById('count');
+
+    const getSubs=()=>{try{return JSON.parse(localStorage.getItem('formSubmissions')||'[]')}catch{return[]}};
+    const updateRate=()=>{const two=Date.now()-120000;const recent=getSubs().filter(t=>t>two);count.textContent=recent.length;note.style.display=recent.length>0?'block':'none'};
+    updateRate();
+
+    message.addEventListener('input',()=>{const l=message.value.length;chars.textContent=l;const c=chars.parentElement;c.classList.remove('warn','danger');if(l>1800)c.classList.add('danger');else if(l>1500)c.classList.add('warn');});
+
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const re=/^[^\s@]+@[^\s@]+\.[^\s@]+$/; if(!re.test(email.value)) return alert('Please enter a valid email');
+      if(message.value.trim().length<10) return alert('Message must be at least 10 characters');
+      const two=Date.now()-120000; const recent=getSubs().filter(t=>t>two); if(recent.length>=5) return alert('Rate limit exceeded. Please wait.');
+      try{
+        const payload={ name:form.name.value||'', email:email.value, message:message.value, serverTimestamp:window.firebaseServerTimestamp(), clientTimestamp:new Date().toISOString() };
+        await window.firebaseAddDoc(window.firebaseCollection(window.firebaseDB,'Messages'), payload);
+        const all=getSubs(); all.push(Date.now()); localStorage.setItem('formSubmissions', JSON.stringify(all));
+        updateRate();
+        alert('✅ Sent!');
+        form.reset(); chars.textContent='0';
+      }catch(err){
+        console.error(err); alert('❌ Failed to send');
+      }
+    });
+  </script>
+</body>
+</html>
