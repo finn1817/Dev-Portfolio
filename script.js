@@ -337,18 +337,26 @@ class EasterEggHunt {
     
     // Enhanced Dark Mode Implementation
     setupDarkMode() {
+        console.log('🔧 Setting up dark mode...');
+        
         const sliders = document.querySelectorAll('.theme-slider');
+        console.log('Found sliders:', sliders.length);
+        
         const savedTheme = localStorage.getItem('theme') || 'light';
+        console.log('Saved theme:', savedTheme);
 
         // Apply saved theme immediately
         this.applyTheme(savedTheme);
 
         // Setup both sliders (nav and floating)
-        sliders.forEach(slider => {
+        sliders.forEach((slider, index) => {
+            console.log(`Setting up slider ${index + 1}:`, slider);
             slider.addEventListener('click', () => {
+                console.log('Slider clicked!');
                 const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
                 const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
                 
+                console.log(`Switching from ${currentTheme} to ${newTheme}`);
                 this.applyTheme(newTheme);
                 localStorage.setItem('theme', newTheme);
                 
@@ -363,25 +371,40 @@ class EasterEggHunt {
     }
 
     applyTheme(theme) {
+        console.log(`🎨 Applying theme: ${theme}`);
+        
         // Set theme on both html and root
         document.documentElement.setAttribute('data-theme', theme);
         document.documentElement.dataset.theme = theme;
+        document.body.setAttribute('data-theme', theme);
         
         // Update all sliders
         const sliders = document.querySelectorAll('.theme-slider');
-        sliders.forEach(slider => {
+        console.log('Updating sliders:', sliders.length);
+        
+        sliders.forEach((slider, index) => {
+            console.log(`Slider ${index + 1} before:`, slider.classList.toString());
             if (theme === 'dark') {
                 slider.classList.add('dark');
             } else {
                 slider.classList.remove('dark');
             }
+            console.log(`Slider ${index + 1} after:`, slider.classList.toString());
         });
 
-        // Force background update
+        // Force background update with important styles
         if (theme === 'dark') {
-            document.body.style.background = 'linear-gradient(135deg, #0f172a 0%, #111827 100%)';
+            document.body.style.setProperty('background', 'linear-gradient(135deg, #0f172a 0%, #111827 100%)', 'important');
+            document.documentElement.style.setProperty('--bg-primary', '#1f2937');
+            document.documentElement.style.setProperty('--text-primary', '#f8fafc');
+            document.documentElement.style.setProperty('--container-bg', 'rgba(31, 41, 55, 0.95)');
+            document.documentElement.style.setProperty('--card-bg', '#374151');
         } else {
-            document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            document.body.style.setProperty('background', 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 'important');
+            document.documentElement.style.setProperty('--bg-primary', '#ffffff');
+            document.documentElement.style.setProperty('--text-primary', '#1f2937');
+            document.documentElement.style.setProperty('--container-bg', 'rgba(255, 255, 255, 0.95)');
+            document.documentElement.style.setProperty('--card-bg', '#ffffff');
         }
 
         console.log(`✅ Theme applied: ${theme}`);

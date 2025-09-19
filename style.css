@@ -130,72 +130,74 @@ nav {
     transition: all 0.3s ease;
 }
 
-/* Enhanced Theme Toggle Slider */
+/* Enhanced Theme Toggle Slider - Debugging Enhanced */
 .theme-toggle-container {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--text-primary);
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    font-size: 0.9rem !important;
+    font-weight: 500 !important;
+    color: var(--text-primary) !important;
+    border: 1px solid red !important; /* Debug border - remove later */
 }
 
 .theme-toggle-container .light-label {
-    color: var(--text-secondary);
-    transition: color 0.3s ease;
+    color: var(--text-secondary) !important;
+    transition: color 0.3s ease !important;
 }
 
 .theme-toggle-container .dark-label {
-    color: var(--text-secondary);
-    transition: color 0.3s ease;
+    color: var(--text-secondary) !important;
+    transition: color 0.3s ease !important;
 }
 
 .theme-slider {
-    position: relative;
-    width: 50px;
-    height: 25px;
-    background: #4ade80; /* Green for light mode */
-    border-radius: 25px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    border: 2px solid var(--primary);
+    position: relative !important;
+    width: 50px !important;
+    height: 25px !important;
+    background: #4ade80 !important; /* Green for light mode */
+    border-radius: 25px !important;
+    cursor: pointer !important;
+    transition: background-color 0.3s ease !important;
+    border: 2px solid var(--primary) !important;
+    flex-shrink: 0 !important;
 }
 
 .theme-slider.dark {
-    background: #ef4444; /* Red for dark mode */
+    background: #ef4444 !important; /* Red for dark mode */
 }
 
 .theme-slider::before {
-    content: '';
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 17px;
-    height: 17px;
-    background: white;
-    border-radius: 50%;
-    transition: transform 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    content: '' !important;
+    position: absolute !important;
+    top: 2px !important;
+    left: 2px !important;
+    width: 17px !important;
+    height: 17px !important;
+    background: white !important;
+    border-radius: 50% !important;
+    transition: transform 0.3s ease !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
 }
 
 .theme-slider.dark::before {
-    transform: translateX(23px);
+    transform: translateX(23px) !important;
 }
 
 /* Active state indicators */
 html[data-theme="light"] .light-label {
-    color: var(--primary);
-    font-weight: 600;
+    color: var(--primary) !important;
+    font-weight: 600 !important;
 }
 
 html[data-theme="dark"] .dark-label {
-    color: var(--primary);
-    font-weight: 600;
+    color: var(--primary) !important;
+    font-weight: 600 !important;
 }
 
 /* Old dark mode button - hide it */
 .dark-mode-btn {
-    display: none;
+    display: none !important;
 }
 
 /* Easter Egg #17: Logo has special hover states */
