@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alex Developer - Portfolio</title>
+    <!-- Easter Egg #1: Hidden message in meta tags -->
+    <meta name="secret" content="🎉 You found the first easter egg! Check the console for more surprises!">
+    <meta name="author" content="Detective Developer - Keep digging!">
+    <meta name="hidden-message" content="The cake is a lie, but the code is real!">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Easter Egg #2: Hidden HTML comments throughout -->
+    <!-- 🕵️ Welcome, fellow code inspector! You're on the right track... -->
+    
+    <div class="container">
+        <header>
+            <nav>
+                <div class="logo">
+                    <!-- Easter Egg #3: Logo clicks trigger something special -->
+                    <span id="secret-logo">AD</span>
+                </div>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#projects">Projects</a></li>
+                    <!-- Easter Egg #4: Hidden nav item appears after specific actions -->
+                    <li><a href="#secret" id="secret-nav" style="display: none;">🎮 Secret</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main>
+            <section id="home" class="hero">
+                <div class="hero-content">
+                    <h1>Hi, I'm <span class="highlight" id="name-span">Alex Developer</span></h1>
+                    <!-- Easter Egg #5: Try typing 'konami' when on this page -->
+                    <p>Full Stack Developer & <span id="secret-title">Code Wizard</span></p>
+                    <button class="cta-button" id="magic-button">View My Work ✨</button>
+                </div>
+                <div class="hero-image">
+                    <!-- Easter Egg #6: Developer avatar has multiple click states -->
+                    <div class="avatar" id="avatar">
+                        <div class="avatar-face">🧑‍💻</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Easter Egg #7: Hidden section that appears with special key combo -->
+            <section id="matrix" class="matrix-section" style="display: none;">
+                <div class="matrix-rain"></div>
+                <h2>🎊 CONGRATULATIONS! 🎊</h2>
+                <p>You've unlocked the Matrix! You're a true code detective!</p>
+                <button id="exit-matrix">Exit Matrix</button>
+            </section>
+
+            <section id="about" class="about">
+                <h2>About Me</h2>
+                <!-- Easter Egg #8: Hover over this paragraph for a surprise -->
+                <p id="about-text">I'm a passionate developer who loves creating amazing web experiences. I believe in clean code, user-friendly design, and... <span class="secret-hover">🎯 hidden surprises</span>!</p>
+                
+                <div class="skills">
+                    <h3>Skills</h3>
+                    <div class="skill-grid">
+                        <!-- Easter Egg #9: Each skill has a secret click counter -->
+                        <div class="skill-item" data-skill="javascript">JavaScript <span class="click-counter">0</span></div>
+                        <div class="skill-item" data-skill="react">React <span class="click-counter">0</span></div>
+                        <div class="skill-item" data-skill="node">Node.js <span class="click-counter">0</span></div>
+                        <div class="skill-item" data-skill="python">Python <span class="click-counter">0</span></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="projects" class="projects">
+                <h2>My Projects</h2>
+                <div class="project-grid">
+                    <div class="project-card">
+                        <h3>🎮 Secret Game Project</h3>
+                        <p>A mysterious project that... <span class="secret-text">only appears when you solve the puzzle</span></p>
+                        <!-- Easter Egg #10: Project card transforms when clicked 5 times -->
+                        <button class="project-btn" data-clicks="0">Learn More</button>
+                    </div>
+                    <div class="project-card">
+                        <h3>💻 Code Inspector Tool</h3>
+                        <p>Perfect for developers who love to peek behind the curtain!</p>
+                        <button class="project-btn">View Project</button>
+                    </div>
+                    <div class="project-card">
+                        <h3>🔍 Easter Egg Hunter</h3>
+                        <p>A tool for finding hidden gems in websites... just like this one!</p>
+                        <button class="project-btn">Explore</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Easter Egg #11: Hidden terminal that can be activated -->
+            <div id="terminal" class="terminal" style="display: none;">
+                <div class="terminal-header">
+                    <span>Terminal - Easter Egg Console</span>
+                    <button id="close-terminal">×</button>
+                </div>
+                <div class="terminal-body">
+                    <div id="terminal-output">
+                        <p>🎯 EASTER EGG TERMINAL ACTIVATED!</p>
+                        <p>Available commands: help, matrix, joke, secret</p>
+                    </div>
+                    <div class="terminal-input">
+                        <span>user@portfolio:~$ </span>
+                        <input type="text" id="terminal-cmd" placeholder="Type a command...">
+                    </div>
+                </div>
+            </div>
+
+            <section id="contact" class="contact">
+                <h2>Get In Touch</h2>
+                <p>Found all the easter eggs? Send me a message!</p>
+                <form id="contact-form">
+                    <input type="email" placeholder="Your email" required>
+                    <!-- Easter Egg #12: Special message field appears after email input -->
+                    <textarea id="message-field" placeholder="Your message..." required></textarea>
+                    <button type="submit">Send Message</button>
+                </form>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 Alex Developer. Made with ❤️ and lots of <span id="footer-secret">easter eggs</span>!</p>
+            <!-- Easter Egg #13: Footer contains hidden ASCII art -->
+            <!--
+            ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+            ░░█▀▀░█▀█░█▀▀░▀█▀░█▀▀░█▀▄░░█▀▀░█▀▀░█▀▀░
+            ░░█▀▀░█▀█░▀▀█░░█░░█▀▀░█▀▄░░█▀▀░█░█░█░█░
+            ░░▀▀▀░▀░▀░▀▀▀░░▀░░▀▀▀░▀░▀░░▀▀▀░▀▀▀░▀▀▀░
+            ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+            -->
+        </footer>
+    </div>
+
+    <!-- Easter Egg #14: Hidden audio elements -->
+    <audio id="secret-sound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmEaATOH0fTHdSUFKHzK7+GMOA0Ve7Dp46BLDww+ltryxnkpBSl+zPLaizsIGGS57OWYTgwKUKPh8bllHgg2jdT0y3koBCJ7yO/eizELFGiz6+ibURELTKXh8bZeGQU2iM/zzn0rBSh+zfHbizwJFlq16uedUgwJVKDg8sB+JAI=" type="audio/wav">
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
