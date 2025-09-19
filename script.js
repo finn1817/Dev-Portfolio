@@ -1,3 +1,7 @@
+// 🔥 IMMEDIATE TEST - This should show in console first
+console.log('🚀 SCRIPT STARTED LOADING...');
+alert('Script is loading! Check console for more info.');
+
 // Easter Egg #26: Console messages and ASCII art
 console.log(`
 🎉 WELCOME TO THE EASTER EGG HUNT! 🎉

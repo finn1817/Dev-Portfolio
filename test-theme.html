@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Theme Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .theme-slider {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #4ade80;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .theme-slider.dark {
+            background: #ef4444;
+        }
+        
+        .theme-slider::before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .theme-slider.dark::before {
+            transform: translateX(30px);
+        }
+        
+        /* Light theme */
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #1f2937;
+        }
+        
+        /* Dark theme */
+        body[data-theme="dark"] {
+            background: linear-gradient(135deg, #0f172a 0%, #111827 100%) !important;
+            color: #f8fafc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple Theme Toggle Test</h1>
+    
+    <div class="theme-toggle">
+        <span>Light</span>
+        <div class="theme-slider" id="theme-slider"></div>
+        <span>Dark</span>
+    </div>
+    
+    <p>If you can see this text and the slider above, CSS is working.</p>
+    <p id="js-test">JavaScript not loaded yet...</p>
+    
+    <script>
+        console.log('🔥 Simple test script loaded!');
+        
+        document.getElementById('js-test').textContent = '✅ JavaScript is working!';
+        
+        const slider = document.getElementById('theme-slider');
+        let isDark = false;
+        
+        slider.addEventListener('click', () => {
+            console.log('Slider clicked! Current state:', isDark ? 'dark' : 'light');
+            
+            isDark = !isDark;
+            
+            if (isDark) {
+                slider.classList.add('dark');
+                document.body.setAttribute('data-theme', 'dark');
+                console.log('✅ Switched to dark theme');
+            } else {
+                slider.classList.remove('dark');
+                document.body.removeAttribute('data-theme');
+                console.log('✅ Switched to light theme');
+            }
+        });
+        
+        console.log('🎯 Test script setup complete!');
+    </script>
+</body>
+</html>
