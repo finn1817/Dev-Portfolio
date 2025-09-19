@@ -58,6 +58,8 @@ class EasterEggHunt {
         this.setupTerminal();
         this.setupMagicButton();
         this.setupSecretHovers();
+        this.setupNameGlitch();
+        this.setupDarkMode();
         this.setupContactForm();
         this.addEasterEgg("Console Detective");
     }
@@ -323,17 +325,270 @@ class EasterEggHunt {
         });
     }
     
-    // Easter Egg #39: Contact form secrets
-    setupContactForm() {
-        const emailInput = document.querySelector('#contact-form input[type="email"]');
-        const messageField = document.getElementById('message-field');
+    // Easter Egg #39: Name glitch effect
+    setupNameGlitch() {
+        const nameSpan = document.getElementById('name-span');
+        nameSpan.addEventListener('click', () => {
+            nameSpan.classList.add('glitch');
+            setTimeout(() => nameSpan.classList.remove('glitch'), 500);
+            this.addEasterEgg("Name Glitch");
+        });
+    }
+    
+    // Dark Mode Implementation
+    setupDarkMode() {
+        const darkModeToggle = document.getElementById('dark-mode-toggle');
+        const savedTheme = localStorage.getItem('theme') || 'light';
         
+        // Apply saved theme
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        darkModeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+        
+        darkModeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            darkModeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            
+            console.log(`🌓 Switched to ${newTheme} mode!`);
+            this.addEasterEgg("Dark Mode Toggle");
+        });
+    }
+    
+    // Firebase Contact Form Implementation
+    setupContactForm() {
+        const form = document.getElementById('contact-form');
+        const emailInput = document.getElementById('email-field');
+        const messageField = document.getElementById('message-field');
+        const charCount = document.getElementById('char-count');
+        const submitBtn = document.getElementById('submit-btn');
+        const rateLimitWarning = document.getElementById('rate-limit-warning');
+        const submissionsCount = document.getElementById('submissions-count');
+        
+        // Character counter
+        messageField.addEventListener('input', () => {
+            const length = messageField.value.length;
+            charCount.textContent = length;
+            
+            const counter = charCount.parentElement;
+            counter.classList.remove('warning', 'danger');
+            
+            if (length > 1800) counter.classList.add('danger');
+            else if (length > 1500) counter.classList.add('warning');
+        });
+        
+        // Easter egg email detection
         emailInput.addEventListener('input', (e) => {
-            if (e.target.value.includes('easter') || e.target.value.includes('egg')) {
+            const email = e.target.value.toLowerCase();
+            if (email.includes('easter') || email.includes('egg')) {
                 messageField.placeholder = "🥚 I see you're an easter egg hunter! Tell me about your discoveries...";
                 this.addEasterEgg("Easter Email");
+            } else if (email.includes('dan')) {
+                messageField.placeholder = "👋 Hey there! Dan here - tell me what you think of the site!";
+                this.addEasterEgg("Developer Email");
             }
         });
+        
+        // Rate limiting check
+        this.updateRateLimitDisplay();
+        
+        // Form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!this.checkRateLimit()) {
+                this.showErrorModal('Rate limit exceeded! Please wait before sending another message.');
+                return;
+            }
+            
+            const formData = new FormData(form);
+            const data = {
+                name: formData.get('name') || '',
+                email: formData.get('email'),
+                message: formData.get('message'),
+                serverTimestamp: window.firebaseServerTimestamp(),
+                clientTimestamp: new Date().toISOString()
+            };
+            
+            // Validation
+            if (!this.validateEmail(data.email)) {
+                this.showErrorModal('Please enter a valid email address.');
+                return;
+            }
+            
+            if (data.message.length < 10) {
+                this.showErrorModal('Message must be at least 10 characters long.');
+                return;
+            }
+            
+            // Show loading state
+            this.setLoadingState(true);
+            
+            try {
+                // Generate custom ID: random 4 digits + date
+                const randomId = Math.floor(1000 + Math.random() * 9000);
+                const today = new Date();
+                const customId = `${randomId}-${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+                
+                // Save to Firebase
+                await window.firebaseAddDoc(
+                    window.firebaseCollection(window.firebaseDB, 'Messages'),
+                    {
+                        id: customId,
+                        ...data
+                    }
+                );
+                
+                // Track submission for rate limiting
+                this.trackSubmission();
+                
+                // Success!
+                this.showSuccessMessage();
+                form.reset();
+                charCount.textContent = '0';
+                this.addEasterEgg("Message Sent");
+                
+                // Dark mode flash effect
+                this.triggerDarkModeFlash();
+                
+                console.log('📧 Message sent successfully!', { id: customId });
+                
+            } catch (error) {
+                console.error('❌ Firebase Error:', error);
+                this.showErrorModal('Failed to send message. Please try again later.');
+            } finally {
+                this.setLoadingState(false);
+            }
+        });
+    }
+    
+    // Rate limiting functions
+    checkRateLimit() {
+        const submissions = this.getSubmissions();
+        const twoMinutesAgo = Date.now() - (2 * 60 * 1000);
+        const recentSubmissions = submissions.filter(time => time > twoMinutesAgo);
+        
+        return recentSubmissions.length < 5;
+    }
+    
+    trackSubmission() {
+        const submissions = this.getSubmissions();
+        submissions.push(Date.now());
+        localStorage.setItem('formSubmissions', JSON.stringify(submissions));
+        this.updateRateLimitDisplay();
+    }
+    
+    getSubmissions() {
+        try {
+            return JSON.parse(localStorage.getItem('formSubmissions') || '[]');
+        } catch {
+            return [];
+        }
+    }
+    
+    updateRateLimitDisplay() {
+        const submissions = this.getSubmissions();
+        const twoMinutesAgo = Date.now() - (2 * 60 * 1000);
+        const recentSubmissions = submissions.filter(time => time > twoMinutesAgo);
+        
+        const count = document.getElementById('submissions-count');
+        const warning = document.getElementById('rate-limit-warning');
+        
+        count.textContent = recentSubmissions.length;
+        
+        if (recentSubmissions.length > 0) {
+            warning.style.display = 'block';
+        } else {
+            warning.style.display = 'none';
+        }
+    }
+    
+    // Utility functions
+    validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
+    
+    setLoadingState(loading) {
+        const submitBtn = document.getElementById('submit-btn');
+        
+        if (loading) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner"></span>Sending...';
+        } else {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Send Message';
+        }
+    }
+    
+    showSuccessMessage() {
+        const form = document.getElementById('contact-form');
+        const successDiv = document.createElement('div');
+        successDiv.style.cssText = `
+            background: linear-gradient(135deg, #10b981, #34d399);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            text-align: center;
+            animation: slideIn 0.5s ease-out;
+        `;
+        successDiv.innerHTML = `
+            <h3>✅ Message Sent Successfully!</h3>
+            <p>Thanks for reaching out! I'll get back to you soon.</p>
+            <small>This message was saved to Firebase with real-time timestamp!</small>
+        `;
+        
+        form.appendChild(successDiv);
+        
+        setTimeout(() => {
+            successDiv.remove();
+        }, 5000);
+    }
+    
+    showErrorModal(message) {
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        `;
+        
+        modal.innerHTML = `
+            <div style="background: white; padding: 2rem; border-radius: 15px; text-align: center; max-width: 400px; margin: 1rem;">
+                <h3 style="color: #ef4444; margin-bottom: 1rem;">❌ Error</h3>
+                <p style="margin-bottom: 1.5rem; color: #1f2937;">${message}</p>
+                <button onclick="this.closest('.error-modal').remove()" 
+                        style="background: #ef4444; color: white; border: none; padding: 0.5rem 1.5rem; 
+                               border-radius: 8px; cursor: pointer; font-weight: 600;">
+                    OK
+                </button>
+            </div>
+        `;
+        
+        modal.className = 'error-modal';
+        document.body.appendChild(modal);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            if (modal.parentNode) modal.remove();
+        }, 5000);
+    }
+    
+    triggerDarkModeFlash() {
+        document.body.classList.add('dark-mode-flash');
+        setTimeout(() => {
+            document.body.classList.remove('dark-mode-flash');
+        }, 6000);
     }
     
     // Matrix activation
@@ -360,7 +615,7 @@ class EasterEggHunt {
             window.easterEggCount++;
             console.log(`🥚 Easter Egg Found: ${name} (${window.easterEggCount} total)`);
             
-            if (window.easterEggCount === 10) {
+            if (window.easterEggCount === 15) {
                 console.log("🏆 CONGRATULATIONS! You're an Easter Egg Master!");
                 this.showVictoryMessage();
             }
@@ -376,6 +631,7 @@ class EasterEggHunt {
                         box-shadow: 0 20px 50px rgba(0,0,0,0.3);">
                 <h2>🏆 EASTER EGG MASTER! 🏆</h2>
                 <p>You found ${window.easterEggCount} easter eggs!</p>
+                <p>🔥 Including the Firebase-powered contact form!</p>
                 <button onclick="this.parentElement.parentElement.remove()" 
                         style="background: white; color: #8b5cf6; border: none; padding: 0.5rem 1rem; 
                                border-radius: 10px; margin-top: 1rem; cursor: pointer; font-weight: bold;">

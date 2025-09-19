@@ -3,23 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dev Playground - Portfolio</title>
+    <title>Dan Finn - Portfolio</title>
     <!-- Easter Egg #1: Hidden message in meta tags -->
-    <meta name="secret" content="🎉 You found the first easter egg! Now look at the console for more!">
-    <meta name="author" content="Good Developer - Keep going!">
+    <meta name="secret" content="🎉 You found the first easter egg! Check the console for more surprises!">
+    <meta name="author" content="Detective Developer - Keep digging!">
     <meta name="hidden-message" content="The cake is a lie, but the code is real!">
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCejm0Ry18S1mlqYpnMRuIJGnQ-iDvu3EU",
+            authDomain: "custom-messages-84ec4.firebaseapp.com",
+            projectId: "custom-messages-84ec4",
+            storageBucket: "custom-messages-84ec4.firebasestorage.app",
+            messagingSenderId: "1079020496100",
+            appId: "1:1079020496100:web:d21ec1428327515e3df8f1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Make Firebase available globally
+        window.firebaseDB = db;
+        window.firebaseAddDoc = addDoc;
+        window.firebaseCollection = collection;
+        window.firebaseServerTimestamp = serverTimestamp;
+        
+        console.log("🔥 Firebase initialized successfully!");
+    </script>
+    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <!-- Easter Egg #2: Hidden HTML comments throughout -->
-    <!-- 🕵️ Looks like you made it to the comments! You're on the right track... -->
+    <!-- 🕵️ Welcome, fellow code inspector! You're on the right track... -->
     
     <div class="container">
         <header>
             <nav>
                 <div class="logo">
                     <!-- Easter Egg #3: Logo clicks trigger something special -->
-                    <span id="secret-logo">AD</span>
+                    <span id="secret-logo">DF</span>
                 </div>
                 <ul>
                     <li><a href="#home">Home</a></li>
@@ -28,6 +55,8 @@
                     <!-- Easter Egg #4: Hidden nav item appears after specific actions -->
                     <li><a href="#secret" id="secret-nav" style="display: none;">🎮 Secret</a></li>
                     <li><a href="#contact">Contact</a></li>
+                    <!-- Dark Mode Toggle -->
+                    <li><button id="dark-mode-toggle" class="dark-mode-btn">🌙</button></li>
                 </ul>
             </nav>
         </header>
@@ -37,7 +66,7 @@
                 <div class="hero-content">
                     <h1>Hi, I'm <span class="highlight" id="name-span">Dan Finn</span></h1>
                     <!-- Easter Egg #5: Try typing 'konami' when on this page -->
-                    <p>Full Stack Developer & <span id="secret-title">Code Wizard</span></p>
+                    <p>Student Developer & <span id="secret-title">Code Wizard</span></p>
                     <button class="cta-button" id="magic-button">View My Work ✨</button>
                 </div>
                 <div class="hero-image">
@@ -51,7 +80,7 @@
             <!-- Easter Egg #7: Hidden section that appears with special key combo -->
             <section id="matrix" class="matrix-section" style="display: none;">
                 <div class="matrix-rain"></div>
-                <h2>🎊 CONGRATS! 🎊</h2>
+                <h2>🎊 CONGRATULATIONS! 🎊</h2>
                 <p>You've unlocked the Matrix! You might actually be a detective...</p>
                 <button id="exit-matrix">Exit Matrix</button>
             </section>
@@ -117,16 +146,23 @@
                 <h2>Get In Touch</h2>
                 <p>Found all the easter eggs? Send me a message!</p>
                 <form id="contact-form">
-                    <input type="email" placeholder="Your email" required>
+                    <input type="text" name="name" id="name-field" placeholder="Your name (optional)">
+                    <input type="email" name="email" id="email-field" placeholder="Your email *" required>
                     <!-- Easter Egg #12: Special message field appears after email input -->
-                    <textarea id="message-field" placeholder="Your message..." required></textarea>
-                    <button type="submit">Send Message</button>
+                    <textarea name="message" id="message-field" placeholder="Your message... *" required maxlength="2000"></textarea>
+                    <div class="char-counter">
+                        <span id="char-count">0</span>/2000 characters
+                    </div>
+                    <button type="submit" id="submit-btn">Send Message</button>
                 </form>
+                <div id="rate-limit-warning" class="rate-limit-info" style="display: none;">
+                    ⏰ Rate limit: <span id="submissions-count">0</span>/5 submissions in the last 2 minutes
+                </div>
             </section>
         </main>
 
         <footer>
-            <p>&copy; 2024 Alex Developer. Made with ❤️ and lots of <span id="footer-secret">easter eggs</span>!</p>
+            <p>&copy; 2024 Dan Finn. Made with ❤️ and lots of <span id="footer-secret">easter eggs</span>!</p>
             <!-- Easter Egg #13: Footer contains hidden ASCII art -->
             <!--
             ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
