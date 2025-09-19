@@ -40,10 +40,21 @@ body {
     font-family: 'Inter', sans-serif;
     line-height: 1.6;
     color: var(--text-primary);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--bg-primary);
     min-height: 100vh;
     position: relative;
-    transition: all 0.3s ease;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Theme-specific body backgrounds (makes dark/light visually distinct) */
+:root[data-theme="light"] body,
+[data-theme="light"] body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+:root[data-theme="dark"] body,
+[data-theme="dark"] body {
+    background: linear-gradient(135deg, #0f172a 0%, #111827 100%);
 }
 
 /* Dark mode flash effect */
