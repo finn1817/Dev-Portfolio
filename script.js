@@ -335,32 +335,56 @@ class EasterEggHunt {
         });
     }
     
-    // Dark Mode Implementation
+    // Enhanced Dark Mode Implementation
     setupDarkMode() {
-        const toggles = document.querySelectorAll('.dark-mode-btn');
+        const sliders = document.querySelectorAll('.theme-slider');
         const savedTheme = localStorage.getItem('theme') || 'light';
 
-        // Apply saved theme
-        document.documentElement.setAttribute('data-theme', savedTheme);
-        toggles.forEach(t => t.textContent = savedTheme === 'dark' ? '☀️' : '🌙');
+        // Apply saved theme immediately
+        this.applyTheme(savedTheme);
 
-        // Allow any toggle button to switch theme
-        toggles.forEach(btn => {
-            btn.addEventListener('click', () => {
+        // Setup both sliders (nav and floating)
+        sliders.forEach(slider => {
+            slider.addEventListener('click', () => {
                 const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
                 const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-
-                document.documentElement.setAttribute('data-theme', newTheme);
+                
+                this.applyTheme(newTheme);
                 localStorage.setItem('theme', newTheme);
-                toggles.forEach(t => t.textContent = newTheme === 'dark' ? '☀️' : '🌙');
-
+                
                 console.log(`🌓 Switched to ${newTheme} mode!`);
-                this.addEasterEgg("Dark Mode Toggle");
-                // brief flash class to make theme change more noticeable
+                this.addEasterEgg("Theme Toggle");
+                
+                // Brief flash effect
                 document.body.classList.add('dark-mode-flash');
                 setTimeout(() => document.body.classList.remove('dark-mode-flash'), 1500);
             });
         });
+    }
+
+    applyTheme(theme) {
+        // Set theme on both html and root
+        document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.dataset.theme = theme;
+        
+        // Update all sliders
+        const sliders = document.querySelectorAll('.theme-slider');
+        sliders.forEach(slider => {
+            if (theme === 'dark') {
+                slider.classList.add('dark');
+            } else {
+                slider.classList.remove('dark');
+            }
+        });
+
+        // Force background update
+        if (theme === 'dark') {
+            document.body.style.background = 'linear-gradient(135deg, #0f172a 0%, #111827 100%)';
+        } else {
+            document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+        }
+
+        console.log(`✅ Theme applied: ${theme}`);
     }
     
     // Firebase Contact Form Implementation

@@ -56,7 +56,13 @@
                     <li><a href="#secret" id="secret-nav" style="display: none;">🎮 Secret</a></li>
                     <li><a href="#contact">Contact</a></li>
                     <!-- Dark Mode Toggle -->
-                    <li><button id="dark-mode-toggle" class="dark-mode-btn">🌙</button></li>
+                    <li>
+                        <div class="theme-toggle-container">
+                            <span class="light-label">Light</span>
+                            <div class="theme-slider" id="theme-slider"></div>
+                            <span class="dark-label">Dark</span>
+                        </div>
+                    </li>
                 </ul>
             </nav>
         </header>
@@ -175,7 +181,11 @@
     </div>
 
     <!-- Floating page toggle for convenience -->
-    <button id="page-theme-toggle" class="dark-mode-btn" title="Toggle theme" style="position:fixed;bottom:20px;left:20px;z-index:1500;">🌙</button>
+    <div class="theme-toggle-container" id="floating-theme-toggle" style="position:fixed;bottom:20px;left:20px;z-index:1500;background:var(--card-bg);padding:0.5rem;border-radius:25px;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+        <span class="light-label">Light</span>
+        <div class="theme-slider" id="floating-theme-slider"></div>
+        <span class="dark-label">Dark</span>
+    </div>
 
     <!-- Easter Egg #14: Hidden audio elements -->
     <audio id="secret-sound" preload="auto">

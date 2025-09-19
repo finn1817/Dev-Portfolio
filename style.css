@@ -30,6 +30,17 @@ html[data-theme="dark"] {
     --card-bg: #374151;
 }
 
+/* Ensure variables are applied to root when theme changes */
+:root[data-theme="dark"] {
+    --bg-primary: #1f2937;
+    --bg-secondary: rgba(31, 41, 55, 0.8);
+    --text-primary: #f8fafc;
+    --text-secondary: #d1d5db;
+    --nav-bg: rgba(31, 41, 55, 0.9);
+    --container-bg: rgba(31, 41, 55, 0.95);
+    --card-bg: #374151;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -48,13 +59,12 @@ body {
 
 /* Theme-specific body backgrounds (makes dark/light visually distinct) */
 html[data-theme="light"] body,
-html[data-theme="light"] {
+body {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-html[data-theme="dark"] body,
-html[data-theme="dark"] {
-    background: linear-gradient(135deg, #0f172a 0%, #111827 100%);
+html[data-theme="dark"] body {
+    background: linear-gradient(135deg, #0f172a 0%, #111827 100%) !important;
 }
 
 /* Dark mode flash effect */
@@ -120,24 +130,72 @@ nav {
     transition: all 0.3s ease;
 }
 
-/* Dark mode toggle button */
-.dark-mode-btn {
-    background: var(--card-bg);
-    border: 2px solid var(--primary);
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    font-size: 1.2rem;
-    transition: all 0.3s ease;
+/* Enhanced Theme Toggle Slider */
+.theme-toggle-container {
     display: flex;
     align-items: center;
-    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
 }
 
-.dark-mode-btn:hover {
-    background: var(--primary);
-    transform: scale(1.1);
+.theme-toggle-container .light-label {
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+.theme-toggle-container .dark-label {
+    color: var(--text-secondary);
+    transition: color 0.3s ease;
+}
+
+.theme-slider {
+    position: relative;
+    width: 50px;
+    height: 25px;
+    background: #4ade80; /* Green for light mode */
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border: 2px solid var(--primary);
+}
+
+.theme-slider.dark {
+    background: #ef4444; /* Red for dark mode */
+}
+
+.theme-slider::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 17px;
+    height: 17px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.theme-slider.dark::before {
+    transform: translateX(23px);
+}
+
+/* Active state indicators */
+html[data-theme="light"] .light-label {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+html[data-theme="dark"] .dark-label {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* Old dark mode button - hide it */
+.dark-mode-btn {
+    display: none;
 }
 
 /* Easter Egg #17: Logo has special hover states */
