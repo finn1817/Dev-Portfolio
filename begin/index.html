@@ -364,11 +364,14 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Track hunt start
+        // Track hunt start (only if signed in)
         async function trackHuntStart() {
             try {
-                await addDoc(collection(db, 'easter_egg_hunt'), {
+                const currentUser = JSON.parse(localStorage.getItem('auth_user') || 'null');
+                if (!currentUser) return; // only store for signed-in users
+                await addDoc(collection(db, `users/${currentUser.username}/events`), {
                     action: 'hunt_started',
+                    source: 'begin_page',
                     timestamp: serverTimestamp(),
                     userAgent: navigator.userAgent,
                     sessionId: generateSessionId()
@@ -536,14 +539,17 @@ Congratulations! You've found the first easter egg just by opening the console!
 Good luck, detective! 🕵️‍♂️
         `);
 
-        // Track console access
+        // Track console access (only if signed in)
         try {
-            addDoc(collection(db, 'easter_eggs'), {
-                type: 'console_access_hunt_page',
-                timestamp: serverTimestamp(),
-                sessionId: generateSessionId(),
-                source: 'begin_page'
-            });
+            const currentUser = JSON.parse(localStorage.getItem('auth_user') || 'null');
+            if (currentUser) {
+                await addDoc(collection(db, `users/${currentUser.username}/events`), {
+                    type: 'console_access_hunt_page',
+                    timestamp: serverTimestamp(),
+                    sessionId: generateSessionId(),
+                    source: 'begin_page'
+                });
+            }
         } catch (error) {
             // Silent fail for analytics
         }

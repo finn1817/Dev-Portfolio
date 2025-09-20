@@ -102,6 +102,153 @@
             list-style: none;
         }
 
+        .left { display: flex; align-items: center; gap: 0.75rem; }
+        .auth-button { background: transparent; color: var(--text-color); border: 1px solid var(--border-color); padding: 0.35rem 0.8rem; border-radius: 20px; cursor: pointer; font-size: 0.85rem; }
+        .auth-button:hover { border-color: var(--accent-color); color: var(--accent-color); }
+
+        /* Auth Modal Styles */
+        .auth-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .auth-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(20px);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .auth-modal.active .auth-card {
+            transform: scale(1);
+        }
+
+        .auth-card h3 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+            font-size: 1.5rem;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .auth-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .auth-input::placeholder {
+            color: var(--text-color);
+            opacity: 0.6;
+        }
+
+        .auth-row {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .auth-row .auth-input {
+            flex: 1;
+        }
+
+        .auth-hint {
+            font-size: 0.8rem;
+            color: var(--text-color);
+            opacity: 0.7;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .auth-actions {
+            display: flex;
+            gap: 0.8rem;
+            justify-content: space-between;
+        }
+
+        .auth-primary, .auth-secondary {
+            flex: 1;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .auth-primary {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .auth-primary:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+
+        .auth-secondary {
+            background: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .auth-secondary:hover {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .auth-mode-toggle {
+            text-align: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .auth-toggle-btn {
+            background: none;
+            border: none;
+            color: var(--accent-color);
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 0.9rem;
+        }
+
+        .auth-toggle-btn:hover {
+            color: var(--secondary-color);
+        }
+
         .nav-links a {
             color: var(--text-color);
             text-decoration: none;
@@ -715,7 +862,7 @@
     <canvas class="matrix-bg" id="matrixCanvas"></canvas>
     
     <nav class="nav">
-        <div class="logo">DF</div>
+        <div class="left"><div class="logo">DF</div><button class="auth-button" id="authBtn" onclick="openAuth()">Sign In</button><span id="authStatus" style="display:none; font-size:0.9rem; opacity:0.85; margin-left:6px;"></span></div>
         <ul class="nav-links">
             <li><a href="#" onclick="showSection('home')" class="nav-tab active" data-section="home">Home</a></li>
             <li><a href="#" onclick="showSection('about')" class="nav-tab" data-section="about">About</a></li>
@@ -898,10 +1045,33 @@
         <span id="notificationText"></span>
     </div>
 
+    <!-- Auth Modal -->
+    <div class="auth-modal" id="authModal">
+        <div class="auth-card">
+            <h3 id="authTitle">Sign In</h3>
+            <input id="authUsername" class="auth-input" placeholder="Username (e.g., Testuser)">
+            <input id="authPassword" class="auth-input" placeholder="Password" type="password" style="margin-top:0.5rem;">
+            <input id="authConfirmPassword" class="auth-input" placeholder="Confirm Password" type="password" style="margin-top:0.5rem; display:none;">
+            <div class="auth-row" style="margin-top:0.5rem;">
+                <input id="authName" class="auth-input" placeholder="Name (optional)">
+                <input id="authPhone" class="auth-input" placeholder="Phone (optional)">
+            </div>
+            <div class="auth-hint" id="authHint">Password must be 4+ chars and include Uppercase, Lowercase, Number, and Special character.</div>
+            <div class="auth-actions">
+                <button class="auth-secondary" onclick="closeAuth()">Cancel</button>
+                <button class="auth-primary" id="authSubmitBtn" onclick="handleAuth()">Sign In</button>
+            </div>
+            <div class="auth-mode-toggle">
+                <span id="authModeText">Don't have an account?</span>
+                <button class="auth-toggle-btn" id="authToggleBtn" onclick="toggleAuthMode()">Create Account</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         // Firebase Configuration
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, updateDoc, deleteDoc, doc, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, where, updateDoc, deleteDoc, doc, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCejm0Ry18S1mlqYpnMRuIJGnQ-iDvu3EU",
@@ -922,7 +1092,8 @@
         let submissionCount = parseInt(localStorage.getItem('submissionCount') || '0');
         let lastSubmissionTime = parseInt(localStorage.getItem('lastSubmissionTime') || '0');
         let sessionId = generateSessionId();
-        let commandHistory = [];
+    let commandHistory = [];
+    let currentUser = JSON.parse(localStorage.getItem('auth_user') || 'null');
 
         // SPA Management
         let currentSection = 'home';
@@ -987,6 +1158,7 @@
             const savedTheme = localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
             updateThemeButton();
+            if (typeof updateAuthUI === 'function') updateAuthUI();
         });
 
         // Firebase Functions
@@ -1022,7 +1194,9 @@
 
         async function logEasterEgg(eggType) {
             try {
-                await addDoc(collection(db, 'easter_eggs'), {
+                if (!currentUser) return; // only store for signed-in users
+                const uid = currentUser.username;
+                await addDoc(collection(db, `users/${uid}/events`), {
                     type: eggType,
                     timestamp: serverTimestamp(),
                     sessionId: sessionId
@@ -1037,7 +1211,9 @@
 
         async function saveCommand(command, output) {
             try {
-                await addDoc(collection(db, 'command_history'), {
+                if (!currentUser) return; // only when signed in
+                const uid = currentUser.username;
+                await addDoc(collection(db, `users/${uid}/command_history`), {
                     command: command,
                     output: output,
                     timestamp: serverTimestamp(),
@@ -1048,6 +1224,221 @@
                 console.error('Error saving command:', error);
             }
         }
+
+        // Auth UI helpers (demo only; not secure)
+        let isCreateMode = false;
+        
+        window.openAuth = function() { 
+            document.getElementById('authModal').classList.add('active'); 
+            resetAuthModal();
+        };
+        
+        window.closeAuth = function() { 
+            document.getElementById('authModal').classList.remove('active'); 
+            resetAuthModal();
+        };
+
+        function resetAuthModal() {
+            isCreateMode = false;
+            document.getElementById('authTitle').textContent = 'Sign In';
+            document.getElementById('authSubmitBtn').textContent = 'Sign In';
+            document.getElementById('authModeText').textContent = "Don't have an account?";
+            document.getElementById('authToggleBtn').textContent = 'Create Account';
+            document.getElementById('authConfirmPassword').style.display = 'none';
+            document.getElementById('authHint').textContent = 'Password must be 4+ chars and include Uppercase, Lowercase, Number, and Special character.';
+            
+            // Clear form fields
+            document.getElementById('authUsername').value = '';
+            document.getElementById('authPassword').value = '';
+            document.getElementById('authConfirmPassword').value = '';
+            document.getElementById('authName').value = '';
+            document.getElementById('authPhone').value = '';
+        }
+
+        window.toggleAuthMode = function() {
+            isCreateMode = !isCreateMode;
+            
+            if (isCreateMode) {
+                document.getElementById('authTitle').textContent = 'Create Account';
+                document.getElementById('authSubmitBtn').textContent = 'Create Account';
+                document.getElementById('authModeText').textContent = 'Already have an account?';
+                document.getElementById('authToggleBtn').textContent = 'Sign In';
+                document.getElementById('authConfirmPassword').style.display = 'block';
+                document.getElementById('authHint').textContent = 'Choose a unique username. Password must be 4+ chars and include Uppercase, Lowercase, Number, and Special character.';
+            } else {
+                resetAuthModal();
+            }
+        };
+
+        function updateAuthUI() {
+            const status = document.getElementById('authStatus');
+            const btn = document.getElementById('authBtn');
+            if (!status || !btn) return;
+            if (currentUser) {
+                status.style.display = 'inline';
+                status.textContent = `Signed in as ${currentUser.username}`;
+                btn.textContent = 'Sign Out';
+                btn.onclick = () => { currentUser = null; localStorage.removeItem('auth_user'); updateAuthUI(); };
+            } else {
+                status.style.display = 'none';
+                status.textContent = '';
+                btn.textContent = 'Sign In';
+                btn.onclick = openAuth;
+            }
+        }
+
+        function validPassword(pw) {
+            return /[A-Z]/.test(pw) && /[a-z]/.test(pw) && /\d/.test(pw) && /[^A-Za-z0-9]/.test(pw) && pw.length >= 4;
+        }
+
+        // Check if username already exists
+        async function checkUsernameExists(username) {
+            try {
+                const usersQuery = query(collection(db, 'users'), where('username', '==', username), limit(1));
+                const snapshot = await getDocs(usersQuery);
+                return !snapshot.empty;
+            } catch (error) {
+                console.error('Error checking username:', error);
+                return false;
+            }
+        }
+
+        window.handleAuth = async function() {
+            const username = document.getElementById('authUsername').value.trim();
+            const password = document.getElementById('authPassword').value;
+            const confirmPassword = document.getElementById('authConfirmPassword').value;
+            const name = document.getElementById('authName').value.trim();
+            const phone = document.getElementById('authPhone').value.trim();
+
+            // Validation
+            if (!username) { 
+                showNotification('Username required', 'error'); 
+                return; 
+            }
+            
+            if (username.length < 3) {
+                showNotification('Username must be at least 3 characters', 'error');
+                return;
+            }
+            
+            if (!validPassword(password)) { 
+                showNotification('Password must include upper, lower, number, special and be 4+ chars', 'error'); 
+                return; 
+            }
+
+            if (isCreateMode) {
+                // Create Account mode
+                if (password !== confirmPassword) {
+                    showNotification('Passwords do not match', 'error');
+                    return;
+                }
+
+                // Check if username already exists
+                const userExists = await checkUsernameExists(username);
+                if (userExists) {
+                    showNotification('Username already exists. Please choose a different one.', 'error');
+                    return;
+                }
+
+                // Create new account
+                try {
+                    await addDoc(collection(db, 'users'), { 
+                        username, 
+                        password: btoa(password), // Basic encoding (not secure for production)
+                        name: name || null, 
+                        phone: phone || null, 
+                        createdAt: serverTimestamp(),
+                        accountType: 'created',
+                        lastLogin: serverTimestamp()
+                    });
+                    
+                    currentUser = { username };
+                    localStorage.setItem('auth_user', JSON.stringify(currentUser));
+                    closeAuth();
+                    updateAuthUI();
+                    showNotification(`Account created successfully! Welcome, ${username}!`);
+                    
+                    // Track account creation
+                    try {
+                        await addDoc(collection(db, `users/${username}/events`), {
+                            type: 'account_created',
+                            timestamp: serverTimestamp(),
+                            sessionId: sessionId
+                        });
+                    } catch (_) {}
+                    
+                } catch (error) {
+                    console.error('Error creating account:', error);
+                    showNotification('Error creating account. Please try again.', 'error');
+                }
+            } else {
+                // Sign In mode
+                try {
+                    // Check if user exists and password matches
+                    const usersQuery = query(
+                        collection(db, 'users'), 
+                        where('username', '==', username), 
+                        limit(1)
+                    );
+                    const snapshot = await getDocs(usersQuery);
+                    
+                    if (snapshot.empty) {
+                        // Special case for Testuser/Password1! (demo account)
+                        if (username === 'Testuser' && password === 'Password1!') {
+                            try {
+                                await addDoc(collection(db, 'users'), { 
+                                    username: 'Testuser', 
+                                    password: btoa('Password1!'),
+                                    name: name || null, 
+                                    phone: phone || null, 
+                                    createdAt: serverTimestamp(),
+                                    accountType: 'demo',
+                                    lastLogin: serverTimestamp()
+                                });
+                            } catch (_) {}
+                        } else {
+                            showNotification('Username not found. Please create an account first.', 'error');
+                            return;
+                        }
+                    } else {
+                        // Verify password
+                        const userData = snapshot.docs[0].data();
+                        const storedPassword = atob(userData.password || '');
+                        
+                        if (storedPassword !== password) {
+                            showNotification('Incorrect password', 'error');
+                            return;
+                        }
+                        
+                        // Update last login
+                        try {
+                            await updateDoc(snapshot.docs[0].ref, {
+                                lastLogin: serverTimestamp()
+                            });
+                        } catch (_) {}
+                    }
+
+                    currentUser = { username };
+                    localStorage.setItem('auth_user', JSON.stringify(currentUser));
+                    closeAuth();
+                    updateAuthUI();
+                    showNotification(`Welcome back, ${username}!`);
+                    
+                    // Track sign in
+                    try {
+                        await addDoc(collection(db, `users/${username}/events`), {
+                            type: 'sign_in',
+                            timestamp: serverTimestamp(),
+                            sessionId: sessionId
+                        });
+                    } catch (_) {}
+                    
+                } catch (error) {
+                    console.error('Error signing in:', error);
+                    showNotification('Error signing in. Please try again.', 'error');
+                }
+            }
+        };
 
         async function getAnalytics() {
             try {
@@ -1077,10 +1468,14 @@
                 const messagesSnapshot = await getDocs(messagesQuery);
                 analytics.messageCount = messagesSnapshot.docs.length;
 
-                // Get easter egg count
-                const easterEggsQuery = query(collection(db, 'easter_eggs'), orderBy('timestamp', 'desc'), limit(50));
-                const easterEggsSnapshot = await getDocs(easterEggsQuery);
-                analytics.easterEggCount = easterEggsSnapshot.docs.length;
+                // Get easter egg count (user-scoped only)
+                analytics.easterEggCount = 0;
+                if (currentUser) {
+                    try {
+                        const eggsSnap = await getDocs(query(collection(db, `users/${currentUser.username}/events`), orderBy('timestamp', 'desc'), limit(50)));
+                        analytics.easterEggCount = eggsSnap.docs.filter(d => !!d.data().type || d.data().action === 'hunt_started').length;
+                    } catch (_) { /* ignore */ }
+                }
 
                 return analytics;
             } catch (error) {
