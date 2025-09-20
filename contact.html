@@ -2,7 +2,34 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scal        .theme-toggle:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Auth Status Styles */
+        .auth-status {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.85rem;
+            color: var(--text-color);
+            backdrop-filter: blur(20px);
+            opacity: 0.9;
+        }
+
+        .auth-status.signed-in {
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+        }
+
+        .auth-status.signed-out {
+            opacity: 0.6;
+        }0">
     <title>Contact - Dan Finn Portfolio</title>
     <style>
         * {
@@ -381,6 +408,7 @@
 </head>
 <body>
     <div class="container">
+        <div class="auth-status" id="authStatus">Not signed in</div>
         <button class="theme-toggle" onclick="toggleTheme()">🌙 Dark</button>
         
         <a href="index.html" class="back-link">
@@ -522,6 +550,21 @@
         let lastSubmissionTime = parseInt(localStorage.getItem('lastSubmissionTime') || '0');
         let sessionId = generateSessionId();
         let messageStats = { total: 0, today: 0, avgResponse: '24h' };
+        let currentUser = JSON.parse(localStorage.getItem('auth_user') || 'null');
+
+        // Auth status display
+        function updateAuthStatus() {
+            const authStatus = document.getElementById('authStatus');
+            if (!authStatus) return;
+            
+            if (currentUser) {
+                authStatus.textContent = `Signed in as ${currentUser.username}`;
+                authStatus.className = 'auth-status signed-in';
+            } else {
+                authStatus.textContent = 'Not signed in';
+                authStatus.className = 'auth-status signed-out';
+            }
+        }
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
@@ -531,6 +574,7 @@
             trackPageView();
             setupRealTimeListeners();
             loadAnalytics();
+            updateAuthStatus(); // Add auth status check
         });
 
         // Firebase Functions

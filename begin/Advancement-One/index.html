@@ -5,24 +5,95 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Advancement One - Easter Hunt</title>
   <style>
-    :root{--bg:#071428;--card:#0f2a3f;--accent:#00ff88;--text:#eaf6f3}
-    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#04101a 0%,#06202b 100%);color:var(--text);display:flex;align-items:center;justify-content:center;height:100vh}
+    :root{--bg:#071428;--card:#0f2a3f;--accent:#00ff88;--text:#eaf6f3;--secondary:#ff6b35}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#04101a 0%,#06202b 100%);color:var(--text);display:flex;align-items:center;justify-content:center;height:100vh;position:relative}
     .card{background:var(--card);padding:3rem;border-radius:14px;border:1px solid rgba(0,255,136,0.08);box-shadow:0 10px 30px rgba(0,0,0,0.5);text-align:center;max-width:720px;width:90%}
     h1{margin:0 0 1rem;font-size:2rem;color:var(--accent)}
     p{margin:0 0 1.5rem;opacity:0.9}
-    .btn{background:linear-gradient(90deg,var(--accent),#ffb86b);border:none;padding:0.9rem 2rem;border-radius:999px;color:#001;background:#001;cursor:pointer;font-weight:700}
+    .btn{background:linear-gradient(90deg,var(--accent),#ffb86b);border:none;padding:0.9rem 2rem;border-radius:999px;color:#001;cursor:pointer;font-weight:700;transition:transform 0.2s}
+    .btn:hover{transform:translateY(-2px)}
     .btn:active{transform:translateY(1px)}
     .meta{margin-top:1rem;color:#93f6c9;opacity:0.8;font-size:0.9rem}
+    
+    .auth-status{position:absolute;top:1.5rem;right:1.5rem;background:var(--card);border:1px solid rgba(0,255,136,0.3);border-radius:20px;padding:0.6rem 1.2rem;font-size:0.85rem;z-index:100}
+    .auth-status.signed-in{border-color:var(--accent);color:var(--accent)}
+    .auth-status.signed-out{opacity:0.6;color:#ffd23f}
+    
+    .hunt-progress{position:absolute;top:1.5rem;left:1.5rem;background:var(--card);border:1px solid rgba(255,107,53,0.3);border-radius:20px;padding:0.6rem 1.2rem;font-size:0.85rem;z-index:100;color:var(--secondary)}
   </style>
 </head>
 <body>
+  <div class="auth-status" id="authStatus">Not signed in</div>
+  <div class="hunt-progress" id="huntProgress">Level: One</div>
+  
   <div class="card">
-    <h1>Advancement One</h1>
-    <p>Welcome to Advancement One. Press the button below when you're ready to move on to the next challenge.</p>
+    <h1>🎯 Advancement One</h1>
+    <p>Congratulations! You've made it to the first advancement level. This means you're successfully navigating the easter egg hunt. Press the button below when you're ready to move on to the next challenge.</p>
     <button class="btn" id="nextBtn">→ Advancement Two</button>
-    <div class="meta">Progress: 1 / 4</div>
+    <div class="meta">Progress: 1 / 4 | Hunt Level: One</div>
   </div>
-  <script>
+  
+  <script type="module">
+    // Firebase Configuration
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCejm0Ry18S1mlqYpnMRuIJGnQ-iDvu3EU",
+      authDomain: "custom-messages-84ec4.firebaseapp.com",
+      projectId: "custom-messages-84ec4",
+      storageBucket: "custom-messages-84ec4.firebasestorage.app",
+      messagingSenderId: "1079020496100",
+      appId: "1:1079020496100:web:d21ec1428327515e3df8f1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    
+    let currentUser = JSON.parse(localStorage.getItem('auth_user') || 'null');
+    
+    function generateSessionId() {
+      return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    }
+
+    function updateAuthStatus() {
+      const authStatus = document.getElementById('authStatus');
+      if (currentUser) {
+        authStatus.textContent = currentUser.username;
+        authStatus.className = 'auth-status signed-in';
+      } else {
+        authStatus.textContent = 'Not signed in';
+        authStatus.className = 'auth-status signed-out';
+      }
+    }
+
+    async function trackProgress() {
+      if (!currentUser) return;
+      
+      try {
+        await addDoc(collection(db, 'users', currentUser.username, 'hunt_progress'), {
+          level: 'advancement-one',
+          page: window.location.pathname,
+          timestamp: serverTimestamp(),
+          sessionId: generateSessionId()
+        });
+        
+        await addDoc(collection(db, 'users', currentUser.username, 'events'), {
+          type: 'advancement_reached',
+          level: 'one',
+          timestamp: serverTimestamp(),
+          sessionId: generateSessionId()
+        });
+      } catch (error) {
+        console.log('Progress tracking failed:', error);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      updateAuthStatus();
+      trackProgress();
+    });
+
     document.getElementById('nextBtn').addEventListener('click', ()=>{
       window.location.href = 'Advancement-Two/index.html';
     });

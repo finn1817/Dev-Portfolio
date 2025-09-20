@@ -1360,7 +1360,7 @@
                     
                     // Track account creation
                     try {
-                        await addDoc(collection(db, `users/${username}/events`), {
+                        await addDoc(collection(db, 'users', username, 'events'), {
                             type: 'account_created',
                             timestamp: serverTimestamp(),
                             sessionId: sessionId
@@ -1426,7 +1426,7 @@
                     
                     // Track sign in
                     try {
-                        await addDoc(collection(db, `users/${username}/events`), {
+                        await addDoc(collection(db, 'users', username, 'events'), {
                             type: 'sign_in',
                             timestamp: serverTimestamp(),
                             sessionId: sessionId
@@ -1472,7 +1472,7 @@
                 analytics.easterEggCount = 0;
                 if (currentUser) {
                     try {
-                        const eggsSnap = await getDocs(query(collection(db, `users/${currentUser.username}/events`), orderBy('timestamp', 'desc'), limit(50)));
+                        const eggsSnap = await getDocs(query(collection(db, 'users', currentUser.username, 'events'), orderBy('timestamp', 'desc'), limit(50)));
                         analytics.easterEggCount = eggsSnap.docs.filter(d => !!d.data().type || d.data().action === 'hunt_started').length;
                     } catch (_) { /* ignore */ }
                 }
@@ -1481,6 +1481,111 @@
             } catch (error) {
                 console.error('Error getting analytics:', error);
                 return null;
+            }
+        }
+
+        // Hunt progress tracking
+        async function getHuntProgress() {
+            if (!currentUser) {
+                return `🎯 HUNT PROGRESS TRACKING
+
+❌ Not signed in! Sign in to track your easter egg hunt progress.
+
+To sign in:
+1. Click the "Sign In" button (top-left)
+2. Create an account or use demo: Testuser / Password1!
+3. Your progress will be automatically tracked across all hunt pages
+
+Once signed in, this command will show:
+• Current hunt level reached
+• Total advancement progress  
+• Easter eggs discovered
+• Achievements unlocked`;
+            }
+
+            try {
+                // Get hunt progress
+                const progressQuery = query(
+                    collection(db, 'users', currentUser.username, 'hunt_progress'), 
+                    orderBy('timestamp', 'desc'), 
+                    limit(10)
+                );
+                const progressSnap = await getDocs(progressQuery);
+                
+                // Get events
+                const eventsQuery = query(
+                    collection(db, 'users', currentUser.username, 'events'), 
+                    orderBy('timestamp', 'desc'), 
+                    limit(20)
+                );
+                const eventsSnap = await getDocs(eventsQuery);
+
+                let highestLevel = 'start';
+                let completedLevels = new Set();
+                let totalEvents = eventsSnap.docs.length;
+                let achievements = [];
+
+                // Analyze progress
+                progressSnap.docs.forEach(doc => {
+                    const data = doc.data();
+                    if (data.level) {
+                        if (data.level.includes('advancement-four')) {
+                            highestLevel = 'COMPLETE';
+                            completedLevels.add('four');
+                        } else if (data.level.includes('advancement-three') && highestLevel !== 'COMPLETE') {
+                            highestLevel = 'advancement-three';
+                            completedLevels.add('three');
+                        } else if (data.level.includes('advancement-two') && !highestLevel.includes('three') && highestLevel !== 'COMPLETE') {
+                            highestLevel = 'advancement-two';
+                            completedLevels.add('two');
+                        } else if (data.level.includes('advancement-one') && highestLevel === 'start') {
+                            highestLevel = 'advancement-one';
+                            completedLevels.add('one');
+                        }
+                    }
+                });
+
+                // Check for achievements
+                eventsSnap.docs.forEach(doc => {
+                    const data = doc.data();
+                    if (data.type === 'console_access_hunt_page') achievements.push('🕵️ Console Detective');
+                    if (data.type === 'advancement_completed') achievements.push('🏆 Chain Master');
+                    if (data.action === 'hunt_started') achievements.push('🎯 Hunt Initiated');
+                });
+
+                // Remove duplicates
+                achievements = [...new Set(achievements)];
+
+                let progressPercentage = 0;
+                if (highestLevel === 'COMPLETE') progressPercentage = 100;
+                else if (highestLevel.includes('three')) progressPercentage = 75;
+                else if (highestLevel.includes('two')) progressPercentage = 50;
+                else if (highestLevel.includes('one')) progressPercentage = 25;
+
+                return `🎯 HUNT PROGRESS TRACKING - ${currentUser.username}
+
+📊 ADVANCEMENT PROGRESS:
+• Current Level: ${highestLevel.toUpperCase()}
+• Progress: ${progressPercentage}% (${completedLevels.size}/4 levels)
+• Completed Levels: ${Array.from(completedLevels).join(', ') || 'none'}
+
+🎮 ACTIVITY SUMMARY:
+• Total Hunt Events: ${totalEvents}
+• Easter Eggs Found: ${eventsSnap.docs.filter(d => !!d.data().type).length}
+• Pages Visited: ${progressSnap.docs.length}
+
+🏆 ACHIEVEMENTS UNLOCKED:
+${achievements.length > 0 ? achievements.map(a => `• ${a}`).join('\n') : '• No achievements yet'}
+
+💡 TIPS:
+${highestLevel === 'start' ? '• Visit begin/index.html to start the hunt' : ''}
+${progressPercentage < 100 ? '• Continue through the advancement chain' : ''}
+${achievements.length < 3 ? '• Explore more to unlock achievements' : ''}
+${progressPercentage === 100 ? '• 🎉 Congratulations! You completed the advancement chain!' : ''}`;
+
+            } catch (error) {
+                console.error('Error getting hunt progress:', error);
+                return '❌ Error loading hunt progress. Please try again.';
             }
         }
 
@@ -1622,7 +1727,8 @@
 • analytics - Show analytics (dev mode only)
 • export - Export data (dev mode only)
 • blackout - Toggle blackout mode (terminal exclusive)
-• hunt - Start the ultimate easter egg hunt`;
+• hunt - Start the ultimate easter egg hunt
+• progress - Show your hunt progress (requires sign in)`;
 
                 case 'hunt':
                     await logEasterEgg('hunt_command_used');
@@ -1643,6 +1749,9 @@ This will take you to the official Easter Egg Hunt starting point with:
 ⚠️  WARNING: This hunt requires expert web development skills!
 
 Good luck, detective! 🕵️‍♂️`;
+
+                case 'progress':
+                    return await getHuntProgress();
 
                 case 'matrix':
                     activateMatrix();
