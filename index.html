@@ -737,7 +737,85 @@
         </section>
 
         <!-- Dynamic Content Container for loaded pages -->
-        <div id="dynamic-content" class="section-content"></div>
+        <div id="dynamic-content" class="section-content">
+            <!-- About Section Content (embedded) -->
+            <div id="about-content" class="embedded-section" style="display: none;">
+                <div class="section">
+                    <div class="card">
+                        <h2>About Me 👨‍💻</h2>
+                        <p>I'm a Student Programmer that's always working on different web projects. I work on coding my own helpful and fun projects to get better at what I do, all with user-friendly design, and... 🎯 lots of hidden surprises!</p>
+                        
+                        <div class="skills-grid">
+                            <div class="skill-card">
+                                <h3>HTML, CSS, & JS</h3>
+                                <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                            </div>
+                            <div class="skill-card">
+                                <h3>Database Experience</h3>
+                                <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                            </div>
+                            <div class="skill-card">
+                                <h3>Python</h3>
+                                <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                            </div>
+                            <div class="skill-card">
+                                <h3>C++</h3>
+                                <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                            </div>
+                            <div class="skill-card">
+                                <h3>Auth & Security</h3>
+                                <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                            </div>
+                            <div class="skill-card">
+                                <h3>AI Integration</h3>
+                                <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                            </div>
+                            <div class="skill-card">
+                                <h3>Dynamic web Dev ability</h3>
+                                <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                            </div>
+                            <div class="skill-card">
+                                <h3>AI - For Planning & In Dev</h3>
+                                <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                            </div>
+                            <div class="skill-card">
+                                <h3>UI - Functionality & Appearance</h3>
+                                <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Projects Section Content (embedded) -->
+            <div id="projects-content" class="embedded-section" style="display: none;">
+                <div class="section">
+                    <h2>My Projects</h2>
+                    <div class="projects-grid">
+                        <div class="project-card">
+                            <h3>🎮 Secret Game Project</h3>
+                            <p>A mysterious project that... only appears when you solve the puzzle</p>
+                            <button class="btn" onclick="unlockSecretProject()">Learn More</button>
+                        </div>
+                        <div class="project-card">
+                            <h3>💻 Code Inspector Tool</h3>
+                            <p>Perfect for developers who love to peek behind the curtain!</p>
+                            <button class="btn" onclick="inspectCode()">View Project</button>
+                        </div>
+                        <div class="project-card">
+                            <h3>🔍 Easter Egg Hunter</h3>
+                            <p>A tool for finding hidden gems in websites... just like this one!</p>
+                            <button class="btn" onclick="huntEasterEggs()">Explore</button>
+                        </div>
+                        <div class="project-card">
+                            <h3>🚀 Real-time Analytics</h3>
+                            <p>Live tracking and analytics dashboard with Firebase integration</p>
+                            <button class="btn" onclick="showAnalytics()">View Analytics</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- Contact Section (kept on main page) -->
         <section id="contact" class="section section-content">
@@ -844,7 +922,6 @@
         let commandHistory = [];
 
         // SPA Management
-        let loadedPages = {};
         let currentSection = 'home';
 
         // SPA Functions
@@ -857,6 +934,7 @@
             
             // Hide all sections
             document.querySelectorAll('.section-content').forEach(content => content.classList.remove('active'));
+            document.querySelectorAll('.embedded-section').forEach(content => content.style.display = 'none');
             
             // Update current section
             currentSection = section;
@@ -865,73 +943,28 @@
                 document.getElementById('home').classList.add('active');
             } else if (section === 'contact') {
                 document.getElementById('contact').classList.add('active');
-            } else if (section === 'about' || section === 'projects') {
-                await loadExternalPage(section);
+            } else if (section === 'about') {
+                document.getElementById('dynamic-content').classList.add('active');
+                document.getElementById('about-content').style.display = 'block';
+                trackSectionView('about');
+            } else if (section === 'projects') {
+                document.getElementById('dynamic-content').classList.add('active');
+                document.getElementById('projects-content').style.display = 'block';
+                trackSectionView('projects');
             }
         };
 
-        async function loadExternalPage(section) {
-            const dynamicContent = document.getElementById('dynamic-content');
-            
-            if (!loadedPages[section]) {
-                try {
-                    const response = await fetch(`${section}.html`);
-                    const html = await response.text();
-                    
-                    // Create a temporary container to parse the HTML
-                    const tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = html;
-                    
-                    // Extract the body content (skip head)
-                    const bodyContent = tempDiv.querySelector('body').innerHTML;
-                    
-                    // Store the loaded content
-                    loadedPages[section] = bodyContent;
-                } catch (error) {
-                    console.error(`Failed to load ${section}.html:`, error);
-                    loadedPages[section] = `<div class="section"><div class="card"><h2>Error</h2><p>Failed to load ${section} content.</p></div></div>`;
-                }
-            }
-            
-            // Set the content and show it
-            dynamicContent.innerHTML = loadedPages[section];
-            dynamicContent.classList.add('active');
-            
-            // Apply current theme to loaded content
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            if (currentTheme) {
-                const scripts = dynamicContent.querySelectorAll('script');
-                scripts.forEach(script => {
-                    // Execute any scripts in the loaded content
-                    if (script.textContent.includes('data-theme')) {
-                        try {
-                            eval(script.textContent);
-                        } catch (e) {
-                            console.log('Script execution skipped:', e);
-                        }
-                    }
+        // Track section views
+        async function trackSectionView(section) {
+            try {
+                await addDoc(collection(db, 'page_views'), {
+                    section: section,
+                    timestamp: serverTimestamp(),
+                    userAgent: navigator.userAgent,
+                    sessionId: sessionId
                 });
-            }
-        }
-
-        // Preload pages function
-        async function preloadPages() {
-            const pagesToPreload = ['about', 'projects'];
-            
-            for (const page of pagesToPreload) {
-                try {
-                    const response = await fetch(`${page}.html`);
-                    const html = await response.text();
-                    
-                    const tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = html;
-                    const bodyContent = tempDiv.querySelector('body').innerHTML;
-                    
-                    loadedPages[page] = bodyContent;
-                    console.log(`Preloaded ${page}.html`);
-                } catch (error) {
-                    console.error(`Failed to preload ${page}.html:`, error);
-                }
+            } catch (error) {
+                console.log('Analytics tracking failed:', error);
             }
         }
 
@@ -942,9 +975,6 @@
             updateSubmissionCount();
             loadEasterEggCount();
             setupRealTimeListeners();
-            
-            // Preload external pages
-            preloadPages();
             
             // Setup form handlers
             document.getElementById('contactForm').addEventListener('submit', handleFormSubmit);
@@ -1193,7 +1223,28 @@
 • sudo dev-mode --enable - Enable super dev mode
 • analytics - Show analytics (dev mode only)
 • export - Export data (dev mode only)
-• blackout - Toggle blackout mode (terminal exclusive)`;
+• blackout - Toggle blackout mode (terminal exclusive)
+• hunt - Start the ultimate easter egg hunt`;
+
+                case 'hunt':
+                    await logEasterEgg('hunt_command_used');
+                    return `🎯 EASTER EGG HUNT DISCOVERED!
+                    
+🔍 You've found the secret hunt command!
+🚀 Ready for the ultimate developer challenge?
+
+Visit: begin/index.html
+
+This will take you to the official Easter Egg Hunt starting point with:
+• 15+ hidden easter eggs throughout the portfolio
+• Advanced developer challenges
+• Console puzzles and hidden commands
+• Secret key combinations and sequences
+• Firebase-tracked progress
+
+⚠️  WARNING: This hunt requires expert web development skills!
+
+Good luck, detective! 🕵️‍♂️`;
 
                 case 'matrix':
                     activateMatrix();
@@ -1395,6 +1446,7 @@
         window.inspectCode = function() {
             console.log('🔍 Code Inspector Activated!');
             console.log('🎯 Easter Egg: You\'re already inspecting the code!');
+            console.log('🚀 BONUS: Want the ultimate challenge? Visit: begin/index.html');
             showNotification('Check the console for a surprise! 🕵️');
             logEasterEgg('code_inspector_used');
         };
@@ -1405,7 +1457,8 @@
                 'Check the matrix effect!',
                 'Look for hidden keyboard shortcuts!',
                 'The developer panel has secrets!',
-                'Try different theme toggles!'
+                'Try different theme toggles!',
+                '🎯 ULTIMATE HUNT: Visit begin/index.html for the full challenge!'
             ];
             
             const randomHint = hints[Math.floor(Math.random() * hints.length)];

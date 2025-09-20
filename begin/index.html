@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Easter Egg Hunt - Begin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            --text-color: #ffffff;
+            --accent-color: #00ff88;
+            --secondary-color: #ff6b35;
+            --warning-color: #ffd23f;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(0, 255, 136, 0.3);
+            --shadow: 0 8px 32px rgba(0, 255, 136, 0.2);
+        }
+
+        body {
+            font-family: 'Courier New', 'Fira Code', monospace;
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 2rem;
+            position: relative;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(20px);
+            text-align: center;
+            position: relative;
+            animation: glow 2s ease-in-out infinite alternate;
+            margin: 2rem auto;
+            min-height: auto;
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: var(--shadow);
+            }
+            to {
+                box-shadow: 0 8px 32px rgba(0, 255, 136, 0.4), 0 0 60px rgba(0, 255, 136, 0.1);
+            }
+        }
+
+        .header {
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            background: linear-gradient(45deg, var(--accent-color), var(--warning-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+
+        .content {
+            margin-bottom: 2rem;
+        }
+
+        .content p {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .warning {
+            background: rgba(255, 210, 63, 0.1);
+            border: 1px solid var(--warning-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            color: var(--warning-color);
+            font-weight: bold;
+        }
+
+        .rules {
+            background: rgba(0, 255, 136, 0.05);
+            border: 1px solid var(--accent-color);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: left;
+        }
+
+        .rules h3 {
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .rules ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .rules li {
+            margin-bottom: 0.8rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .rules li::before {
+            content: "🎯";
+            position: absolute;
+            left: 0;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 1rem 3rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 1rem;
+            box-shadow: 0 5px 20px rgba(0, 255, 136, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .btn:hover::before {
+            left: 0;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.5);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #6c757d, #495057);
+            box-shadow: 0 5px 20px rgba(108, 117, 125, 0.3);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 10px 30px rgba(108, 117, 125, 0.5);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-item {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--accent-color);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .footer {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+            
+            .container {
+                padding: 2rem;
+                margin: 1rem auto;
+                max-width: 95%;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .content p {
+                font-size: 1rem;
+            }
+            
+            .btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 0.9rem;
+                margin: 0.5rem;
+                display: inline-block;
+                width: auto;
+            }
+            
+            .actions {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+                align-items: center;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas class="matrix-bg" id="matrixCanvas"></canvas>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🎯 EASTER EGG HUNT</h1>
+            <p class="subtitle">Welcome to the Ultimate Developer Challenge</p>
+        </div>
+
+        <div class="content">
+            <p>You've discovered the secret entrance to Dan's Portfolio Easter Egg Hunt! This is where true developers test their skills and detective abilities.</p>
+            
+            <div class="warning">
+                ⚠️ WARNING: This hunt requires advanced web development knowledge, console debugging skills, and creative thinking!
+            </div>
+
+            <div class="rules">
+                <h3>🎮 Hunt Rules & Guidelines</h3>
+                <ul>
+                    <li>Use browser developer tools extensively</li>
+                    <li>Inspect source code, network requests, and console logs</li>
+                    <li>Look for hidden elements, comments, and secret URLs</li>
+                    <li>Try unusual keyboard combinations and sequences</li>
+                    <li>Pay attention to JavaScript console messages</li>
+                    <li>Some eggs require specific actions or commands</li>
+                    <li>The terminal on the main site is your best friend</li>
+                    <li>Not all eggs are visible - some are purely functional</li>
+                </ul>
+            </div>
+
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="totalEggs">15+</span>
+                    <span class="stat-label">Total Eggs</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="foundEggs">0</span>
+                    <span class="stat-label">Found</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="difficulty">Expert</span>
+                    <span class="stat-label">Difficulty</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="timeEstimate">2-4h</span>
+                    <span class="stat-label">Est. Time</span>
+                </div>
+            </div>
+
+            <p><strong>Your mission:</strong> Find as many hidden easter eggs as possible throughout the portfolio. Each discovery unlocks new secrets and proves your developer prowess!</p>
+        </div>
+
+        <div class="actions">
+            <button class="btn" onclick="startHunt()">🚀 START THE HUNT</button>
+            <button class="btn btn-secondary" onclick="viewHints()">💡 View Hints</button>
+            <button class="btn btn-secondary" onclick="goBack()">← Back to Portfolio</button>
+        </div>
+
+        <div class="footer">
+            <p>🔍 Tip: Start by exploring the main portfolio site with your developer tools open!</p>
+            <p>Good luck, detective! 🕵️‍♂️</p>
+        </div>
+    </div>
+
+    <script type="module">
+        // Firebase Configuration for tracking hunt progress
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCejm0Ry18S1mlqYpnMRuIJGnQ-iDvu3EU",
+            authDomain: "custom-messages-84ec4.firebaseapp.com",
+            projectId: "custom-messages-84ec4",
+            storageBucket: "custom-messages-84ec4.firebasestorage.app",
+            messagingSenderId: "1079020496100",
+            appId: "1:1079020496100:web:d21ec1428327515e3df8f1"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Track hunt start
+        async function trackHuntStart() {
+            try {
+                await addDoc(collection(db, 'easter_egg_hunt'), {
+                    action: 'hunt_started',
+                    timestamp: serverTimestamp(),
+                    userAgent: navigator.userAgent,
+                    sessionId: generateSessionId()
+                });
+            } catch (error) {
+                console.log('Hunt tracking failed:', error);
+            }
+        }
+
+        // Functions
+        window.startHunt = function() {
+            trackHuntStart();
+            
+            // Add a special session marker for the hunt
+            localStorage.setItem('easterEggHuntActive', 'true');
+            localStorage.setItem('huntStartTime', Date.now().toString());
+            
+            // Show success message
+            showNotification('🎯 Hunt activated! Head to the main portfolio and start exploring!');
+            
+            // Redirect after short delay
+            setTimeout(() => {
+                window.location.href = '../index.html';
+            }, 2000);
+        };
+
+        window.viewHints = function() {
+            const hints = [
+                "🔍 Try typing 'help' in the terminal",
+                "⌨️ The Konami Code might work somewhere...",
+                "🖱️ Right-click and inspect elements thoroughly", 
+                "📱 Check the browser console for hidden messages",
+                "🎮 Some buttons do more than they appear to",
+                "🔧 The developer panel has secrets",
+                "🌙 Theme switching might reveal hidden features",
+                "⚡ Network tab might show interesting requests",
+                "🎯 Some eggs are activated by specific key combinations",
+                "🚀 Matrix mode is just the beginning..."
+            ];
+            
+            const randomHints = hints.sort(() => 0.5 - Math.random()).slice(0, 3);
+            alert('🎯 HUNT HINTS:\n\n' + randomHints.map((hint, i) => `${i + 1}. ${hint}`).join('\n\n'));
+        };
+
+        window.goBack = function() {
+            window.location.href = '../index.html';
+        };
+
+        // Matrix background effect
+        function initializeMatrix() {
+            const canvas = document.getElementById('matrixCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const chars = '🎯🔍🎮💻🚀⚡🌟🔧💎🎊';
+            const charArray = chars.split('');
+            const fontSize = 20;
+            const columns = canvas.width / fontSize;
+            const drops = [];
+            
+            for (let i = 0; i < columns; i++) {
+                drops[i] = 1;
+            }
+            
+            function drawMatrix() {
+                ctx.fillStyle = 'rgba(26, 26, 46, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = '#00ff88';
+                ctx.font = `${fontSize}px monospace`;
+                
+                for (let i = 0; i < drops.length; i++) {
+                    const text = charArray[Math.floor(Math.random() * charArray.length)];
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                    
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+            }
+            
+            setInterval(drawMatrix, 100);
+        }
+
+        function showNotification(message) {
+            // Create temporary notification
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed; top: 20px; right: 20px; z-index: 1000;
+                background: var(--accent-color); color: black; padding: 1rem 2rem;
+                border-radius: 10px; font-weight: bold; animation: slideIn 0.3s ease;
+                max-width: 300px; box-shadow: 0 5px 20px rgba(0,255,136,0.5);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function generateSessionId() {
+            return 'hunt_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+        }
+
+        // Add CSS for notification animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(400px); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeMatrix();
+            
+            // Update found eggs count if available
+            const foundCount = parseInt(localStorage.getItem('easterEggsFound') || '0');
+            document.getElementById('foundEggs').textContent = foundCount;
+            
+            // Easter egg: Konami code on this page too!
+            let konamiCode = '';
+            const konamiSequence = 'ArrowUpArrowUpArrowDownArrowDownArrowLeftArrowRightArrowLeftArrowRightKeyBKeyA';
+            
+            document.addEventListener('keydown', function(event) {
+                konamiCode += event.code;
+                if (konamiCode === konamiSequence) {
+                    showNotification('🎊 KONAMI CODE ACTIVATED! You found the first secret!');
+                    localStorage.setItem('huntKonamiFound', 'true');
+                    konamiCode = '';
+                } else if (!konamiSequence.startsWith(konamiCode)) {
+                    konamiCode = '';
+                }
+            });
+        });
+
+        // Console Easter Egg
+        console.log(`
+🎯 EASTER EGG HUNT - DEVELOPER CONSOLE ACCESS DETECTED!
+═══════════════════════════════════════════════════════
+
+Congratulations! You've found the first easter egg just by opening the console!
+
+🔍 HUNT STATS:
+• Total Eggs Available: 15+
+• Current Status: Hunt Beginning
+• This Page Eggs: 2 (Console Message + Konami Code)
+
+💡 ADVANCED TIPS:
+1. The main portfolio has a secret terminal - type 'help' for commands
+2. Try unusual key combinations throughout the site
+3. Inspect network requests for hidden API calls  
+4. Look for comments in HTML source code
+5. Some eggs require specific sequences of actions
+
+🚀 Ready to continue? Head back to the main portfolio!
+
+Good luck, detective! 🕵️‍♂️
+        `);
+
+        // Track console access
+        try {
+            addDoc(collection(db, 'easter_eggs'), {
+                type: 'console_access_hunt_page',
+                timestamp: serverTimestamp(),
+                sessionId: generateSessionId(),
+                source: 'begin_page'
+            });
+        } catch (error) {
+            // Silent fail for analytics
+        }
+    </script>
+</body>
+</html>
