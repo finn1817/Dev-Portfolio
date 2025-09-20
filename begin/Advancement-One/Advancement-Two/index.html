@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Advancement Two - Easter Hunt</title>
+  <style>
+    :root{--bg:#05122a;--card:#0b2b3f;--accent:#00d1ff;--text:#eaf6f3}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#041b2a 0%,#042b3b 100%);color:var(--text);display:flex;align-items:center;justify-content:center;height:100vh}
+    .card{background:var(--card);padding:3rem;border-radius:14px;border:1px solid rgba(0,209,255,0.08);box-shadow:0 10px 30px rgba(0,0,0,0.5);text-align:center;max-width:720px;width:90%}
+    h1{margin:0 0 1rem;font-size:2rem;color:var(--accent)}
+    p{margin:0 0 1.5rem;opacity:0.9}
+    .btn{background:linear-gradient(90deg,var(--accent),#8b5cf6);border:none;padding:0.9rem 2rem;border-radius:999px;color:#001;background:#001;cursor:pointer;font-weight:700}
+    .meta{margin-top:1rem;color:#9fe8ff;opacity:0.8;font-size:0.9rem}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Advancement Two</h1>
+    <p>Nice progress. You're on step two. Click the button to continue to the third advancement.</p>
+    <button class="btn" id="nextBtn">→ Advancement Three</button>
+    <div class="meta">Progress: 2 / 4</div>
+  </div>
+  <script>
+    document.getElementById('nextBtn').addEventListener('click', ()=>{
+      window.location.href = 'Advancement-Three/index.html';
+    });
+  </script>
+</body>
+</html>

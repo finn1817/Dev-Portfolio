@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Advancement Four - Completed</title>
+  <style>
+    :root{--bg:#071428;--card:#0f2a3f;--accent:#9bff6b;--text:#eaf6f3}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#04101a 0%,#06202b 100%);color:var(--text);display:flex;align-items:center;justify-content:center;height:100vh}
+    .card{background:var(--card);padding:3rem;border-radius:14px;border:1px solid rgba(155,255,107,0.06);box-shadow:0 10px 30px rgba(0,0,0,0.5);text-align:center;max-width:720px;width:90%}
+    h1{margin:0 0 1rem;font-size:2rem;color:var(--accent)}
+    p{margin:0 0 1.5rem;opacity:0.95}
+    .btn{background:linear-gradient(90deg,var(--accent),#ffd36b);border:none;padding:0.9rem 2rem;border-radius:999px;color:#001;background:#001;cursor:pointer;font-weight:700}
+    .meta{margin-top:1rem;color:#cfffbd;opacity:0.8;font-size:0.9rem}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Advancement Four — Congratulations!</h1>
+    <p>You reached the final advancement. This marks completion of the linear advancement chain. Well done, detective!</p>
+    <button class="btn" id="backBtn">↺ Back to Hunt Start</button>
+    <div class="meta">Progress: 4 / 4</div>
+  </div>
+  <script>
+    document.getElementById('backBtn').addEventListener('click', ()=>{
+      window.location.href = '../../index.html';
+    });
+  </script>
+</body>
+</html>
