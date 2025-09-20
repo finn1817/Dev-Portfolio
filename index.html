@@ -52,6 +52,7 @@
             transition: all 0.3s ease;
             overflow-x: hidden;
             min-height: 100vh;
+            padding-top: 62px; /* ensure fixed nav does not cover content */
         }
 
         .matrix-bg {
@@ -68,26 +69,27 @@
             position: fixed;
             top: 0;
             width: 100%;
-            padding: 1rem 2rem;
+            padding: 0.5rem 1.2rem; /* reduced padding */
             background: var(--nav-bg);
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(12px);
             z-index: 1000;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid var(--border-color);
             box-shadow: var(--shadow);
+            height: 60px;
         }
 
         .logo {
-            font-size: 1.8rem;
+            font-size: 1.2rem; /* smaller logo */
             font-weight: 800;
             background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .logo:hover {
@@ -141,26 +143,27 @@
         }
 
         .hero {
-            height: 100vh;
+            min-height: calc(100vh - 62px); /* account for fixed nav */
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start; /* start a little lower so not covered */
             align-items: center;
             text-align: center;
             position: relative;
-            padding: 2rem;
+            padding: 2.2rem 2rem 2rem; /* ensure breathing room */
+            margin-top: 8px;
         }
 
         .hero h1 {
-            font-size: 4.5rem;
-            margin-bottom: 1rem;
+            font-size: 3rem; /* reduced title size */
+            margin-bottom: 0.6rem;
             background: linear-gradient(45deg, var(--accent-color), var(--secondary-color), #ffd700);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: glow 3s ease-in-out infinite alternate;
             font-weight: 800;
-            text-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+            text-shadow: 0 0 18px rgba(0, 255, 136, 0.2);
         }
 
         @keyframes glow {
@@ -175,8 +178,8 @@
         }
 
         .hero .subtitle {
-            font-size: 1.8rem;
-            margin-bottom: 3rem;
+            font-size: 1.05rem; /* reduced subtitle */
+            margin-bottom: 2rem;
             opacity: 0.9;
             font-weight: 300;
             background: linear-gradient(45deg, var(--text-color), var(--accent-color));
@@ -732,7 +735,7 @@
             <div style="margin-top: 2rem;">
                 <button class="btn" onclick="activateTerminal()">🔧 Terminal</button>
                 <button class="btn btn-secondary" id="dev-panel-btn" onclick="toggleDevPanel()" style="display: none;">📊 Dev Panel</button>
-                <button class="btn" onclick="generateEasterEgg()">🎯 Find Easter Egg</button>
+                <button class="btn" onclick="location.href='begin/index.html'">🎯 Find Easter Egg</button>
             </div>
         </section>
 
