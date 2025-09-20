@@ -12,23 +12,33 @@
         }
 
         :root {
-            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-gradient: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
             --text-color: #ffffff;
-            --accent-color: #00ff88;
-            --secondary-color: #ff6b6b;
-            --card-bg: rgba(255, 255, 255, 0.1);
-            --border-color: rgba(255, 255, 255, 0.2);
+            --accent-color: #3b82f6;
+            --secondary-color: #6366f1;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.1);
             --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
         [data-theme="light"] {
-            --bg-gradient: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            --bg-gradient: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             --text-color: #2d3748;
-            --accent-color: #3182ce;
-            --secondary-color: #e53e3e;
-            --card-bg: rgba(255, 255, 255, 0.9);
+            --accent-color: #3b82f6;
+            --secondary-color: #6366f1;
+            --card-bg: rgba(255, 255, 255, 0.8);
             --border-color: rgba(0, 0, 0, 0.1);
             --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="blackout"] {
+            --bg-gradient: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+            --text-color: #ffffff;
+            --accent-color: #00ff00;
+            --secondary-color: #ff0040;
+            --card-bg: rgba(0, 0, 0, 0.8);
+            --border-color: rgba(0, 255, 0, 0.3);
+            --shadow: 0 8px 32px rgba(0, 255, 0, 0.2);
         }
 
         body {
@@ -747,8 +757,9 @@
         }
 
         window.toggleTheme = function() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            // Only toggle between light and dark (not blackout)
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
             
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
@@ -756,9 +767,15 @@
         };
 
         function updateThemeButton() {
-            const theme = document.documentElement.getAttribute('data-theme');
+            const theme = document.documentElement.getAttribute('data-theme') || 'dark';
             const button = document.querySelector('.theme-toggle');
-            button.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+            if (theme === 'light') {
+                button.textContent = '🌙 Dark';
+            } else if (theme === 'blackout') {
+                button.textContent = '⚫ Blackout';
+            } else {
+                button.textContent = '☀️ Light';
+            }
         }
 
         // Feature functions

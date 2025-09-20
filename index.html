@@ -12,25 +12,36 @@
         }
 
         :root {
-            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-gradient: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
             --text-color: #ffffff;
-            --accent-color: #00ff88;
-            --secondary-color: #ff6b6b;
-            --card-bg: rgba(255, 255, 255, 0.1);
-            --border-color: rgba(255, 255, 255, 0.2);
+            --accent-color: #3b82f6;
+            --secondary-color: #6366f1;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.1);
             --nav-bg: rgba(0, 0, 0, 0.8);
             --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
         [data-theme="light"] {
-            --bg-gradient: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            --bg-gradient: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             --text-color: #2d3748;
-            --accent-color: #3182ce;
-            --secondary-color: #e53e3e;
-            --card-bg: rgba(255, 255, 255, 0.9);
+            --accent-color: #3b82f6;
+            --secondary-color: #6366f1;
+            --card-bg: rgba(255, 255, 255, 0.8);
             --border-color: rgba(0, 0, 0, 0.1);
             --nav-bg: rgba(255, 255, 255, 0.9);
             --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="blackout"] {
+            --bg-gradient: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+            --text-color: #ffffff;
+            --accent-color: #00ff00;
+            --secondary-color: #ff0040;
+            --card-bg: rgba(0, 0, 0, 0.8);
+            --border-color: rgba(0, 255, 0, 0.3);
+            --nav-bg: rgba(0, 0, 0, 0.95);
+            --shadow: 0 8px 32px rgba(0, 255, 0, 0.2);
         }
 
         body {
@@ -421,8 +432,30 @@
             border-radius: 4px;
         }
 
-        .terminal-body::-webkit-scrollbar-thumb:hover {
-            background: var(--secondary-color);
+        [data-theme="blackout"] .terminal {
+            background: linear-gradient(145deg, #000000, #0a0a0a);
+            border-color: #00ff00;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.9), 
+                        0 0 0 1px rgba(0, 255, 0, 0.5),
+                        inset 0 1px 0 rgba(0, 255, 0, 0.2);
+        }
+
+        [data-theme="blackout"] .terminal-header {
+            background: linear-gradient(45deg, #00ff00, #ff0040);
+        }
+
+        [data-theme="blackout"] .terminal-body {
+            background: linear-gradient(145deg, #000000, #0a0a0a);
+            color: #00ff00;
+        }
+
+        [data-theme="blackout"] .nav {
+            background: rgba(0, 0, 0, 0.98);
+            border-bottom-color: rgba(0, 255, 0, 0.3);
+        }
+
+        [data-theme="blackout"] .hero h1 {
+            text-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
         }
 
         .terminal-input {
@@ -555,10 +588,16 @@
             transition: all 0.3s ease;
             overflow-y: auto;
             padding: 1rem;
+            backdrop-filter: blur(20px);
+            display: none; /* Hidden by default */
         }
 
         .dev-panel.active {
             right: 0;
+        }
+
+        .dev-panel.enabled {
+            display: block; /* Only show when dev mode is enabled */
         }
 
         .analytics-widget {
@@ -680,7 +719,7 @@
         <button class="cta-button" onclick="scrollToProjects()">View My Work ✨</button>
         <div style="margin-top: 2rem;">
             <button class="btn" onclick="activateTerminal()">🔧 Terminal</button>
-            <button class="btn btn-secondary" onclick="toggleDevPanel()">📊 Dev Panel</button>
+            <button class="btn btn-secondary" id="dev-panel-btn" onclick="toggleDevPanel()" style="display: none;">📊 Dev Panel</button>
             <button class="btn" onclick="generateEasterEgg()">🎯 Find Easter Egg</button>
         </div>
     </section>
@@ -1101,7 +1140,8 @@
 • dev-mode - Show dev mode info
 • sudo dev-mode --enable - Enable super dev mode
 • analytics - Show analytics (dev mode only)
-• export - Export data (dev mode only)`;
+• export - Export data (dev mode only)
+• blackout - Toggle blackout mode (terminal exclusive)`;
 
                 case 'matrix':
                     activateMatrix();
@@ -1149,7 +1189,13 @@
                         devModeEnabled = true;
                         await logEasterEgg('dev_mode_enabled');
                         showNotification('🔧 Super Dev Mode Activated!');
-                        return '🎉 SUPER DEV MODE ACTIVATED!\n✅ Analytics access granted\n✅ Database tools unlocked\n✅ Advanced features enabled\n✅ Export capabilities available';
+                        // Show dev panel button
+                        const devPanelBtn = document.getElementById('dev-panel-btn');
+                        if (devPanelBtn) devPanelBtn.style.display = 'inline-block';
+                        // Enable dev panel
+                        const devPanel = document.getElementById('devPanel');
+                        if (devPanel) devPanel.classList.add('enabled');
+                        return '🎉 SUPER DEV MODE ACTIVATED!\n✅ Analytics access granted\n✅ Database tools unlocked\n✅ Advanced features enabled\n✅ Export capabilities available\n✅ Dev Panel button now visible!';
                     }
                     return 'Super Dev Mode already enabled!';
 
@@ -1172,6 +1218,22 @@
                         return '📤 Data export initiated. Check downloads folder.';
                     }
                     return '🔒 Access denied. Enable dev mode first.';
+
+                case 'blackout':
+                    const currentTheme = document.documentElement.getAttribute('data-theme');
+                    if (currentTheme === 'blackout') {
+                        document.documentElement.setAttribute('data-theme', 'dark');
+                        localStorage.setItem('theme', 'dark');
+                        updateThemeButton();
+                        await logEasterEgg('blackout_mode_disabled');
+                        return '🌙 Blackout mode disabled. Returned to dark theme.';
+                    } else {
+                        document.documentElement.setAttribute('data-theme', 'blackout');
+                        localStorage.setItem('theme', 'blackout');
+                        updateThemeButton();
+                        await logEasterEgg('blackout_mode_enabled');
+                        return '⚫ BLACKOUT MODE ACTIVATED!\n🖤 Pure darkness engaged\n💀 Matrix-style green accents\n🔴 Red danger highlights\n⚠️ This mode is terminal exclusive!';
+                    }
 
                 default:
                     return `Command not found: ${command}\nType 'help' for available commands.`;
@@ -1226,8 +1288,9 @@
 
         // UI Functions
         window.toggleTheme = function() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            // Only toggle between light and dark (not blackout)
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
             
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
@@ -1237,9 +1300,15 @@
         };
 
         function updateThemeButton() {
-            const theme = document.documentElement.getAttribute('data-theme');
+            const theme = document.documentElement.getAttribute('data-theme') || 'dark';
             const button = document.querySelector('.theme-toggle');
-            button.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+            if (theme === 'light') {
+                button.textContent = '🌙 Dark';
+            } else if (theme === 'blackout') {
+                button.textContent = '⚫ Blackout';
+            } else {
+                button.textContent = '☀️ Light';
+            }
         }
 
         window.scrollToProjects = function() {
