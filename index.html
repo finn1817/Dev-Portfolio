@@ -117,6 +117,12 @@
             background: rgba(59, 130, 246, 0.1);
         }
 
+        .nav-links a.active {
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+            background: rgba(59, 130, 246, 0.2);
+        }
+
         .theme-toggle {
             background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
             border: none;
@@ -660,6 +666,24 @@
             transform: translateX(0);
         }
 
+        /* SPA Section Management */
+        .section-content {
+            display: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .section-content.active {
+            display: block;
+            opacity: 1;
+        }
+
+        #dynamic-content iframe {
+            width: 100%;
+            border: none;
+            min-height: 100vh;
+            background: transparent;
+        }
+
         @media (max-width: 768px) {
             .nav {
                 padding: 1rem;
@@ -690,124 +714,60 @@
     <nav class="nav">
         <div class="logo">DF</div>
         <ul class="nav-links">
-            <li><a href="#home">Home</a></li>
-            <li><a href="#about">About</a></li>
-            <li><a href="#projects">Projects</a></li>
-            <li><a href="#contact">Contact</a></li>
+            <li><a href="#" onclick="showSection('home')" class="nav-tab active" data-section="home">Home</a></li>
+            <li><a href="#" onclick="showSection('about')" class="nav-tab" data-section="about">About</a></li>
+            <li><a href="#" onclick="showSection('projects')" class="nav-tab" data-section="projects">Projects</a></li>
+            <li><a href="#" onclick="showSection('contact')" class="nav-tab" data-section="contact">Contact</a></li>
         </ul>
         <button class="theme-toggle" onclick="toggleTheme()">🌙 Dark</button>
     </nav>
 
-    <section id="home" class="hero">
-        <h1>Dan Finn</h1>
-        <p class="subtitle">Student Developer & Code Wizard</p>
-        <button class="cta-button" onclick="scrollToProjects()">View My Work ✨</button>
-        <div style="margin-top: 2rem;">
-            <button class="btn" onclick="activateTerminal()">🔧 Terminal</button>
-            <button class="btn btn-secondary" id="dev-panel-btn" onclick="toggleDevPanel()" style="display: none;">📊 Dev Panel</button>
-            <button class="btn" onclick="generateEasterEgg()">🎯 Find Easter Egg</button>
-        </div>
-    </section>
+    <!-- Main Content Container -->
+    <div id="main-content">
+        <!-- Home Section (default visible) -->
+        <section id="home" class="hero section-content active">
+            <h1>Dan Finn</h1>
+            <p class="subtitle">Student Developer & Code Wizard</p>
+            <button class="cta-button" onclick="showSection('projects')">View My Work ✨</button>
+            <div style="margin-top: 2rem;">
+                <button class="btn" onclick="activateTerminal()">🔧 Terminal</button>
+                <button class="btn btn-secondary" id="dev-panel-btn" onclick="toggleDevPanel()" style="display: none;">📊 Dev Panel</button>
+                <button class="btn" onclick="generateEasterEgg()">🎯 Find Easter Egg</button>
+            </div>
+        </section>
 
-    <section id="about" class="section">
-        <div class="card">
-            <h2>About Me 👨‍💻</h2>
-            <p>I'm a Student Programmer that's always working on different web projects. I work on coding my own helpful and fun projects to get better at what I do, all with user-friendly design, and... 🎯 lots of hidden surprises!</p>
-            
-            <div class="skills-grid">
-                <div class="skill-card">
-                    <h3>HTML, CSS, & JS</h3>
-                    <div class="skill-level">⭐⭐⭐⭐⭐</div>
-                </div>
-                <div class="skill-card">
-                    <h3>Database Experience</h3>
-                    <div class="skill-level">⭐⭐⭐⭐⭐</div>
-                </div>
-                <div class="skill-card">
-                    <h3>Python</h3>
-                    <div class="skill-level">⭐⭐⭐⭐⭐</div>
-                </div>
-                <div class="skill-card">
-                    <h3>C++</h3>
-                    <div class="skill-level">⭐⭐⭐⭐⭐</div>
-                </div>
-                <div class="skill-card">
-                    <h3>Auth & Security</h3>
-                    <div class="skill-level">⭐⭐⭐⭐⭐</div>
-                </div>
-                <div class="skill-card">
-                    <h3>AI Integration</h3>
-                    <div class="skill-level">⭐⭐⭐⭐⭐</div>
-                </div>
-                <div class="skill-card">
-                    <h3>Dynamic web Dev ability</h3>
-                    <div class="skill-level">⭐⭐⭐⭐⭐</div>
-                </div>
-                <div class="skill-card">
-                    <h3>AI - For Planning & In Dev</h3>
-                    <div class="skill-level">⭐⭐⭐⭐⭐</div>
-                </div>
-                    <div class="skill-card">
-                    <h3>UI - Functionality & Appearance</h3>
-                    <div class="skill-level">⭐⭐⭐⭐⭐</div>
-                </div>
-            </div>
-        </div>
-    </section>
+        <!-- Dynamic Content Container for loaded pages -->
+        <div id="dynamic-content" class="section-content"></div>
 
-    <section id="projects" class="section">
-        <h2>My Projects</h2>
-        <div class="projects-grid">
-            <div class="project-card">
-                <h3>🎮 Secret Game Project</h3>
-                <p>A mysterious project that... only appears when you solve the puzzle</p>
-                <button class="btn" onclick="unlockSecretProject()">Learn More</button>
-            </div>
-            <div class="project-card">
-                <h3>💻 Code Inspector Tool</h3>
-                <p>Perfect for developers who love to peek behind the curtain!</p>
-                <button class="btn" onclick="inspectCode()">View Project</button>
-            </div>
-            <div class="project-card">
-                <h3>🔍 Easter Egg Hunter</h3>
-                <p>A tool for finding hidden gems in websites... just like this one!</p>
-                <button class="btn" onclick="huntEasterEggs()">Explore</button>
-            </div>
-            <div class="project-card">
-                <h3>🚀 Real-time Analytics</h3>
-                <p>Live tracking and analytics dashboard with Firebase integration</p>
-                <button class="btn" onclick="showAnalytics()">View Analytics</button>
-            </div>
-        </div>
-    </section>
-
-    <section id="contact" class="section">
-        <div class="card">
-            <h2>Get In Touch</h2>
-            <p>Found all the easter eggs? Send me a message!</p>
-            
-            <form class="contact-form" id="contactForm">
-                <div class="form-group">
-                    <label for="name">Name:</label>
-                    <input type="text" id="name" name="name" required>
+        <!-- Contact Section (kept on main page) -->
+        <section id="contact" class="section section-content">
+            <div class="card">
+                <h2>Get In Touch</h2>
+                <p>Found all the easter eggs? Send me a message!</p>
+                
+                <form class="contact-form" id="contactForm">
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message:</label>
+                        <textarea id="message" name="message" rows="5" maxlength="2000" required></textarea>
+                        <div class="char-counter"><span id="charCount">0</span>/2000 characters</div>
+                    </div>
+                    <button type="submit" class="btn">Send Message 🚀</button>
+                </form>
+                
+                <div class="rate-limit">
+                    Rate limit: <span id="submissionCount">0</span>/5 in the last 2 minutes
                 </div>
-                <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="message">Message:</label>
-                    <textarea id="message" name="message" rows="5" maxlength="2000" required></textarea>
-                    <small><span id="charCount">0</span>/2000 characters</small>
-                </div>
-                <button type="submit" class="btn">Send Message</button>
-            </form>
-            
-            <div class="rate-limit">
-                ⏰ Rate limit: <span id="submissionCount">0</span>/5 submissions in the last 2 minutes
             </div>
-        </div>
-    </section>
+        </section>
+    </div>
 
     <div class="terminal" id="terminal">
         <div class="terminal-header">
@@ -883,6 +843,98 @@
         let sessionId = generateSessionId();
         let commandHistory = [];
 
+        // SPA Management
+        let loadedPages = {};
+        let currentSection = 'home';
+
+        // SPA Functions
+        window.showSection = async function(section) {
+            // Remove active class from all nav tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            
+            // Add active class to clicked tab
+            document.querySelector(`[data-section="${section}"]`).classList.add('active');
+            
+            // Hide all sections
+            document.querySelectorAll('.section-content').forEach(content => content.classList.remove('active'));
+            
+            // Update current section
+            currentSection = section;
+            
+            if (section === 'home') {
+                document.getElementById('home').classList.add('active');
+            } else if (section === 'contact') {
+                document.getElementById('contact').classList.add('active');
+            } else if (section === 'about' || section === 'projects') {
+                await loadExternalPage(section);
+            }
+        };
+
+        async function loadExternalPage(section) {
+            const dynamicContent = document.getElementById('dynamic-content');
+            
+            if (!loadedPages[section]) {
+                try {
+                    const response = await fetch(`${section}.html`);
+                    const html = await response.text();
+                    
+                    // Create a temporary container to parse the HTML
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = html;
+                    
+                    // Extract the body content (skip head)
+                    const bodyContent = tempDiv.querySelector('body').innerHTML;
+                    
+                    // Store the loaded content
+                    loadedPages[section] = bodyContent;
+                } catch (error) {
+                    console.error(`Failed to load ${section}.html:`, error);
+                    loadedPages[section] = `<div class="section"><div class="card"><h2>Error</h2><p>Failed to load ${section} content.</p></div></div>`;
+                }
+            }
+            
+            // Set the content and show it
+            dynamicContent.innerHTML = loadedPages[section];
+            dynamicContent.classList.add('active');
+            
+            // Apply current theme to loaded content
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            if (currentTheme) {
+                const scripts = dynamicContent.querySelectorAll('script');
+                scripts.forEach(script => {
+                    // Execute any scripts in the loaded content
+                    if (script.textContent.includes('data-theme')) {
+                        try {
+                            eval(script.textContent);
+                        } catch (e) {
+                            console.log('Script execution skipped:', e);
+                        }
+                    }
+                });
+            }
+        }
+
+        // Preload pages function
+        async function preloadPages() {
+            const pagesToPreload = ['about', 'projects'];
+            
+            for (const page of pagesToPreload) {
+                try {
+                    const response = await fetch(`${page}.html`);
+                    const html = await response.text();
+                    
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = html;
+                    const bodyContent = tempDiv.querySelector('body').innerHTML;
+                    
+                    loadedPages[page] = bodyContent;
+                    console.log(`Preloaded ${page}.html`);
+                } catch (error) {
+                    console.error(`Failed to preload ${page}.html:`, error);
+                }
+            }
+        }
+
         // Initialize app
         document.addEventListener('DOMContentLoaded', async function() {
             initializeMatrix();
@@ -890,6 +942,9 @@
             updateSubmissionCount();
             loadEasterEggCount();
             setupRealTimeListeners();
+            
+            // Preload external pages
+            preloadPages();
             
             // Setup form handlers
             document.getElementById('contactForm').addEventListener('submit', handleFormSubmit);
@@ -1309,7 +1364,7 @@
         }
 
         window.scrollToProjects = function() {
-            document.getElementById('projects').scrollIntoView({ behavior: 'smooth' });
+            showSection('projects');
         };
 
         window.toggleDevPanel = function() {

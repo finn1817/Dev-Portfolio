@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - Dan Finn Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-gradient: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+            --text-color: #ffffff;
+            --accent-color: #3b82f6;
+            --secondary-color: #6366f1;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --nav-bg: rgba(0, 0, 0, 0.8);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        [data-theme="light"] {
+            --bg-gradient: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            --text-color: #2d3748;
+            --accent-color: #3b82f6;
+            --secondary-color: #6366f1;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --border-color: rgba(0, 0, 0, 0.1);
+            --nav-bg: rgba(255, 255, 255, 0.9);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="blackout"] {
+            --bg-gradient: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+            --text-color: #ffffff;
+            --accent-color: #00ff00;
+            --secondary-color: #ff0040;
+            --card-bg: rgba(0, 0, 0, 0.8);
+            --border-color: rgba(0, 255, 0, 0.3);
+            --nav-bg: rgba(0, 0, 0, 0.95);
+            --shadow: 0 8px 32px rgba(0, 255, 0, 0.2);
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .section {
+            padding: 2rem 0;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section h2 {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .project-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
+            opacity: 0.1;
+            transition: left 0.3s ease;
+            z-index: 0;
+        }
+
+        .project-card:hover::before {
+            left: 0;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--accent-color);
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.2);
+        }
+
+        .project-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+            position: relative;
+            z-index: 1;
+        }
+
+        .project-card p {
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--secondary-color), var(--accent-color));
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .btn:hover::before {
+            left: 0;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            background: var(--accent-color);
+            color: white;
+            border-radius: 8px;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+            max-width: 300px;
+            box-shadow: var(--shadow);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 768px) {
+            .section {
+                padding: 1rem;
+            }
+            
+            .section h2 {
+                font-size: 2rem;
+            }
+            
+            .projects-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .project-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="section">
+        <h2>My Projects</h2>
+        <div class="projects-grid">
+            <div class="project-card">
+                <h3>🎮 Secret Game Project</h3>
+                <p>A mysterious project that... only appears when you solve the puzzle</p>
+                <button class="btn" onclick="unlockSecretProject()">Learn More</button>
+            </div>
+            <div class="project-card">
+                <h3>💻 Code Inspector Tool</h3>
+                <p>Perfect for developers who love to peek behind the curtain!</p>
+                <button class="btn" onclick="inspectCode()">View Project</button>
+            </div>
+            <div class="project-card">
+                <h3>🔍 Easter Egg Hunter</h3>
+                <p>A tool for finding hidden gems in websites... just like this one!</p>
+                <button class="btn" onclick="huntEasterEggs()">Explore</button>
+            </div>
+            <div class="project-card">
+                <h3>🚀 Real-time Analytics</h3>
+                <p>Live tracking and analytics dashboard with Firebase integration</p>
+                <button class="btn" onclick="showAnalytics()">View Analytics</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">
+        <span id="notificationText"></span>
+    </div>
+
+    <script type="module">
+        // Firebase Configuration (shared with main page)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCejm0Ry18S1mlqYpnMRuIJGnQ-iDvu3EU",
+            authDomain: "custom-messages-84ec4.firebaseapp.com",
+            projectId: "custom-messages-84ec4",
+            storageBucket: "custom-messages-84ec4.firebasestorage.app",
+            messagingSenderId: "1079020496100",
+            appId: "1:1079020496100:web:d21ec1428327515e3df8f1"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Project Functions (connect to parent window functions if available)
+        window.unlockSecretProject = function() {
+            if (window.parent && window.parent.unlockSecretProject) {
+                window.parent.unlockSecretProject();
+            } else {
+                showNotification('🎮 Secret Project: Try typing "matrix" in the terminal!');
+                logEasterEgg('secret_project_hint');
+            }
+        };
+
+        window.inspectCode = function() {
+            if (window.parent && window.parent.inspectCode) {
+                window.parent.inspectCode();
+            } else {
+                console.log('🔍 Code Inspector Activated!');
+                console.log('🎯 Easter Egg: You\'re already inspecting the code!');
+                showNotification('Check the console for a surprise! 🕵️');
+                logEasterEgg('code_inspector_used');
+            }
+        };
+
+        window.huntEasterEggs = function() {
+            if (window.parent && window.parent.huntEasterEggs) {
+                window.parent.huntEasterEggs();
+            } else {
+                const hints = [
+                    'Try the Konami Code! ↑↑↓↓←→←→BA',
+                    'Open the terminal and type "matrix"',
+                    'Check the console for hidden messages',
+                    'Look for clickable elements that seem suspicious',
+                    'The theme toggle might have secrets...'
+                ];
+                
+                const randomHint = hints[Math.floor(Math.random() * hints.length)];
+                showNotification(`🔍 Hint: ${randomHint}`);
+                logEasterEgg('easter_egg_hunt');
+            }
+        };
+
+        window.showAnalytics = function() {
+            if (window.parent && window.parent.showAnalytics) {
+                window.parent.showAnalytics();
+            } else {
+                showNotification('📊 Analytics feature requires main page context');
+            }
+        };
+
+        // Utility functions
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            
+            notificationText.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+        }
+
+        async function logEasterEgg(eggType) {
+            try {
+                await addDoc(collection(db, 'easter_eggs'), {
+                    type: eggType,
+                    timestamp: serverTimestamp(),
+                    userAgent: navigator.userAgent,
+                    sessionId: window.parent?.sessionId || 'standalone',
+                    source: 'projects_page'
+                });
+            } catch (error) {
+                console.log('Easter egg logging failed:', error);
+            }
+        }
+
+        // Track section view
+        async function trackSectionView() {
+            try {
+                await addDoc(collection(db, 'page_views'), {
+                    section: 'projects',
+                    timestamp: serverTimestamp(),
+                    userAgent: navigator.userAgent,
+                    sessionId: window.parent?.sessionId || 'standalone'
+                });
+            } catch (error) {
+                console.log('Analytics tracking disabled or failed:', error);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            trackSectionView();
+            
+            // Apply theme from parent if loaded in iframe/parent context
+            if (window.parent && window.parent.document) {
+                const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
+                if (parentTheme) {
+                    document.documentElement.setAttribute('data-theme', parentTheme);
+                }
+            }
+        });
+
+        // Make Firebase available globally
+        window.db = db;
+    </script>
+</body>
+</html>

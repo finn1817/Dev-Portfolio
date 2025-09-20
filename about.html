@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Dan Finn Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-gradient: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+            --text-color: #ffffff;
+            --accent-color: #3b82f6;
+            --secondary-color: #6366f1;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --nav-bg: rgba(0, 0, 0, 0.8);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        [data-theme="light"] {
+            --bg-gradient: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            --text-color: #2d3748;
+            --accent-color: #3b82f6;
+            --secondary-color: #6366f1;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --border-color: rgba(0, 0, 0, 0.1);
+            --nav-bg: rgba(255, 255, 255, 0.9);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="blackout"] {
+            --bg-gradient: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
+            --text-color: #ffffff;
+            --accent-color: #00ff00;
+            --secondary-color: #ff0040;
+            --card-bg: rgba(0, 0, 0, 0.8);
+            --border-color: rgba(0, 255, 0, 0.3);
+            --nav-bg: rgba(0, 0, 0, 0.95);
+            --shadow: 0 8px 32px rgba(0, 255, 0, 0.2);
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .section {
+            padding: 2rem 0;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            padding: 3rem;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), var(--secondary-color));
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        .card p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            line-height: 1.8;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .skill-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .skill-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
+            opacity: 0.1;
+            transition: left 0.3s ease;
+            z-index: 0;
+        }
+
+        .skill-card:hover::before {
+            left: 0;
+        }
+
+        .skill-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-color);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+        }
+
+        .skill-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            color: var(--accent-color);
+            position: relative;
+            z-index: 1;
+        }
+
+        .skill-level {
+            font-size: 1.1rem;
+            color: #ffd700;
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 768px) {
+            .section {
+                padding: 1rem;
+            }
+            
+            .card {
+                padding: 2rem;
+            }
+            
+            .card h2 {
+                font-size: 2rem;
+            }
+            
+            .skills-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="section">
+        <div class="card">
+            <h2>About Me 👨‍💻</h2>
+            <p>I'm a Student Programmer that's always working on different web projects. I work on coding my own helpful and fun projects to get better at what I do, all with user-friendly design, and... 🎯 lots of hidden surprises!</p>
+            
+            <div class="skills-grid">
+                <div class="skill-card">
+                    <h3>HTML, CSS, & JS</h3>
+                    <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                </div>
+                <div class="skill-card">
+                    <h3>Database Experience</h3>
+                    <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                </div>
+                <div class="skill-card">
+                    <h3>Python</h3>
+                    <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                </div>
+                <div class="skill-card">
+                    <h3>C++</h3>
+                    <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                </div>
+                <div class="skill-card">
+                    <h3>Auth & Security</h3>
+                    <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                </div>
+                <div class="skill-card">
+                    <h3>AI Integration</h3>
+                    <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                </div>
+                <div class="skill-card">
+                    <h3>Dynamic web Dev ability</h3>
+                    <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                </div>
+                <div class="skill-card">
+                    <h3>AI - For Planning & In Dev</h3>
+                    <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                </div>
+                <div class="skill-card">
+                    <h3>UI - Functionality & Appearance</h3>
+                    <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Firebase Configuration (shared with main page)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCejm0Ry18S1mlqYpnMRuIJGnQ-iDvu3EU",
+            authDomain: "custom-messages-84ec4.firebaseapp.com",
+            projectId: "custom-messages-84ec4",
+            storageBucket: "custom-messages-84ec4.firebasestorage.app",
+            messagingSenderId: "1079020496100",
+            appId: "1:1079020496100:web:d21ec1428327515e3df8f1"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Track page section view
+        async function trackSectionView() {
+            try {
+                await addDoc(collection(db, 'page_views'), {
+                    section: 'about',
+                    timestamp: serverTimestamp(),
+                    userAgent: navigator.userAgent,
+                    sessionId: window.parent?.sessionId || 'standalone'
+                });
+            } catch (error) {
+                console.log('Analytics tracking disabled or failed:', error);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            trackSectionView();
+            
+            // Apply theme from parent if loaded in iframe/parent context
+            if (window.parent && window.parent.document) {
+                const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
+                if (parentTheme) {
+                    document.documentElement.setAttribute('data-theme', parentTheme);
+                }
+            }
+        });
+
+        // Make Firebase available globally
+        window.db = db;
+    </script>
+</body>
+</html>
