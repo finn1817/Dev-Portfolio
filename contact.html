@@ -417,7 +417,7 @@
 
         <div class="header">
             <h1>Contact</h1>
-            <p>Drop me a message below. Writes to the same Firebase collection as the main page.</p>
+            <p>Drop me a message below. This demo saves messages locally in your browser.</p>
         </div>
 
         <form id="contactForm">
@@ -499,7 +499,7 @@
                 <button class="feature-btn" onclick="clearForm()">🗑️ Clear Form</button>
                 <button class="feature-btn" onclick="exportFormData()">📤 Export Data</button>
                 <button class="feature-btn" onclick="showAnalytics()">📊 Analytics</button>
-                <button class="feature-btn" onclick="testConnection()">🔗 Test Firebase</button>
+                <button class="feature-btn" onclick="testConnection()">🧪 Run Self-Test</button>
                 <button class="feature-btn" onclick="generateReport()">📋 Generate Report</button>
             </div>
         </div>
@@ -527,24 +527,16 @@
         <span id="notificationText"></span>
     </div>
 
-    <script src="auth.js"></script>
     <script type="module">
-        // Firebase Configuration
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, where, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCejm0Ry18S1mlqYpnMRuIJGnQ-iDvu3EU",
-            authDomain: "custom-messages-84ec4.firebaseapp.com",
-            projectId: "custom-messages-84ec4",
-            storageBucket: "custom-messages-84ec4.firebasestorage.app",
-            messagingSenderId: "1079020496100",
-            appId: "1:1079020496100:web:d21ec1428327515e3df8f1"
+        // Firebase removed: use local browser storage instead
+        const localDB = {
+            analytics: JSON.parse(localStorage.getItem('local_analytics') || '[]'),
+            messages: JSON.parse(localStorage.getItem('local_messages') || '[]')
         };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        function persist(){
+            localStorage.setItem('local_analytics', JSON.stringify(localDB.analytics));
+            localStorage.setItem('local_messages', JSON.stringify(localDB.messages));
+        }
 
         // Global variables
         let submissionCount = parseInt(localStorage.getItem('submissionCount') || '0');
@@ -642,75 +634,39 @@
             updateAuthStatus(); // Update auth display
         });
 
-        // Firebase Functions
+        // Local save
         async function saveMessage(messageData) {
-            try {
-                const enhancedData = {
-                    ...messageData,
-                    timestamp: serverTimestamp(),
-                    sessionId: sessionId,
-                    userAgent: navigator.userAgent,
-                    page: 'contact',
-                    ip: await getClientIP(),
-                    browser: getBrowserInfo(),
-                    referrer: document.referrer || 'direct'
-                };
-
-                const docRef = await addDoc(collection(db, 'messages'), enhancedData);
-                showNotification('Message sent successfully! 🎉');
-                return docRef.id;
-            } catch (error) {
-                console.error('Error saving message:', error);
-                showNotification('Error sending message. Please try again.', 'error');
-                throw error;
-            }
+            const enhanced = {
+                ...messageData,
+                timestamp: Date.now(),
+                sessionId: sessionId,
+                userAgent: navigator.userAgent,
+                page: 'contact',
+                ip: await getClientIP(),
+                browser: getBrowserInfo(),
+                referrer: document.referrer || 'direct'
+            };
+            const id = 'msg_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
+            localDB.messages.push({ id, ...enhanced });
+            persist();
+            showNotification('Message saved locally! 🎉');
+            return id;
         }
 
         async function trackPageView() {
-            try {
-                await addDoc(collection(db, 'analytics'), {
-                    type: 'page_view',
-                    page: 'contact',
-                    timestamp: serverTimestamp(),
-                    sessionId: sessionId,
-                    userAgent: navigator.userAgent
-                });
-            } catch (error) {
-                console.error('Error tracking page view:', error);
-            }
+            localDB.analytics.push({ type: 'page_view', page: 'contact', timestamp: Date.now(), sessionId, userAgent: navigator.userAgent });
+            persist();
         }
 
         async function loadAnalytics() {
-            try {
-                // Get total messages
-                const messagesQuery = query(collection(db, 'messages'), orderBy('timestamp', 'desc'), limit(100));
-                const messagesSnapshot = await getDocs(messagesQuery);
-                messageStats.total = messagesSnapshot.docs.length;
-
-                // Get today's messages
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                const todayQuery = query(
-                    collection(db, 'messages'),
-                    where('timestamp', '>=', today),
-                    orderBy('timestamp', 'desc')
-                );
-                const todaySnapshot = await getDocs(todayQuery);
-                messageStats.today = todaySnapshot.docs.length;
-
-                updateAnalyticsDisplay();
-            } catch (error) {
-                console.error('Error loading analytics:', error);
-            }
+            const all = localDB.messages.slice().sort((a,b)=>b.timestamp-a.timestamp);
+            messageStats.total = all.length;
+            const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+            messageStats.today = all.filter(m=>m.timestamp >= todayStart.getTime()).length;
+            updateAnalyticsDisplay();
         }
 
-        function setupRealTimeListeners() {
-            // Listen for new messages
-            const messagesQuery = query(collection(db, 'messages'), orderBy('timestamp', 'desc'), limit(10));
-            onSnapshot(messagesQuery, (snapshot) => {
-                loadAnalytics();
-            });
-        }
+        function setupRealTimeListeners() { /* no-op */ }
 
         // Form handling
         function setupFormHandlers() {
@@ -767,15 +723,9 @@
                 updateSubmissionCount();
                 clearFormData();
                 
-                // Track successful submission
-                await addDoc(collection(db, 'analytics'), {
-                    type: 'form_submission',
-                    page: 'contact',
-                    timestamp: serverTimestamp(),
-                    sessionId: sessionId,
-                    category: messageData.category,
-                    priority: messageData.priority
-                });
+                // Track successful submission (local)
+                localDB.analytics.push({ type: 'form_submission', page: 'contact', timestamp: Date.now(), sessionId, category: messageData.category, priority: messageData.priority });
+                persist();
                 
             } catch (error) {
                 console.error('Error submitting form:', error);
@@ -941,17 +891,13 @@
 
         window.testConnection = async function() {
             try {
-                await addDoc(collection(db, 'dev_logs'), {
-                    type: 'connection_test',
-                    page: 'contact',
-                    timestamp: serverTimestamp(),
-                    sessionId: sessionId,
-                    status: 'success'
-                });
-                showNotification('✅ Firebase connection successful!');
-            } catch (error) {
-                showNotification('❌ Firebase connection failed', 'error');
-                console.error('Connection test failed:', error);
+                const key = 'contact_self_test_' + Date.now();
+                localStorage.setItem(key, 'ok');
+                const val = localStorage.getItem(key);
+                localStorage.removeItem(key);
+                if (val === 'ok') showNotification('✅ Local self-test passed!'); else throw new Error('mismatch');
+            } catch (e) {
+                showNotification('❌ Self-test failed', 'error');
             }
         };
 
@@ -1045,7 +991,6 @@
         setInterval(loadAnalytics, 30000);
 
         // Make key functions globally available
-        window.db = db;
         window.sessionId = sessionId;
     </script>
 </body>

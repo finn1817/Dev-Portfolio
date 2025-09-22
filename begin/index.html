@@ -398,109 +398,46 @@
         </div>
     </div>
 
-    <script src="../auth.js"></script>
     <script type="module">
-        // Firebase Configuration for tracking hunt progress
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCejm0Ry18S1mlqYpnMRuIJGnQ-iDvu3EU",
-            authDomain: "custom-messages-84ec4.firebaseapp.com",
-            projectId: "custom-messages-84ec4",
-            storageBucket: "custom-messages-84ec4.firebasestorage.app",
-            messagingSenderId: "1079020496100",
-            appId: "1:1079020496100:web:d21ec1428327515e3df8f1"
+        // Local-only hunt tracking (no auth.js)
+        const localDB = {
+            events: JSON.parse(localStorage.getItem('local_events') || '{}'),
+            progress: JSON.parse(localStorage.getItem('local_progress') || '{}'),
         };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // Global variables
-    let currentUser = (window.Auth && Auth.getUser()) || null;
-
-        // Cookie helpers (fallback for auth persistence)
-        function setCookie(name, value, days = 30) {
-            const expires = new Date(Date.now() + days * 864e5).toUTCString();
-            document.cookie = `${name}=${encodeURIComponent(value)}; Expires=${expires}; Path=/; SameSite=Lax`;
+        function persist(){
+            localStorage.setItem('local_events', JSON.stringify(localDB.events));
+            localStorage.setItem('local_progress', JSON.stringify(localDB.progress));
         }
 
-        function getCookie(name) {
-            return document.cookie
-                .split('; ')
-                .find(row => row.startsWith(name + '='))
-                ?.split('=')[1];
-        }
-
-        function deleteCookie(name) {
-            document.cookie = `${name}=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax`;
-        }
-
-        // Robust auth functions
-        function loadUserFromStorage() { currentUser = (window.Auth && Auth.load()) || null; return !!currentUser; }
+        const USER_ID = 'anonymous'; // stable local key used across pages
 
         // Auth status display
         function updateAuthStatus() {
             const authStatus = document.getElementById('authStatus');
             if (!authStatus) return;
-            
-            console.log('Debug: updateAuthStatus called, currentUser =', currentUser);
-            
-            if (currentUser) {
-                authStatus.textContent = `${currentUser.username}`;
-                authStatus.className = 'auth-status signed-in';
-                console.log('Debug: Set auth status to signed in');
-            } else {
-                authStatus.textContent = 'Not signed in';
-                authStatus.className = 'auth-status signed-out';
-                console.log('Debug: Set auth status to signed out');
-            }
+            authStatus.textContent = 'Local tracking';
+            authStatus.className = 'auth-status signed-out';
         }
 
         // Hunt progress tracking
         async function updateHuntProgress(level = 'start') {
             const progressElement = document.getElementById('huntProgress');
-            
-            if (currentUser) {
-                // Track progress in Firebase
-                try {
-                    await addDoc(collection(db, 'users', currentUser.username, 'hunt_progress'), {
-                        level: level,
-                        page: window.location.pathname,
-                        timestamp: serverTimestamp(),
-                        sessionId: generateSessionId()
-                    });
-                } catch (error) {
-                    console.log('Progress tracking failed:', error);
-                }
-                
-                // Update display
-                progressElement.textContent = `Hunt Level: ${level}`;
-                progressElement.className = 'hunt-progress has-progress';
-            } else {
-                progressElement.textContent = 'Hunt Level: Start (Sign in to track progress)';
-                progressElement.className = 'hunt-progress';
-            }
+            const uid = USER_ID;
+            if (!localDB.progress[uid]) localDB.progress[uid] = [];
+            localDB.progress[uid].push({ level, page: window.location.pathname, timestamp: Date.now(), sessionId: generateSessionId() });
+            persist();
+            // Update display
+            progressElement.textContent = `Hunt Level: ${level}`;
+            progressElement.className = 'hunt-progress has-progress';
         }
 
         // Track hunt start (only if signed in)
         async function trackHuntStart() {
-            try {
-                if (!currentUser) return; // only store for signed-in users
-                await addDoc(collection(db, 'users', currentUser.username, 'events'), {
-                    action: 'hunt_started',
-                    source: 'begin_page',
-                    timestamp: serverTimestamp(),
-                    userAgent: navigator.userAgent,
-                    sessionId: generateSessionId()
-                });
-                
-                // Update hunt progress
-                await updateHuntProgress('begin');
-            } catch (error) {
-                console.log('Hunt tracking failed:', error);
-            }
+            const uid = USER_ID;
+            if (!localDB.events[uid]) localDB.events[uid] = [];
+            localDB.events[uid].push({ action: 'hunt_started', source: 'begin_page', timestamp: Date.now(), userAgent: navigator.userAgent, sessionId: generateSessionId() });
+            persist();
+            await updateHuntProgress('begin');
         }
 
         // Functions
@@ -613,14 +550,8 @@
         `;
         document.head.appendChild(style);
 
-        // Try to load immediately (before DOM ready) to avoid race conditions
-    loadUserFromStorage();
-
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            // Load auth state using robust function
-            if (!currentUser) loadUserFromStorage();
-            
             initializeMatrix();
             updateAuthStatus();
             updateHuntProgress('begin');
@@ -669,19 +600,13 @@ Congratulations! You've found the first easter egg just by opening the console!
 Good luck, detective! 🕵️‍♂️
         `);
 
-        // Track console access (only if signed in)
+        // Track console access
         try {
-            if (currentUser) {
-                await addDoc(collection(db, 'users', currentUser.username, 'events'), {
-                    type: 'console_access_hunt_page',
-                    timestamp: serverTimestamp(),
-                    sessionId: generateSessionId(),
-                    source: 'begin_page'
-                });
-            }
-        } catch (error) {
-            // Silent fail for analytics
-        }
+            const uid = USER_ID;
+            if (!localDB.events[uid]) localDB.events[uid] = [];
+            localDB.events[uid].push({ type: 'console_access_hunt_page', timestamp: Date.now(), sessionId: generateSessionId(), source: 'begin_page' });
+            persist();
+        } catch (error) { /* silent */ }
     </script>
 </body>
 </html>

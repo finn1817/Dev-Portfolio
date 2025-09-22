@@ -33,32 +33,18 @@
     <div class="meta">Progress: 1 / 4 | Hunt Level: One</div>
   </div>
   
-  <script src="../auth.js"></script>
   <script type="module">
-    // Firebase Configuration
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCejm0Ry18S1mlqYpnMRuIJGnQ-iDvu3EU",
-      authDomain: "custom-messages-84ec4.firebaseapp.com",
-      projectId: "custom-messages-84ec4",
-      storageBucket: "custom-messages-84ec4.firebasestorage.app",
-      messagingSenderId: "1079020496100",
-      appId: "1:1079020496100:web:d21ec1428327515e3df8f1"
+    // Firebase removed: local storage tracking
+    const localDB = {
+      events: JSON.parse(localStorage.getItem('local_events') || '{}'),
+      progress: JSON.parse(localStorage.getItem('local_progress') || '{}'),
     };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    function persist(){
+      localStorage.setItem('local_events', JSON.stringify(localDB.events));
+      localStorage.setItem('local_progress', JSON.stringify(localDB.progress));
+    }
     
-  let currentUser = (window.Auth && Auth.getUser()) || null;
-
-  // Cookie helpers (fallback for auth persistence)
-  function getCookie(name){return document.cookie.split('; ').find(r=>r.startsWith(name+'='))?.split('=')[1]}
-  function deleteCookie(name){document.cookie=`${name}=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax`}
-    
-    // Robust auth functions
-    function loadUserFromStorage(){ currentUser = (window.Auth && Auth.load()) || null; return !!currentUser; }
+  const USER_ID = 'anonymous';
     
     function generateSessionId() {
       return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -66,44 +52,20 @@
 
     function updateAuthStatus() {
       const authStatus = document.getElementById('authStatus');
-      if (currentUser) {
-        authStatus.textContent = currentUser.username;
-        authStatus.className = 'auth-status signed-in';
-      } else {
-        authStatus.textContent = 'Not signed in';
-        authStatus.className = 'auth-status signed-out';
-      }
+      authStatus.textContent = 'Local tracking';
+      authStatus.className = 'auth-status signed-out';
     }
 
     async function trackProgress() {
-      if (!currentUser) return;
-      
-      try {
-        await addDoc(collection(db, 'users', currentUser.username, 'hunt_progress'), {
-          level: 'advancement-one',
-          page: window.location.pathname,
-          timestamp: serverTimestamp(),
-          sessionId: generateSessionId()
-        });
-        
-        await addDoc(collection(db, 'users', currentUser.username, 'events'), {
-          type: 'advancement_reached',
-          level: 'one',
-          timestamp: serverTimestamp(),
-          sessionId: generateSessionId()
-        });
-      } catch (error) {
-        console.log('Progress tracking failed:', error);
-      }
+      const uid = USER_ID;
+      if (!localDB.progress[uid]) localDB.progress[uid] = [];
+      localDB.progress[uid].push({ level: 'advancement-one', page: window.location.pathname, timestamp: Date.now(), sessionId: generateSessionId() });
+      if (!localDB.events[uid]) localDB.events[uid] = [];
+      localDB.events[uid].push({ type: 'advancement_reached', level: 'one', timestamp: Date.now(), sessionId: generateSessionId() });
+      persist();
     }
 
-    // Load ASAP
-  loadUserFromStorage();
-
     document.addEventListener('DOMContentLoaded', function() {
-      // Load auth state using robust function
-      if (!currentUser) loadUserFromStorage();
-      
       updateAuthStatus();
       trackProgress();
     });

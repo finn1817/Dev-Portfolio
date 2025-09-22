@@ -637,7 +637,7 @@
     <canvas class="matrix-bg" id="matrixCanvas"></canvas>
     
     <nav class="nav">
-        <div class="left"><div class="logo">DF</div><button class="auth-button" id="authBtn" onclick="openAuth()">Sign In</button><span id="authStatus" style="display:none; font-size:0.9rem; opacity:0.85; margin-left:6px;"></span></div>
+        <div class="left"><div class="logo">DF</div><span id="authStatus" style="display:none; font-size:0.9rem; opacity:0.85; margin-left:6px;"></span></div>
         <ul class="nav-links">
             <li><a href="#" onclick="showSection('home')" class="nav-tab active" data-section="home">Home</a></li>
             <li><a href="#" onclick="showSection('about')" class="nav-tab" data-section="about">About</a></li>
@@ -733,8 +733,8 @@
                             <button class="btn" onclick="huntEasterEggs()">Explore</button>
                         </div>
                         <div class="project-card">
-                            <h3>🚀 Real-time Analytics</h3>
-                            <p>Live tracking and analytics dashboard with Firebase integration</p>
+                            <h3>🚀 Live Analytics (Demo)</h3>
+                            <p>Local tracking demo dashboard (no external services required)</p>
                             <button class="btn" onclick="showAnalytics()">View Analytics</button>
                         </div>
                     </div>
@@ -772,46 +772,7 @@
         </section>
     </div>
 
-    <div class="terminal" id="terminal">
-        <div class="terminal-header">
-            <span>🎯 EASTER EGG TERMINAL ACTIVATED!</span>
-            <button class="terminal-close" onclick="closeTerminal()">×</button>
-        </div>
-        <div class="terminal-body" id="terminalOutput">
-            <div>Welcome to Dan's Portfolio Terminal v2.0</div>
-            <div>Type 'help' for available commands</div>
-            <div>Super Dev Mode: Type 'sudo dev-mode --enable' to unlock advanced features</div>
-        </div>
-        <div class="terminal-input">
-            <span class="terminal-prompt">user@portfolio:~$</span>
-            <input type="text" id="terminalInput" onkeypress="handleTerminalInput(event)">
-        </div>
-    </div>
-
-    <div class="dev-panel" id="devPanel">
-        <h3>🔧 Developer Panel</h3>
-        <div class="analytics-widget">
-            <h4>📊 Live Analytics</h4>
-            <p>Page Views: <span id="pageViews">Loading...</span></p>
-            <p>Active Users: <span id="activeUsers">Loading...</span></p>
-            <p>Messages Sent: <span id="messageCount">Loading...</span></p>
-            <button class="btn" onclick="refreshAnalytics()">Refresh</button>
-        </div>
-        
-        <div class="analytics-widget">
-            <h4>🎯 Easter Eggs Found</h4>
-            <p>Total: <span id="easterEggCount">0</span></p>
-            <button class="btn" onclick="resetEasterEggs()">Reset</button>
-        </div>
-
-        <div class="analytics-widget">
-            <h4>⚡ Quick Actions</h4>
-            <button class="btn" onclick="exportData()">Export Data</button>
-            <button class="btn btn-secondary" onclick="clearCache()">Clear Cache</button>
-            <button class="btn" onclick="testConnection()">Test Firebase</button>
-        </div>
-    </div>
-
+    
     <button class="floating-button" onclick="activateTerminal()" title="Open Terminal">
         🔧
     </button>
@@ -820,50 +781,25 @@
         <span id="notificationText"></span>
     </div>
 
-    <!-- Auth Modal -->
-    <div class="auth-modal" id="authModal">
-        <div class="auth-card">
-            <h3 id="authTitle">Sign In</h3>
-            <input id="authUsername" class="auth-input" placeholder="Username (e.g., Testuser)">
-            <input id="authPassword" class="auth-input" placeholder="Password" type="password" style="margin-top:0.5rem;">
-            <input id="authConfirmPassword" class="auth-input" placeholder="Confirm Password" type="password" style="margin-top:0.5rem; display:none;">
-            <div class="auth-row" style="margin-top:0.5rem;">
-                <input id="authName" class="auth-input" placeholder="Name (optional)">
-                <input id="authPhone" class="auth-input" placeholder="Phone (optional)">
-            </div>
-            <div class="auth-hint" id="authHint">Password must be 4+ chars and include Uppercase, Lowercase, Number, and Special character.</div>
-            <div class="auth-actions">
-                <button class="auth-secondary" onclick="closeAuth()">Cancel</button>
-                <button class="auth-primary" id="authSubmitBtn" onclick="handleAuth()">Sign In</button>
-            </div>
-            <div class="auth-mode-toggle">
-                <span id="authModeText">Don't have an account?</span>
-                <button class="auth-toggle-btn" id="authToggleBtn" onclick="toggleAuthMode()">Create Account</button>
-            </div>
-        </div>
-    </div>
+    
 
-    <script src="auth.js"></script>
     <script type="module">
-        // Firebase Configuration
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, where, updateDoc, deleteDoc, doc, serverTimestamp, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-    import { getAuth, setPersistence, browserLocalPersistence, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCejm0Ry18S1mlqYpnMRuIJGnQ-iDvu3EU",
-            authDomain: "custom-messages-84ec4.firebaseapp.com",
-            projectId: "custom-messages-84ec4",
-            storageBucket: "custom-messages-84ec4.firebasestorage.app",
-            messagingSenderId: "1079020496100",
-            appId: "1:1079020496100:web:d21ec1428327515e3df8f1"
+        // Firebase removed: using local in-memory/localStorage stubs instead
+        // Simple local stores
+        const localDB = {
+            analytics: JSON.parse(localStorage.getItem('local_analytics') || '[]'),
+            messages: JSON.parse(localStorage.getItem('local_messages') || '[]'),
+            users: JSON.parse(localStorage.getItem('local_users') || '{}'),
+            events: JSON.parse(localStorage.getItem('local_events') || '{}'),
+            progress: JSON.parse(localStorage.getItem('local_progress') || '{}')
         };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
-    await setPersistence(auth, browserLocalPersistence);
+        function persistLocalDB(){
+            localStorage.setItem('local_analytics', JSON.stringify(localDB.analytics));
+            localStorage.setItem('local_messages', JSON.stringify(localDB.messages));
+            localStorage.setItem('local_users', JSON.stringify(localDB.users));
+            localStorage.setItem('local_events', JSON.stringify(localDB.events));
+            localStorage.setItem('local_progress', JSON.stringify(localDB.progress));
+        }
 
         // Global variables
         let devModeEnabled = false;
@@ -871,8 +807,8 @@
         let submissionCount = parseInt(localStorage.getItem('submissionCount') || '0');
         let lastSubmissionTime = parseInt(localStorage.getItem('lastSubmissionTime') || '0');
         let sessionId = generateSessionId();
-    let commandHistory = [];
-    let currentUser = null;
+        let commandHistory = [];
+        let currentUser = null;
 
         // Cookie helpers (fallback for auth persistence)
         function setCookie(name, value, days = 30) {
@@ -934,18 +870,11 @@
             }
         };
 
-        // Track section views
+        // Track section views (local)
         async function trackSectionView(section) {
-            try {
-                await addDoc(collection(db, 'page_views'), {
-                    section: section,
-                    timestamp: serverTimestamp(),
-                    userAgent: navigator.userAgent,
-                    sessionId: sessionId
-                });
-            } catch (error) {
-                console.log('Analytics tracking failed:', error);
-            }
+            const entry = { type: 'section_view', section, timestamp: Date.now(), userAgent: navigator.userAgent, sessionId };
+            localDB.analytics.push(entry);
+            persistLocalDB();
         }
 
         // Attempt load immediately so UI using currentUser has state ASAP
@@ -960,7 +889,7 @@
             updateSubmissionCount();
             loadEasterEggCount();
             setupRealTimeListeners();
-            initializeDemoAccount(); // Initialize demo account
+            initializeDemoAccount(); // Initialize demo account (local)
             
             // Setup form handlers
             document.getElementById('contactForm').addEventListener('submit', handleFormSubmit);
@@ -973,351 +902,101 @@
             if (typeof updateAuthUI === 'function') updateAuthUI();
         });
 
-        // Firebase Functions
+        // Local analytics
         async function trackPageView() {
-            try {
-                await addDoc(collection(db, 'analytics'), {
-                    type: 'page_view',
-                    page: 'index',
-                    timestamp: serverTimestamp(),
-                    sessionId: sessionId,
-                    userAgent: navigator.userAgent
-                });
-            } catch (error) {
-                console.error('Error tracking page view:', error);
-            }
+            localDB.analytics.push({ type: 'page_view', page: 'index', timestamp: Date.now(), sessionId, userAgent: navigator.userAgent });
+            persistLocalDB();
         }
 
         async function saveMessage(messageData) {
-            try {
-                const docRef = await addDoc(collection(db, 'messages'), {
-                    ...messageData,
-                    timestamp: serverTimestamp(),
-                    sessionId: sessionId
-                });
-                showNotification('Message sent successfully! 🎉');
-                return docRef.id;
-            } catch (error) {
-                console.error('Error saving message:', error);
-                showNotification('Error sending message. Please try again.', 'error');
-                throw error;
-            }
+            const id = 'msg_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
+            localDB.messages.push({ id, ...messageData, timestamp: Date.now(), sessionId });
+            persistLocalDB();
+            showNotification('Message saved locally! 🎉');
+            return id;
         }
 
         async function logEasterEgg(eggType) {
-            try {
-                if (!currentUser) return; // only store for signed-in users
-                const uid = currentUser.username;
-                await addDoc(collection(db, `users/${uid}/events`), {
-                    type: eggType,
-                    timestamp: serverTimestamp(),
-                    sessionId: sessionId
-                });
-                easterEggsFound++;
-                localStorage.setItem('easterEggsFound', easterEggsFound.toString());
-                updateEasterEggCount();
-            } catch (error) {
-                console.error('Error logging easter egg:', error);
-            }
+            const uid = (currentUser && currentUser.username) || 'anonymous';
+            if (!localDB.events[uid]) localDB.events[uid] = [];
+            localDB.events[uid].push({ type: eggType, timestamp: Date.now(), sessionId });
+            persistLocalDB();
+            easterEggsFound++;
+            localStorage.setItem('easterEggsFound', easterEggsFound.toString());
+            updateEasterEggCount();
         }
 
         async function saveCommand(command, output) {
-            try {
-                if (!currentUser) return; // only when signed in
-                const uid = currentUser.username;
-                await addDoc(collection(db, `users/${uid}/command_history`), {
-                    command: command,
-                    output: output,
-                    timestamp: serverTimestamp(),
-                    sessionId: sessionId,
-                    devMode: devModeEnabled
-                });
-            } catch (error) {
-                console.error('Error saving command:', error);
-            }
+            const uid = (currentUser && currentUser.username) || 'anonymous';
+            if (!localDB.events[uid]) localDB.events[uid] = [];
+            localDB.events[uid].push({ type: 'command', command, output, timestamp: Date.now(), sessionId, devMode: devModeEnabled });
+            persistLocalDB();
         }
 
-        // Auth UI helpers (demo only; not secure)
-        let isCreateMode = false;
-        
-        window.openAuth = function() { 
-            document.getElementById('authModal').classList.add('active'); 
-            resetAuthModal();
-        };
-        
-        window.closeAuth = function() { 
-            document.getElementById('authModal').classList.remove('active'); 
-            resetAuthModal();
-        };
-
-        function resetAuthModal() {
-            isCreateMode = false;
-            document.getElementById('authTitle').textContent = 'Sign In';
-            document.getElementById('authSubmitBtn').textContent = 'Sign In';
-            document.getElementById('authModeText').textContent = "Don't have an account?";
-            document.getElementById('authToggleBtn').textContent = 'Create Account';
-            document.getElementById('authConfirmPassword').style.display = 'none';
-            document.getElementById('authHint').textContent = 'Password must be 4+ chars and include Uppercase, Lowercase, Number, and Special character.';
-            
-            // Clear form fields
-            document.getElementById('authUsername').value = '';
-            document.getElementById('authPassword').value = '';
-            document.getElementById('authConfirmPassword').value = '';
-            document.getElementById('authName').value = '';
-            document.getElementById('authPhone').value = '';
-        }
-
-        window.toggleAuthMode = function() {
-            isCreateMode = !isCreateMode;
-            
-            if (isCreateMode) {
-                document.getElementById('authTitle').textContent = 'Create Account';
-                document.getElementById('authSubmitBtn').textContent = 'Create Account';
-                document.getElementById('authModeText').textContent = 'Already have an account?';
-                document.getElementById('authToggleBtn').textContent = 'Sign In';
-                document.getElementById('authConfirmPassword').style.display = 'block';
-                document.getElementById('authHint').textContent = 'Choose a unique username. Password must be 4+ chars and include Uppercase, Lowercase, Number, and Special character.';
-            } else {
-                resetAuthModal();
-            }
-        };
+    // Auth UI helpers (demo only; not secure)
 
         // Demo account initialization
         async function initializeDemoAccount() {
-            try {
-                const usersQuery = query(
-                    collection(db, 'users'), 
-                    where('username', '==', 'Testuser'), 
-                    limit(1)
-                );
-                const snapshot = await getDocs(usersQuery);
-                
-                if (snapshot.empty) {
-                    // Create demo profile doc if it doesn't exist (no password stored here)
-                    await setDoc(doc(db, 'users', 'Testuser'), {
-                        username: 'Testuser',
-                        name: 'Demo User',
-                        phone: null,
-                        createdAt: serverTimestamp(),
-                        accountType: 'demo',
-                        lastLogin: serverTimestamp()
-                    }, { merge: true });
-                    console.log('Demo user profile initialized');
-                }
-            } catch (error) {
-                console.log('Demo account initialization failed:', error);
+            // Seed a local demo user for UX hints
+            if (!localDB.users['Testuser']) {
+                localDB.users['Testuser'] = { username: 'Testuser', name: 'Demo User', accountType: 'demo', createdAt: Date.now(), lastLogin: Date.now() };
+                persistLocalDB();
             }
         }
 
         function updateAuthUI() {
             const status = document.getElementById('authStatus');
-            const btn = document.getElementById('authBtn');
-            if (!status || !btn) return;
-            if (currentUser) {
-                status.style.display = 'inline';
-                status.textContent = `Signed in as ${currentUser.username}`;
-                btn.textContent = 'Sign Out';
-                btn.onclick = async () => { try { await signOut(auth); } catch(_){} };
-            } else {
-                status.style.display = 'none';
-                status.textContent = '';
-                btn.textContent = 'Sign In';
-                btn.onclick = openAuth;
-            }
+            if (!status) return;
+            status.style.display = 'none';
+            status.textContent = '';
         }
 
         function validPassword(pw) {
             return /[A-Z]/.test(pw) && /[a-z]/.test(pw) && /\d/.test(pw) && /[^A-Za-z0-9]/.test(pw) && pw.length >= 4;
         }
 
-        // Check if username already exists
-        async function checkUsernameExists(username) {
-            try {
-                const usersQuery = query(collection(db, 'users'), where('username', '==', username), limit(1));
-                const snapshot = await getDocs(usersQuery);
-                return !snapshot.empty;
-            } catch (error) {
-                console.error('Error checking username:', error);
-                return false;
-            }
-        }
-
-        // Convert username to a synthetic email for Firebase Auth
-        function usernameToEmail(u){
-            const base = (u || '').trim();
-            return `${base}@users.dfinn.local`;
-        }
-
-        window.handleAuth = async function() {
-            const username = document.getElementById('authUsername').value.trim();
-            const password = document.getElementById('authPassword').value;
-            const confirmPassword = document.getElementById('authConfirmPassword').value;
-            const name = document.getElementById('authName').value.trim();
-            const phone = document.getElementById('authPhone').value.trim();
-
-            // Validation
-            if (!username) { showNotification('Username required', 'error'); return; }
-            if (username.length < 3) { showNotification('Username must be at least 3 characters', 'error'); return; }
-            if (!validPassword(password)) { showNotification('Password must include upper, lower, number, special and be 4+ chars', 'error'); return; }
-
-            if (isCreateMode) {
-                if (password !== confirmPassword) { showNotification('Passwords do not match', 'error'); return; }
-                const userExists = await checkUsernameExists(username);
-                if (userExists) { showNotification('Username already exists. Please choose a different one.', 'error'); return; }
-                try {
-                    const email = usernameToEmail(username);
-                    const cred = await createUserWithEmailAndPassword(auth, email, password);
-                    await updateProfile(cred.user, { displayName: username });
-                    try {
-                        await setDoc(doc(db, 'users', username), {
-                            username,
-                            name: name || null,
-                            phone: phone || null,
-                            createdAt: serverTimestamp(),
-                            accountType: 'created',
-                            lastLogin: serverTimestamp()
-                        }, { merge: true });
-                    } catch(_) {}
-                    showNotification(`Account created successfully! Welcome, ${username}!`);
-                    closeAuth();
-                } catch (e) {
-                    console.error('Auth sign up failed', e);
-                    showNotification('Sign up failed: ' + (e.message || ''), 'error');
-                }
-            } else {
-                try {
-                    const email = usernameToEmail(username);
-                    await signInWithEmailAndPassword(auth, email, password);
-                    showNotification(`Welcome back, ${username}!`);
-                    closeAuth();
-                } catch (e) {
-                    console.error('Auth sign in failed', e);
-                    showNotification('Sign in failed: ' + (e.message || ''), 'error');
-                }
-            }
-        };
-
-        // Keep UI and a small local mirror in sync with Firebase Auth
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = { username: user.displayName || (user.email ? user.email.split('@')[0] : 'user'), uid: user.uid };
-                try { localStorage.setItem('auth_user', JSON.stringify(currentUser)); } catch(_){}
-                updateAuthUI();
-            } else {
-                currentUser = null;
-                try { localStorage.removeItem('auth_user'); } catch(_){}
-                updateAuthUI();
-            }
-        });
+        // Auth handlers removed entirely
 
         // Analytics helper
         async function getAnalytics() {
-            try {
-                const analytics = { pageViews: 0, activeUsers: 0, messageCount: 0, easterEggCount: 0 };
-                const pageViewsQuery = query(collection(db, 'analytics'), where('type', '==', 'page_view'), orderBy('timestamp', 'desc'), limit(500));
-                const pageViewsSnapshot = await getDocs(pageViewsQuery);
-                analytics.pageViews = pageViewsSnapshot.docs.length;
-                const uniqueSessions = new Set();
-                pageViewsSnapshot.docs.forEach(d => {
-                    const sid = d.data().sessionId;
-                    if (sid) uniqueSessions.add(sid);
-                });
-                analytics.activeUsers = uniqueSessions.size;
-                const messagesQuery = query(collection(db, 'messages'), orderBy('timestamp', 'desc'), limit(50));
-                const messagesSnapshot = await getDocs(messagesQuery);
-                analytics.messageCount = messagesSnapshot.docs.length;
-                if (currentUser) {
-                    try {
-                        const eggsSnap = await getDocs(query(collection(db, 'users', currentUser.username, 'events'), orderBy('timestamp', 'desc'), limit(50)));
-                        analytics.easterEggCount = eggsSnap.docs.filter(d => !!d.data().type || d.data().action === 'hunt_started').length;
-                    } catch (_) { /* ignore */ }
-                }
-                return analytics;
-            } catch (error) {
-                console.error('Error getting analytics:', error);
-                return null;
-            }
+            const analytics = { pageViews: 0, activeUsers: 0, messageCount: 0, easterEggCount: 0 };
+            const recent = localDB.analytics.slice(-500);
+            analytics.pageViews = recent.filter(a=>a.type==='page_view' && a.page==='index').length;
+            const sessions = new Set(recent.map(a=>a.sessionId).filter(Boolean));
+            analytics.activeUsers = sessions.size;
+            analytics.messageCount = localDB.messages.length;
+            const uid = (currentUser && currentUser.username) || 'anonymous';
+            const ev = localDB.events[uid] || [];
+            analytics.easterEggCount = ev.filter(e=>e.type && e.type.includes('egg')).length;
+            return analytics;
         }
 
     // Hunt progress tracking
         async function getHuntProgress() {
-            if (!currentUser) {
-                return `🎯 HUNT PROGRESS TRACKING
-
-❌ Not signed in! Sign in to track your easter egg hunt progress.
-
-To sign in:
-1. Click the "Sign In" button (top-left)
-2. Create an account (use any username + strong password)
-3. Your progress will be automatically tracked across all hunt pages
-
-Once signed in, this command will show:
-• Current hunt level reached
-• Total advancement progress  
-• Easter eggs discovered
-• Achievements unlocked`;
-            }
-
-            try {
-                // Get hunt progress
-                const progressQuery = query(
-                    collection(db, 'users', currentUser.username, 'hunt_progress'), 
-                    orderBy('timestamp', 'desc'), 
-                    limit(10)
-                );
-                const progressSnap = await getDocs(progressQuery);
-                
-                // Get events
-                const eventsQuery = query(
-                    collection(db, 'users', currentUser.username, 'events'), 
-                    orderBy('timestamp', 'desc'), 
-                    limit(20)
-                );
-                const eventsSnap = await getDocs(eventsQuery);
-
-                let highestLevel = 'start';
-                let completedLevels = new Set();
-                let totalEvents = eventsSnap.docs.length;
-                let achievements = [];
-
-                // Analyze progress
-                progressSnap.docs.forEach(doc => {
-                    const data = doc.data();
-                    if (data.level) {
-                        if (data.level.includes('advancement-four')) {
-                            highestLevel = 'COMPLETE';
-                            completedLevels.add('four');
-                        } else if (data.level.includes('advancement-three') && highestLevel !== 'COMPLETE') {
-                            highestLevel = 'advancement-three';
-                            completedLevels.add('three');
-                        } else if (data.level.includes('advancement-two') && !highestLevel.includes('three') && highestLevel !== 'COMPLETE') {
-                            highestLevel = 'advancement-two';
-                            completedLevels.add('two');
-                        } else if (data.level.includes('advancement-one') && highestLevel === 'start') {
-                            highestLevel = 'advancement-one';
-                            completedLevels.add('one');
-                        }
-                    }
-                });
-
-                // Check for achievements
-                eventsSnap.docs.forEach(doc => {
-                    const data = doc.data();
-                    if (data.type === 'console_access_hunt_page') achievements.push('🕵️ Console Detective');
-                    if (data.type === 'advancement_completed') achievements.push('🏆 Chain Master');
-                    if (data.action === 'hunt_started') achievements.push('🎯 Hunt Initiated');
-                });
-
-                // Remove duplicates
-                achievements = [...new Set(achievements)];
-
-                let progressPercentage = 0;
-                if (highestLevel === 'COMPLETE') progressPercentage = 100;
-                else if (highestLevel.includes('three')) progressPercentage = 75;
-                else if (highestLevel.includes('two')) progressPercentage = 50;
-                else if (highestLevel.includes('one')) progressPercentage = 25;
-
-                return `🎯 HUNT PROGRESS TRACKING - ${currentUser.username}
+            const uid = (currentUser && currentUser.username) || 'anonymous';
+            const progress = localDB.progress[uid] || [];
+            const events = localDB.events[uid] || [];
+            let highestLevel = 'start';
+            const completedLevels = new Set();
+            progress.forEach(p=>{
+                const lvl = (p.level||'').toLowerCase();
+                if (lvl.includes('four')) { highestLevel = 'COMPLETE'; completedLevels.add('four'); }
+                else if (lvl.includes('three')) { if (highestLevel!=='COMPLETE') highestLevel='advancement-three'; completedLevels.add('three'); }
+                else if (lvl.includes('two')) { if (!highestLevel.includes('three') && highestLevel!=='COMPLETE') highestLevel='advancement-two'; completedLevels.add('two'); }
+                else if (lvl.includes('one') && highestLevel==='start') { highestLevel='advancement-one'; completedLevels.add('one'); }
+            });
+            let progressPercentage = 0;
+            if (highestLevel === 'COMPLETE') progressPercentage = 100;
+            else if (highestLevel.includes('three')) progressPercentage = 75;
+            else if (highestLevel.includes('two')) progressPercentage = 50;
+            else if (highestLevel.includes('one')) progressPercentage = 25;
+            const achievements = [...new Set(events.map(e=>{
+                if (e.type==='console_access_hunt_page') return '🕵️ Console Detective';
+                if (e.type==='advancement_completed') return '🏆 Chain Master';
+                if (e.action==='hunt_started') return '🎯 Hunt Initiated';
+                return null;
+            }).filter(Boolean))];
+            return `🎯 HUNT PROGRESS (local)
 
 📊 ADVANCEMENT PROGRESS:
 • Current Level: ${highestLevel.toUpperCase()}
@@ -1325,41 +1004,19 @@ Once signed in, this command will show:
 • Completed Levels: ${Array.from(completedLevels).join(', ') || 'none'}
 
 🎮 ACTIVITY SUMMARY:
-• Total Hunt Events: ${totalEvents}
-• Easter Eggs Found: ${eventsSnap.docs.filter(d => !!d.data().type).length}
-• Pages Visited: ${progressSnap.docs.length}
+• Total Hunt Events: ${events.length}
+• Easter Eggs Found: ${events.filter(e=>!!e.type).length}
+• Pages Visited: ${progress.length}
 
 🏆 ACHIEVEMENTS UNLOCKED:
 ${achievements.length > 0 ? achievements.map(a => `• ${a}`).join('\n') : '• No achievements yet'}
 
 💡 TIPS:
-${highestLevel === 'start' ? '• Visit begin/index.html to start the hunt' : ''}
-${progressPercentage < 100 ? '• Continue through the advancement chain' : ''}
-${achievements.length < 3 ? '• Explore more to unlock achievements' : ''}
-${progressPercentage === 100 ? '• 🎉 Congratulations! You completed the advancement chain!' : ''}`;
-
-            } catch (error) {
-                console.error('Error getting hunt progress:', error);
-                return '❌ Error loading hunt progress. Please try again.';
-            }
+• Visit begin/index.html to start the hunt`;
         }
 
         // Real-time listeners
-        function setupRealTimeListeners() {
-            // Listen for new messages
-            const messagesQuery = query(collection(db, 'messages'), orderBy('timestamp', 'desc'), limit(10));
-            onSnapshot(messagesQuery, (snapshot) => {
-                if (devModeEnabled) {
-                    console.log('New messages received:', snapshot.docs.length);
-                }
-            });
-
-            // Listen for analytics updates
-            const analyticsQuery = query(collection(db, 'analytics'), orderBy('timestamp', 'desc'), limit(10));
-            onSnapshot(analyticsQuery, (snapshot) => {
-                refreshAnalytics();
-            });
-        }
+        function setupRealTimeListeners() { /* no-op: realtime removed */ }
 
         // Form handling
         async function handleFormSubmit(event) {
@@ -1454,7 +1111,7 @@ ${progressPercentage === 100 ? '• 🎉 Congratulations! You completed the adva
                 responseDiv.innerHTML = response;
                 output.appendChild(responseDiv);
                 
-                // Save to Firebase
+                // Save command (local)
                 await saveCommand(input, response);
                 
                 // Clear input and scroll to bottom
@@ -1483,7 +1140,7 @@ ${progressPercentage === 100 ? '• 🎉 Congratulations! You completed the adva
 • export - Export data (dev mode only)
 • blackout - Toggle blackout mode (terminal exclusive)
 • hunt - Start the ultimate easter egg hunt
-• progress - Show your hunt progress (requires sign in)`;
+• progress - Show your hunt progress (local)`;
 
                 case 'hunt':
                     await logEasterEgg('hunt_command_used');
@@ -1499,7 +1156,7 @@ This will take you to the official Easter Egg Hunt starting point with:
 • Advanced developer challenges
 • Console puzzles and hidden commands
 • Secret key combinations and sequences
-• Firebase-tracked progress
+• Locally-tracked progress
 
 ⚠️  WARNING: This hunt requires expert web development skills!
 
@@ -1567,13 +1224,11 @@ Good luck, detective! 🕵️‍♂️`;
                 case 'analytics':
                     if (devModeEnabled) {
                         const analytics = await getAnalytics();
-                        return analytics ? 
-                            `📊 Live Analytics:
+                        return `📊 Live Analytics (Local):
 • Page Views: ${analytics.pageViews}
 • Active Users: ${analytics.activeUsers}  
 • Messages: ${analytics.messageCount}
-• Easter Eggs Found: ${analytics.easterEggCount}` 
-                            : 'Error loading analytics';
+• Easter Eggs Found: ${analytics.easterEggCount}`;
                     }
                     return '🔒 Access denied. Enable dev mode first.';
 
@@ -1730,9 +1385,7 @@ Good luck, detective! 🕵️‍♂️`;
 
         window.showAnalytics = async function() {
             const analytics = await getAnalytics();
-            if (analytics) {
-                showNotification(`📊 Analytics: ${analytics.pageViews} views, ${analytics.messageCount} messages sent!`);
-            }
+            showNotification(`📊 Analytics (Local): ${analytics.pageViews} views, ${analytics.messageCount} messages saved!`);
             logEasterEgg('analytics_viewed');
         };
 
@@ -1790,15 +1443,16 @@ Good luck, detective! 🕵️‍♂️`;
         };
 
         window.testConnection = async function() {
+            // Local self-test: try localStorage round-trip
             try {
-                await addDoc(collection(db, 'dev_logs'), {
-                    type: 'connection_test',
-                    timestamp: serverTimestamp(),
-                    status: 'success'
-                });
-                showNotification('✅ Firebase connection successful!');
-            } catch (error) {
-                showNotification('❌ Firebase connection failed', 'error');
+                const key = 'self_test_' + Date.now();
+                localStorage.setItem(key, 'ok');
+                const val = localStorage.getItem(key);
+                localStorage.removeItem(key);
+                if (val === 'ok') showNotification('✅ Local self-test passed!');
+                else throw new Error('mismatch');
+            } catch (e) {
+                showNotification('❌ Self-test failed', 'error');
             }
         };
 
@@ -1854,12 +1508,10 @@ Good luck, detective! 🕵️‍♂️`;
         });
 
         // Initialize analytics on load
-        setTimeout(() => {
-            refreshAnalytics();
-        }, 2000);
+        setTimeout(() => { refreshAnalytics(); }, 1000);
 
         // Make functions globally available
-        window.db = db;
+        // db removed
         window.devModeEnabled = () => devModeEnabled;
         window.getSessionId = () => sessionId;
     </script>
