@@ -527,6 +527,7 @@
         <span id="notificationText"></span>
     </div>
 
+    <script src="auth.js"></script>
     <script type="module">
         // Firebase Configuration
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -550,7 +551,7 @@
         let lastSubmissionTime = parseInt(localStorage.getItem('lastSubmissionTime') || '0');
         let sessionId = generateSessionId();
         let messageStats = { total: 0, today: 0, avgResponse: '24h' };
-        let currentUser = null;
+    let currentUser = (window.Auth && Auth.getUser()) || null;
 
         // Cookie helpers (fallback for auth persistence)
         function setCookie(name, value, days = 30) {

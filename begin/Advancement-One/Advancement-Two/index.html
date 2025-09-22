@@ -33,6 +33,7 @@
     <div class="meta">Progress: 2 / 4 | Hunt Level: Two</div>
   </div>
   
+  <script src="../auth.js"></script>
   <script type="module">
     // Firebase Configuration
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -50,30 +51,12 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     
-  let currentUser = null;
+  let currentUser = (window.Auth && Auth.getUser()) || null;
   function getCookie(name){return document.cookie.split('; ').find(r=>r.startsWith(name+'='))?.split('=')[1]}
   function deleteCookie(name){document.cookie=`${name}=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax`}
     
     // Robust auth functions
-    function loadUserFromStorage() {
-      try {
-        const stored = localStorage.getItem('auth_user');
-        if (!stored || stored === 'null' || stored === 'undefined') {
-          const cookieVal=getCookie('auth_user');
-          if (cookieVal){ try{ currentUser=JSON.parse(decodeURIComponent(cookieVal)); localStorage.setItem('auth_user', JSON.stringify(currentUser)); return true;}catch(e){}}
-          currentUser = null;
-          return false;
-        }
-        currentUser = JSON.parse(stored);
-        return currentUser !== null;
-      } catch (e) {
-        console.error('Failed to parse auth_user:', e);
-        currentUser = null;
-        localStorage.removeItem('auth_user');
-        deleteCookie('auth_user');
-        return false;
-      }
-    }
+    function loadUserFromStorage(){ currentUser = (window.Auth && Auth.load()) || null; return !!currentUser; }
     
     function generateSessionId() {
       return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -113,7 +96,7 @@
     }
 
     // Load ASAP
-    loadUserFromStorage();
+  loadUserFromStorage();
 
     document.addEventListener('DOMContentLoaded', function() {
       if (!currentUser) loadUserFromStorage();

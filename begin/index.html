@@ -398,6 +398,7 @@
         </div>
     </div>
 
+    <script src="../auth.js"></script>
     <script type="module">
         // Firebase Configuration for tracking hunt progress
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -417,7 +418,7 @@
         const db = getFirestore(app);
 
         // Global variables
-        let currentUser = null;
+    let currentUser = (window.Auth && Auth.getUser()) || null;
 
         // Cookie helpers (fallback for auth persistence)
         function setCookie(name, value, days = 30) {
@@ -437,39 +438,7 @@
         }
 
         // Robust auth functions
-        function loadUserFromStorage() {
-            try {
-                const stored = localStorage.getItem('auth_user');
-                console.log('Debug: Raw localStorage auth_user =', stored);
-                
-                if (!stored || stored === 'null' || stored === 'undefined') {
-                    // Cookie fallback
-                    const cookieVal = getCookie('auth_user');
-                    if (cookieVal) {
-                        try {
-                            currentUser = JSON.parse(decodeURIComponent(cookieVal));
-                            console.log('Debug: Loaded user from cookie =', currentUser);
-                            localStorage.setItem('auth_user', JSON.stringify(currentUser));
-                            return true;
-                        } catch (e) {
-                            console.warn('Debug: Failed to parse cookie user:', e);
-                        }
-                    }
-                    currentUser = null;
-                    return false;
-                }
-                
-                currentUser = JSON.parse(stored);
-                console.log('Debug: Parsed currentUser =', currentUser);
-                return currentUser !== null;
-            } catch (e) {
-                console.error('Debug: Failed to parse auth_user from localStorage:', e);
-                currentUser = null;
-                localStorage.removeItem('auth_user'); // Clear corrupted data
-                deleteCookie('auth_user');
-                return false;
-            }
-        }
+        function loadUserFromStorage() { currentUser = (window.Auth && Auth.load()) || null; return !!currentUser; }
 
         // Auth status display
         function updateAuthStatus() {
@@ -645,7 +614,7 @@
         document.head.appendChild(style);
 
         // Try to load immediately (before DOM ready) to avoid race conditions
-        loadUserFromStorage();
+    loadUserFromStorage();
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
