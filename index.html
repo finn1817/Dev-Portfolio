@@ -908,83 +908,45 @@
     </div>
 
     <script type="module">
-        console.log('🔥 Script module loading...');
+        console.log('🔥 Firebase Portfolio Script Loading...');
         
-        let app, db, addDoc, collection, serverTimestamp;
-        
-        // Dynamic Firebase import with error handling
-        async function initializeFirebase() {
-            try {
-                console.log('🔥 Loading Firebase modules...');
-                console.log('🌐 Current origin:', window.location.origin);
-                console.log('🌐 Current protocol:', window.location.protocol);
-                
-                const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js");
-                const firebaseFirestore = await import("https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js");
-                
-                // Extract functions - match debug tool pattern exactly
-                addDoc = firebaseFirestore.addDoc;
-                collection = firebaseFirestore.collection;
-                serverTimestamp = firebaseFirestore.serverTimestamp;
-                const { getFirestore } = firebaseFirestore;
+        // Firebase imports using the latest v9+ modular SDK
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js';
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            serverTimestamp,
+            getDocs,
+            query,
+            orderBy,
+            limit
+        } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js';
 
-                const firebaseConfig = {
-                    apiKey: "AIzaSyCejm0Ry18S1mlqYpnMRuIJGnQ-iDvu3EU",
-                    authDomain: "custom-messages-84ec4.firebaseapp.com",
-                    projectId: "custom-messages-84ec4",
-                    storageBucket: "custom-messages-84ec4.firebasestorage.app",
-                    messagingSenderId: "1079020496100",
-                    appId: "1:1079020496100:web:d21ec1428327515e3df8f1"
-                };
+        // Your Firebase configuration (exactly as provided)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCejm0Ry18S1mlqYpnMRuIJGnQ-iDvu3EU",
+            authDomain: "custom-messages-84ec4.firebaseapp.com",
+            projectId: "custom-messages-84ec4",
+            storageBucket: "custom-messages-84ec4.firebasestorage.app",
+            messagingSenderId: "1079020496100",
+            appId: "1:1079020496100:web:d21ec1428327515e3df8f1"
+        };
 
-                console.log('🔥 Initializing Firebase app...');
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                console.log('✅ Firebase initialized successfully!');
-                
-                // Show notification about protocol
-                if (window.location.protocol === 'file:') {
-                    console.warn('⚠️ Running on file:// protocol - Firebase may have limitations');
-                    setTimeout(() => {
-                        showNotification('⚠️ Local file detected - Firebase may be limited', 'info');
-                    }, 3000);
-                }
-                
-                return true;
-            } catch (error) {
-                console.error('❌ Firebase initialization failed:', error);
-                console.error('Error details:', {
-                    name: error.name,
-                    message: error.message,
-                    code: error.code,
-                    stack: error.stack
-                });
-                console.log('📱 Will use local storage fallback for all operations');
-                
-                // Check if we're on dfinn.me domain
-                const isDfinnMe = window.location.hostname === 'dfinn.me' || 
-                                window.location.hostname === 'www.dfinn.me' ||
-                                window.location.hostname.endsWith('.dfinn.me');
-                
-                console.log('🌐 Is dfinn.me domain:', isDfinnMe);
-                
-                // Show appropriate error message based on domain
-                if (isDfinnMe && (error.message.includes('CORS') || error.message.includes('network'))) {
-                    setTimeout(() => {
-                        showNotification('🚨 CORS/Domain issue on dfinn.me - check Firebase authorized domains', 'error');
-                    }, 2000);
-                } else if (error.message.includes('CORS') || error.message.includes('network')) {
-                    setTimeout(() => {
-                        showNotification('🌐 Network/CORS issue - will retry on form submission', 'warning');
-                    }, 2000);
-                } else {
-                    setTimeout(() => {
-                        showNotification('⚠️ Firebase unavailable - will retry on form submission', 'warning');
-                    }, 2000);
-                }
-                
-                return false;
-            }
+        // Initialize Firebase
+        console.log('🔥 Initializing Firebase app...');
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        console.log('✅ Firebase initialized successfully!');
+
+        // Generate unique session ID
+        function generateSessionId() {
+            return 'session_' + Date.now() + '_' + Math.random().toString(36).substring(2, 15);
+        }
+
+        // Generate unique document ID
+        function generateDocumentId() {
+            return 'msg_' + Date.now() + '_' + Math.random().toString(36).substring(2, 12);
         }
 
         // Global variables
@@ -997,7 +959,7 @@
         let currentUser = null;
         let currentSection = 'home';
 
-        // Local storage database simulation
+        // Local storage database simulation for offline backup
         const localDB = {
             analytics: JSON.parse(localStorage.getItem('local_analytics') || '[]'),
             messages: JSON.parse(localStorage.getItem('local_messages') || '[]'),
@@ -1014,19 +976,158 @@
             localStorage.setItem('local_progress', JSON.stringify(localDB.progress));
         }
 
+        // Test Firebase connection
+        async function testFirebaseConnection() {
+            try {
+                console.log('🔥 Testing Firebase connection to Messages collection...');
+                
+                // Test write to Messages collection
+                const testMessage = {
+                    type: 'connection_test',
+                    timestamp: serverTimestamp(),
+                    userAgent: navigator.userAgent,
+                    sessionId: sessionId,
+                    testId: generateDocumentId(),
+                    source: 'portfolio_connection_test',
+                    page: window.location.href,
+                    protocol: window.location.protocol,
+                    origin: window.location.origin
+                };
+                
+                const docRef = await addDoc(collection(db, 'Messages'), testMessage);
+                console.log('✅ Firebase Messages collection test successful! Doc ID:', docRef.id);
+                
+                // Test read from Messages collection
+                const messagesQuery = query(
+                    collection(db, 'Messages'), 
+                    orderBy('timestamp', 'desc'), 
+                    limit(5)
+                );
+                const querySnapshot = await getDocs(messagesQuery);
+                console.log('✅ Firebase Messages read test successful! Found', querySnapshot.size, 'documents');
+                
+                showNotification('🔥 Firebase Messages collection connected successfully!', 'success');
+                return true;
+                
+            } catch (error) {
+                console.error('❌ Firebase connection test failed:', error);
+                showNotification('⚠️ Firebase connection failed - using local backup', 'error');
+                return false;
+            }
+        }
+
+        // Save message to Firebase Messages collection with comprehensive data
+        async function saveMessage(messageData) {
+            try {
+                console.log('💾 Saving message to Firebase Messages collection...');
+                
+                // Create comprehensive message document with unique fields
+                const messageDocument = {
+                    // User input data
+                    fullName: messageData.name,
+                    emailAddress: messageData.email,
+                    messageContent: messageData.message,
+                    
+                    // Timestamp fields
+                    clientTimestamp: messageData.clientTimestamp,
+                    serverTimestamp: serverTimestamp(),
+                    submittedAt: new Date().toISOString(),
+                    
+                    // Session and tracking data
+                    sessionId: sessionId,
+                    messageId: generateDocumentId(),
+                    submissionNumber: submissionCount + 1,
+                    
+                    // Browser and environment data
+                    userAgent: navigator.userAgent,
+                    browserLanguage: navigator.language,
+                    screenResolution: `${screen.width}x${screen.height}`,
+                    viewportSize: `${window.innerWidth}x${window.innerHeight}`,
+                    platform: navigator.platform,
+                    cookieEnabled: navigator.cookieEnabled,
+                    
+                    // Page and site data
+                    currentPage: window.location.href,
+                    referrer: document.referrer || 'direct',
+                    pageTitle: document.title,
+                    origin: window.location.origin,
+                    protocol: window.location.protocol,
+                    hostname: window.location.hostname,
+                    
+                    // Form and interaction data
+                    formSubmissionMethod: 'portfolio_contact_form',
+                    characterCount: messageData.message.length,
+                    formValidated: true,
+                    
+                    // Status and metadata
+                    messageStatus: 'new',
+                    readStatus: 'unread',
+                    priority: 'normal',
+                    source: 'dan_finn_portfolio',
+                    category: 'contact_inquiry',
+                    
+                    // Additional tracking
+                    timeOnPageBeforeSubmit: Date.now() - performance.timing.navigationStart,
+                    easterEggsFound: easterEggsFound,
+                    devModeEnabled: devModeEnabled,
+                    currentTheme: document.documentElement.getAttribute('data-theme'),
+                    
+                    // IP will be added by Firebase Functions if configured
+                    ipAddress: null,
+                    geolocation: null
+                };
+
+                console.log('📤 Sending to Firebase Messages collection:', messageDocument);
+                
+                // Add to Messages collection
+                const docRef = await addDoc(collection(db, 'Messages'), messageDocument);
+                console.log('✅ Message saved to Firebase Messages collection with ID:', docRef.id);
+                
+                // Also save to local backup
+                const localId = generateDocumentId();
+                localDB.messages.push({ 
+                    id: localId, 
+                    firebaseId: docRef.id,
+                    ...messageData, 
+                    timestamp: Date.now(), 
+                    sessionId,
+                    savedToFirebase: true
+                });
+                persistLocalDB();
+                
+                return docRef.id;
+                
+            } catch (error) {
+                console.error('❌ Error saving to Firebase Messages collection:', error);
+                
+                // Fallback to local storage
+                const localId = generateDocumentId();
+                localDB.messages.push({ 
+                    id: localId,
+                    ...messageData, 
+                    timestamp: Date.now(), 
+                    sessionId,
+                    origin: window.location.origin,
+                    protocol: window.location.protocol,
+                    savedToFirebase: false,
+                    firebaseError: error.message,
+                    userAgent: navigator.userAgent,
+                    errorTimestamp: new Date().toISOString()
+                });
+                persistLocalDB();
+                
+                console.log('✅ Message saved locally with ID:', localId);
+                throw error; // Re-throw to handle in form submit
+            }
+        }
+
         // SPA Navigation
         window.showSection = function(section) {
-            // Remove active class from all nav tabs
             document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
-            
-            // Add active class to clicked tab
             const targetTab = document.querySelector(`[data-section="${section}"]`);
             if (targetTab) targetTab.classList.add('active');
             
-            // Hide all sections
             document.querySelectorAll('.section-content').forEach(content => content.classList.remove('active'));
-            
-            // Show target section
             const targetSection = document.getElementById(section);
             if (targetSection) {
                 targetSection.classList.add('active');
@@ -1034,64 +1135,6 @@
                 trackSectionView(section);
             }
         };
-
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('🚀 App initializing...');
-            
-            // Initialize Firebase first
-            const firebaseReady = await initializeFirebase();
-            console.log('Firebase ready:', firebaseReady);
-            
-            initializeMatrix();
-            trackPageView();
-            updateSubmissionCount();
-            loadEasterEggCount();
-            initializeDemoAccount();
-            
-            // Test Firebase connection on page load
-            if (firebaseReady) {
-                testFirebaseConnection();
-            }
-            
-            // Setup form handlers with error checking
-            const contactForm = document.getElementById('contactForm');
-            const messageInput = document.getElementById('message');
-            
-            if (contactForm) {
-                console.log('✅ Contact form found, setting up event listener...');
-                contactForm.addEventListener('submit', handleFormSubmit);
-                
-                // Also add direct onclick handler as backup
-                const submitBtn = contactForm.querySelector('button[type="submit"]');
-                if (submitBtn) {
-                    submitBtn.addEventListener('click', function(event) {
-                        console.log('📝 Submit button clicked!');
-                        // Only prevent default if form won't submit naturally
-                        if (event.target.closest('form')) {
-                            event.preventDefault();
-                            handleFormSubmit(event);
-                        }
-                    });
-                }
-            } else {
-                console.error('❌ Contact form not found!');
-            }
-            
-            if (messageInput) {
-                messageInput.addEventListener('input', updateCharCount);
-            }
-            
-            // Setup theme
-            const savedTheme = localStorage.getItem('theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            updateThemeButton();
-            
-            // Refresh analytics
-            setTimeout(refreshAnalytics, 1000);
-            
-            console.log('✅ App initialized successfully!');
-        });
 
         // Analytics functions
         async function trackPageView() {
@@ -1117,156 +1160,138 @@
             persistLocalDB();
         }
 
-        // Test Firebase connection on page load
-        async function testFirebaseConnection() {
-            try {
-                console.log('🔥 Testing Firebase connection...');
-                
-                // Check if Firebase is available
-                if (!db || !addDoc || !collection || !serverTimestamp) {
-                    throw new Error('Firebase not properly initialized');
-                }
-                
-                // Simple test by creating a connection test document
-                const testRef = collection(db, 'test');
-                const testDoc = {
-                    type: 'connection_test',
-                    timestamp: serverTimestamp(),
-                    userAgent: navigator.userAgent,
-                    page: 'portfolio_load'
-                };
-                
-                const docRef = await addDoc(testRef, testDoc);
-                console.log('✅ Firebase connected successfully! Test doc ID:', docRef.id);
-                
-                // Show success notification
-                setTimeout(() => {
-                    showNotification('🔥 Firebase connected successfully!', 'success');
-                }, 2000);
-                
-                return true;
-            } catch (error) {
-                console.error('❌ Firebase connection failed:', error);
-                
-                // Show error notification
-                setTimeout(() => {
-                    showNotification('⚠️ Firebase connection failed - using local backup', 'error');
-                }, 2000);
-                
-                return false;
+        // Form handling with enhanced error handling
+        async function handleFormSubmit(event) {
+            console.log('🔥 Form submission started!');
+            
+            event.preventDefault();
+            event.stopPropagation();
+            
+            if (!checkRateLimit()) {
+                console.log('❌ Rate limit exceeded');
+                showNotification('Rate limit exceeded. Please wait before sending another message.', 'error');
+                return;
             }
-        }
 
-        async function saveMessage(messageData) {
+            const form = event.target.closest('form') || document.getElementById('contactForm');
+            if (!form) {
+                console.error('❌ Could not find form element');
+                showNotification('❌ Form not found', 'error');
+                return;
+            }
+
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn ? submitBtn.textContent : 'Send Message 🚀';
+            
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending... ⏳';
+                submitBtn.classList.add('pulse');
+            }
+
+            const formData = new FormData(form);
+            const messageData = {
+                name: formData.get('name'),
+                email: formData.get('email'),
+                message: formData.get('message'),
+                clientTimestamp: new Date().toISOString()
+            };
+
+            console.log('📊 Form data collected:', messageData);
+
             try {
-                console.log('💾 Attempting to save message...');
-                console.log('🌐 Protocol:', window.location.protocol);
-                console.log('🌐 Origin:', window.location.origin);
+                showNotification('📤 Sending message to Firebase Messages collection...', 'info');
                 
-                // Ensure Firebase is initialized before attempting to save
-                if (!db) {
-                    console.log('🔄 Firebase not initialized, attempting initialization...');
-                    const success = await initializeFirebase();
-                    if (!success) {
-                        console.log('❌ Firebase initialization failed, using local storage');
-                        throw new Error('Firebase initialization failed');
+                const result = await saveMessage(messageData);
+                
+                // Success - Firebase save worked
+                showNotification('✅ Message sent successfully to Firebase Messages collection!', 'success');
+                
+                // Reset form and update counts
+                form.reset();
+                updateCharCount();
+                updateSubmissionCount();
+                await logEasterEgg('form_submission_success');
+                
+                console.log('✅ Form submission completed successfully! Firebase ID:', result);
+                
+            } catch (error) {
+                console.error('❌ Error submitting form:', error);
+                
+                // Check if message was saved locally as backup
+                if (localDB.messages.length > 0) {
+                    const lastMessage = localDB.messages[localDB.messages.length - 1];
+                    if (lastMessage.sessionId === sessionId && !lastMessage.savedToFirebase) {
+                        showNotification('⚠️ Firebase failed, but message saved locally as backup', 'warning');
+                    } else {
+                        showNotification('❌ Failed to send message to Firebase', 'error');
                     }
-                }
-                
-                // Check if Firebase is available
-                if (db && addDoc && collection && serverTimestamp) {
-                    console.log('🔥 Using Firebase...');
-                    // Add message to Firebase Firestore
-                    const messagesRef = collection(db, 'Messages');
-                    const messageDoc = {
-                        name: messageData.name,
-                        email: messageData.email,
-                        message: messageData.message,
-                        clientTimestamp: messageData.clientTimestamp,
-                        serverTimestamp: serverTimestamp(),
-                        sessionId: sessionId,
-                        userAgent: navigator.userAgent,
-                        origin: window.location.origin,
-                        protocol: window.location.protocol,
-                        ipAddress: null, // Will be set by server
-                        status: 'new',
-                        source: 'portfolio_contact_form'
-                    };
-
-                    console.log('📤 Sending to Firebase with data:', messageDoc);
-                    const docRef = await addDoc(messagesRef, messageDoc);
-                    console.log('✅ Message saved to Firebase with ID: ', docRef.id);
-                    
-                    // Also save locally as backup
-                    const id = 'msg_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
-                    localDB.messages.push({ id, ...messageData, timestamp: Date.now(), sessionId });
-                    persistLocalDB();
-                    
-                    return docRef.id;
                 } else {
-                    console.log('📱 Firebase not available, using local storage...');
-                    throw new Error('Firebase not initialized');
+                    showNotification('❌ Failed to send message to Firebase', 'error');
                 }
-            } catch (error) {
-                console.error('❌ Error saving message to Firebase:', error);
-                console.error('Error details:', {
-                    name: error.name,
-                    message: error.message,
-                    code: error.code,
-                    stack: error.stack
-                });
-                
-                // Check for specific error types
-                if (error.message.includes('CORS') || 
-                    error.message.includes('network') ||
-                    error.message.includes('fetch') ||
-                    error.code === 'unavailable') {
-                    console.log('🌐 Network/CORS issue detected');
-                }
-                
-                // Fallback to local storage if Firebase fails
-                const id = 'msg_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
-                localDB.messages.push({ 
-                    id, 
-                    ...messageData, 
-                    timestamp: Date.now(), 
-                    sessionId,
-                    origin: window.location.origin,
-                    protocol: window.location.protocol,
-                    savedLocally: true,
-                    firebaseError: error.message
-                });
-                persistLocalDB();
-                
-                console.log('✅ Message saved locally with ID:', id);
-                return id;
+            } finally {
+                setTimeout(() => {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
+                        submitBtn.classList.remove('pulse');
+                    }
+                }, 1000);
             }
         }
 
+        function checkRateLimit() {
+            const now = Date.now();
+            const twoMinutes = 2 * 60 * 1000;
+            
+            if (now - lastSubmissionTime > twoMinutes) {
+                submissionCount = 0;
+                lastSubmissionTime = now;
+            }
+            
+            return submissionCount < 5;
+        }
+
+        function updateSubmissionCount() {
+            const now = Date.now();
+            const twoMinutes = 2 * 60 * 1000;
+            
+            if (now - lastSubmissionTime > twoMinutes) {
+                submissionCount = 0;
+            }
+            
+            if (submissionCount > 0) {
+                lastSubmissionTime = now;
+                submissionCount++;
+            } else {
+                submissionCount = 1;
+                lastSubmissionTime = now;
+            }
+            
+            localStorage.setItem('submissionCount', submissionCount.toString());
+            localStorage.setItem('lastSubmissionTime', lastSubmissionTime.toString());
+            
+            const countElement = document.getElementById('submissionCount');
+            if (countElement) countElement.textContent = submissionCount;
+        }
+
+        // Easter egg and event logging
         async function logEasterEgg(eggType) {
             const uid = (currentUser && currentUser.username) || 'anonymous';
             if (!localDB.events[uid]) localDB.events[uid] = [];
-            localDB.events[uid].push({ type: eggType, timestamp: Date.now(), sessionId });
+            localDB.events[uid].push({ 
+                type: eggType, 
+                timestamp: Date.now(), 
+                sessionId,
+                documentId: generateDocumentId()
+            });
             persistLocalDB();
             easterEggsFound++;
             localStorage.setItem('easterEggsFound', easterEggsFound.toString());
             updateEasterEggCount();
         }
 
-        async function saveCommand(command, output) {
-            const uid = (currentUser && currentUser.username) || 'anonymous';
-            if (!localDB.events[uid]) localDB.events[uid] = [];
-            localDB.events[uid].push({ 
-                type: 'command', 
-                command, 
-                output, 
-                timestamp: Date.now(), 
-                sessionId, 
-                devMode: devModeEnabled 
-            });
-            persistLocalDB();
-        }
-
+        // Analytics functions
         async function getAnalytics() {
             const analytics = { pageViews: 0, activeUsers: 0, messageCount: 0, easterEggCount: 0 };
             const recent = localDB.analytics.slice(-500);
@@ -1278,6 +1303,200 @@
             const ev = localDB.events[uid] || [];
             analytics.easterEggCount = ev.filter(e=>e.type && e.type.includes('egg')).length;
             return analytics;
+        }
+
+        // Terminal functions
+        window.activateTerminal = function() {
+            document.getElementById('terminal').classList.add('active');
+            document.getElementById('terminalInput').focus();
+            logEasterEgg('terminal_activated');
+        };
+
+        window.closeTerminal = function() {
+            document.getElementById('terminal').classList.remove('active');
+        };
+
+        window.handleTerminalInput = async function(event) {
+            if (event.key === 'Enter') {
+                const input = event.target.value.trim();
+                const output = document.getElementById('terminalOutput');
+                
+                commandHistory.push(input);
+                
+                const commandDiv = document.createElement('div');
+                commandDiv.innerHTML = `<span style="color: #00ff41;">user@portfolio:~$</span> ${input}`;
+                output.appendChild(commandDiv);
+                
+                const response = await processCommand(input);
+                const responseDiv = document.createElement('div');
+                responseDiv.innerHTML = response;
+                output.appendChild(responseDiv);
+                
+                event.target.value = '';
+                output.scrollTop = output.scrollHeight;
+            }
+        };
+
+        async function processCommand(command) {
+            const cmd = command.toLowerCase().trim();
+            
+            switch (cmd) {
+                case 'help':
+                    return `Available commands:
+• help - Show this help message
+• matrix - Enter the Matrix
+• firebase-test - Test Firebase Messages collection
+• messages - Show recent messages count
+• joke - Tell a random joke
+• secret - Reveal a secret
+• clear - Clear terminal
+• whoami - Show user info
+• date - Show current date
+• ls - List available features
+• dev-mode - Show dev mode info
+• sudo dev-mode --enable - Enable super dev mode
+• analytics - Show analytics (dev mode only)
+• export - Export data (dev mode only)
+• blackout - Toggle blackout mode (terminal exclusive)
+• hunt - Start the ultimate easter egg hunt
+• progress - Show your hunt progress (local)`;
+
+                case 'firebase-test':
+                    await logEasterEgg('firebase_test_command');
+                    const testResult = await testFirebaseConnection();
+                    return testResult ? 
+                        '✅ Firebase Messages collection test successful!' : 
+                        '❌ Firebase Messages collection test failed!';
+
+                case 'messages':
+                    try {
+                        const messagesQuery = query(
+                            collection(db, 'Messages'), 
+                            orderBy('timestamp', 'desc'), 
+                            limit(10)
+                        );
+                        const querySnapshot = await getDocs(messagesQuery);
+                        await logEasterEgg('messages_query_command');
+                        return `📊 Messages in Firebase: ${querySnapshot.size} recent documents found in Messages collection`;
+                    } catch (error) {
+                        return `❌ Error querying Messages: ${error.message}`;
+                    }
+
+                case 'matrix':
+                    activateMatrix();
+                    await logEasterEgg('matrix_activated');
+                    return '🎊 CONGRATULATIONS! 🎊\nYou\'ve unlocked the Matrix! You might actually be a detective...';
+
+                case 'joke':
+                    const jokes = [
+                        'Why do programmers prefer dark mode? Because light attracts bugs!',
+                        'How many programmers does it take to change a light bulb? None, that\'s a hardware problem.',
+                        'Why do Java developers wear glasses? Because they can\'t C#!',
+                        'A SQL query goes into a bar, walks up to two tables and asks: "Can I join you?"'
+                    ];
+                    return jokes[Math.floor(Math.random() * jokes.length)];
+
+                case 'secret':
+                    await logEasterEgg('secret_revealed');
+                    return '🔐 Secret revealed: The Konami Code works on this site! ↑↑↓↓←→←→BA';
+
+                case 'clear':
+                    document.getElementById('terminalOutput').innerHTML = '<div>Terminal cleared. Type \'help\' for commands.</div>';
+                    return '';
+
+                case 'whoami':
+                    return `User: Anonymous Visitor\nSession: ${sessionId}\nLocation: Unknown\nSkill Level: Curious Developer\nFirebase: Connected to Messages collection`;
+
+                case 'date':
+                    return new Date().toString();
+
+                case 'ls':
+                    return `Available features:
+• 🎮 Secret projects
+• 🔧 Developer tools
+• 📊 Analytics dashboard
+• 🎯 Easter egg hunter
+• 💻 Code inspector
+• 🔥 Firebase Messages collection`;
+
+                case 'dev-mode':
+                    return devModeEnabled ? 
+                        '🔧 Super Dev Mode: ENABLED\nAccess to advanced features unlocked!' :
+                        '🔒 Super Dev Mode: DISABLED\nUse "sudo dev-mode --enable" to unlock';
+
+                case 'sudo dev-mode --enable':
+                    if (!devModeEnabled) {
+                        devModeEnabled = true;
+                        await logEasterEgg('dev_mode_enabled');
+                        showNotification('🔧 Super Dev Mode Activated!');
+                        const devPanelBtn = document.getElementById('dev-panel-btn');
+                        if (devPanelBtn) devPanelBtn.style.display = 'inline-block';
+                        const devPanel = document.getElementById('devPanel');
+                        if (devPanel) devPanel.classList.add('enabled');
+                        return '🎉 SUPER DEV MODE ACTIVATED!\n✅ Analytics access granted\n✅ Database tools unlocked\n✅ Advanced features enabled\n✅ Export capabilities available\n✅ Dev Panel button now visible!';
+                    }
+                    return 'Super Dev Mode already enabled!';
+
+                case 'analytics':
+                    if (devModeEnabled) {
+                        const analytics = await getAnalytics();
+                        return `📊 Live Analytics (Local):
+• Page Views: ${analytics.pageViews}
+• Active Users: ${analytics.activeUsers}  
+• Messages: ${analytics.messageCount}
+• Easter Eggs Found: ${analytics.easterEggCount}`;
+                    }
+                    return '🔒 Access denied. Enable dev mode first.';
+
+                case 'export':
+                    if (devModeEnabled) {
+                        exportData();
+                        return '📤 Data export initiated. Check downloads folder.';
+                    }
+                    return '🔒 Access denied. Enable dev mode first.';
+
+                case 'blackout':
+                    const currentTheme = document.documentElement.getAttribute('data-theme');
+                    if (currentTheme === 'blackout') {
+                        document.documentElement.setAttribute('data-theme', 'dark');
+                        localStorage.setItem('theme', 'dark');
+                        updateThemeButton();
+                        await logEasterEgg('blackout_mode_disabled');
+                        return '🌙 Blackout mode disabled. Returned to dark theme.';
+                    } else {
+                        document.documentElement.setAttribute('data-theme', 'blackout');
+                        localStorage.setItem('theme', 'blackout');
+                        updateThemeButton();
+                        await logEasterEgg('blackout_mode_enabled');
+                        return '⚫ BLACKOUT MODE ACTIVATED!\n🖤 Pure darkness engaged\n💀 Matrix-style green accents\n🔴 Red danger highlights\n⚠️ This mode is terminal exclusive!';
+                    }
+
+                case 'hunt':
+                    await logEasterEgg('hunt_command_used');
+                    return `🎯 EASTER EGG HUNT DISCOVERED!
+                    
+🔍 You've found the secret hunt command!
+🚀 Ready for the ultimate developer challenge?
+
+Visit: begin/index.html
+
+This will take you to the official Easter Egg Hunt starting point with:
+• 15+ hidden easter eggs throughout the portfolio
+• Advanced developer challenges
+• Console puzzles and hidden commands
+• Secret key combinations and sequences
+• Locally-tracked progress
+
+⚠️  WARNING: This hunt requires expert web development skills!
+
+Good luck, detective! 🕵️‍♂️`;
+
+                case 'progress':
+                    return await getHuntProgress();
+
+                default:
+                    return `Command not found: ${command}\nType 'help' for available commands.`;
+            }
         }
 
         async function getHuntProgress() {
@@ -1334,320 +1553,6 @@ ${achievements.length > 0 ? achievements.map(a => `• ${a}`).join('\n') : '• 
 
 💡 TIPS:
 • Visit begin/index.html to start the hunt`;
-        }
-
-        async function initializeDemoAccount() {
-            if (!localDB.users['Testuser']) {
-                localDB.users['Testuser'] = { 
-                    username: 'Testuser', 
-                    name: 'Demo User', 
-                    accountType: 'demo', 
-                    createdAt: Date.now(), 
-                    lastLogin: Date.now() 
-                };
-                persistLocalDB();
-            }
-        }
-
-        // Form handling
-        async function handleFormSubmit(event) {
-            console.log('🔥 handleFormSubmit called!', event);
-            
-            // Prevent default form submission
-            event.preventDefault();
-            event.stopPropagation();
-            
-            console.log('✅ Default prevented, checking rate limit...');
-            
-            if (!checkRateLimit()) {
-                console.log('❌ Rate limit exceeded');
-                showNotification('Rate limit exceeded. Please wait before sending another message.', 'error');
-                return;
-            }
-
-            console.log('✅ Rate limit OK, processing form...');
-
-            // Get the form element - handle both form submit and button click events
-            const form = event.target.closest ? event.target.closest('form') : 
-                        event.target.tagName === 'FORM' ? event.target : 
-                        document.getElementById('contactForm');
-            
-            if (!form) {
-                console.error('❌ Could not find form element');
-                showNotification('❌ Form not found', 'error');
-                return;
-            }
-
-            // Disable the submit button and show loading
-            const submitBtn = form.querySelector('button[type="submit"]');
-            const originalText = submitBtn ? submitBtn.textContent : 'Send Message 🚀';
-            
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Sending... ⏳';
-            }
-
-            const formData = new FormData(form);
-            const messageData = {
-                name: formData.get('name'),
-                email: formData.get('email'),
-                message: formData.get('message'),
-                clientTimestamp: new Date().toISOString()
-            };
-
-            console.log('📊 Form data collected:', messageData);
-
-            try {
-                // Show immediate feedback
-                showNotification('📤 Sending message to database...', 'info');
-                
-                console.log('🔄 Calling saveMessage...');
-                // Wait for saveMessage to complete
-                const result = await saveMessage(messageData);
-                console.log('✅ saveMessage completed:', result);
-                
-                // Add artificial delay for better UX (minimum 2 seconds)
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                
-                // Success feedback - check if it was saved to Firebase or locally
-                if (result && result.length > 20) {
-                    // Firebase document IDs are typically longer
-                    showNotification('✅ Message sent successfully to Firebase!', 'success');
-                } else {
-                    // Local storage backup
-                    showNotification('✅ Message saved locally (Firebase unavailable)', 'info');
-                }
-                
-                // Reset form and update counts
-                form.reset();
-                updateCharCount();
-                updateSubmissionCount();
-                await logEasterEgg('form_submission');
-                
-                console.log('✅ Form submission completed successfully!');
-                
-            } catch (error) {
-                console.error('❌ Error submitting form:', error);
-                
-                // Add delay even for errors
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                
-                showNotification('❌ Failed to send message to database', 'error');
-            } finally {
-                // Re-enable button after delay
-                setTimeout(() => {
-                    if (submitBtn) {
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = originalText;
-                    }
-                }, 1000);
-            }
-        }
-
-        function checkRateLimit() {
-            const now = Date.now();
-            const twoMinutes = 2 * 60 * 1000;
-            
-            if (now - lastSubmissionTime > twoMinutes) {
-                submissionCount = 0;
-                lastSubmissionTime = now;
-            }
-            
-            return submissionCount < 5;
-        }
-
-        function updateSubmissionCount() {
-            const now = Date.now();
-            const twoMinutes = 2 * 60 * 1000;
-            
-            if (now - lastSubmissionTime > twoMinutes) {
-                submissionCount = 0;
-            }
-            
-            if (submissionCount > 0) {
-                lastSubmissionTime = now;
-                submissionCount++;
-            } else {
-                submissionCount = 1;
-                lastSubmissionTime = now;
-            }
-            
-            localStorage.setItem('submissionCount', submissionCount.toString());
-            localStorage.setItem('lastSubmissionTime', lastSubmissionTime.toString());
-            
-            document.getElementById('submissionCount').textContent = submissionCount;
-        }
-
-        // Terminal functions
-        window.activateTerminal = function() {
-            document.getElementById('terminal').classList.add('active');
-            document.getElementById('terminalInput').focus();
-            logEasterEgg('terminal_activated');
-        };
-
-        window.closeTerminal = function() {
-            document.getElementById('terminal').classList.remove('active');
-        };
-
-        window.handleTerminalInput = async function(event) {
-            if (event.key === 'Enter') {
-                const input = event.target.value.trim();
-                const output = document.getElementById('terminalOutput');
-                
-                commandHistory.push(input);
-                
-                const commandDiv = document.createElement('div');
-                commandDiv.innerHTML = `<span style="color: #00ff41;">user@portfolio:~$</span> ${input}`;
-                output.appendChild(commandDiv);
-                
-                const response = await processCommand(input);
-                const responseDiv = document.createElement('div');
-                responseDiv.innerHTML = response;
-                output.appendChild(responseDiv);
-                
-                await saveCommand(input, response);
-                
-                event.target.value = '';
-                output.scrollTop = output.scrollHeight;
-            }
-        };
-
-        async function processCommand(command) {
-            const cmd = command.toLowerCase().trim();
-            
-            switch (cmd) {
-                case 'help':
-                    return `Available commands:
-• help - Show this help message
-• matrix - Enter the Matrix
-• joke - Tell a random joke
-• secret - Reveal a secret
-• clear - Clear terminal
-• whoami - Show user info
-• date - Show current date
-• ls - List available features
-• dev-mode - Show dev mode info
-• sudo dev-mode --enable - Enable super dev mode
-• analytics - Show analytics (dev mode only)
-• export - Export data (dev mode only)
-• blackout - Toggle blackout mode (terminal exclusive)
-• hunt - Start the ultimate easter egg hunt
-• progress - Show your hunt progress (local)`;
-
-                case 'hunt':
-                    await logEasterEgg('hunt_command_used');
-                    return `🎯 EASTER EGG HUNT DISCOVERED!
-                    
-🔍 You've found the secret hunt command!
-🚀 Ready for the ultimate developer challenge?
-
-Visit: begin/index.html
-
-This will take you to the official Easter Egg Hunt starting point with:
-• 15+ hidden easter eggs throughout the portfolio
-• Advanced developer challenges
-• Console puzzles and hidden commands
-• Secret key combinations and sequences
-• Locally-tracked progress
-
-⚠️  WARNING: This hunt requires expert web development skills!
-
-Good luck, detective! 🕵️‍♂️`;
-
-                case 'progress':
-                    return await getHuntProgress();
-
-                case 'matrix':
-                    activateMatrix();
-                    await logEasterEgg('matrix_activated');
-                    return '🎊 CONGRATULATIONS! 🎊\nYou\'ve unlocked the Matrix! You might actually be a detective...';
-
-                case 'joke':
-                    const jokes = [
-                        'Why do programmers prefer dark mode? Because light attracts bugs!',
-                        'How many programmers does it take to change a light bulb? None, that\'s a hardware problem.',
-                        'Why do Java developers wear glasses? Because they can\'t C#!',
-                        'A SQL query goes into a bar, walks up to two tables and asks: "Can I join you?"'
-                    ];
-                    return jokes[Math.floor(Math.random() * jokes.length)];
-
-                case 'secret':
-                    await logEasterEgg('secret_revealed');
-                    return '🔐 Secret revealed: The Konami Code works on this site! ↑↑↓↓←→←→BA';
-
-                case 'clear':
-                    document.getElementById('terminalOutput').innerHTML = '<div>Terminal cleared. Type \'help\' for commands.</div>';
-                    return '';
-
-                case 'whoami':
-                    return `User: Anonymous Visitor\nSession: ${sessionId}\nLocation: Unknown\nSkill Level: Curious Developer`;
-
-                case 'date':
-                    return new Date().toString();
-
-                case 'ls':
-                    return `Available features:
-• 🎮 Secret projects
-• 🔧 Developer tools
-• 📊 Analytics dashboard
-• 🎯 Easter egg hunter
-• 💻 Code inspector`;
-
-                case 'dev-mode':
-                    return devModeEnabled ? 
-                        '🔧 Super Dev Mode: ENABLED\nAccess to advanced features unlocked!' :
-                        '🔒 Super Dev Mode: DISABLED\nUse "sudo dev-mode --enable" to unlock';
-
-                case 'sudo dev-mode --enable':
-                    if (!devModeEnabled) {
-                        devModeEnabled = true;
-                        await logEasterEgg('dev_mode_enabled');
-                        showNotification('🔧 Super Dev Mode Activated!');
-                        const devPanelBtn = document.getElementById('dev-panel-btn');
-                        if (devPanelBtn) devPanelBtn.style.display = 'inline-block';
-                        const devPanel = document.getElementById('devPanel');
-                        if (devPanel) devPanel.classList.add('enabled');
-                        return '🎉 SUPER DEV MODE ACTIVATED!\n✅ Analytics access granted\n✅ Database tools unlocked\n✅ Advanced features enabled\n✅ Export capabilities available\n✅ Dev Panel button now visible!';
-                    }
-                    return 'Super Dev Mode already enabled!';
-
-                case 'analytics':
-                    if (devModeEnabled) {
-                        const analytics = await getAnalytics();
-                        return `📊 Live Analytics (Local):
-• Page Views: ${analytics.pageViews}
-• Active Users: ${analytics.activeUsers}  
-• Messages: ${analytics.messageCount}
-• Easter Eggs Found: ${analytics.easterEggCount}`;
-                    }
-                    return '🔒 Access denied. Enable dev mode first.';
-
-                case 'export':
-                    if (devModeEnabled) {
-                        exportData();
-                        return '📤 Data export initiated. Check downloads folder.';
-                    }
-                    return '🔒 Access denied. Enable dev mode first.';
-
-                case 'blackout':
-                    const currentTheme = document.documentElement.getAttribute('data-theme');
-                    if (currentTheme === 'blackout') {
-                        document.documentElement.setAttribute('data-theme', 'dark');
-                        localStorage.setItem('theme', 'dark');
-                        updateThemeButton();
-                        await logEasterEgg('blackout_mode_disabled');
-                        return '🌙 Blackout mode disabled. Returned to dark theme.';
-                    } else {
-                        document.documentElement.setAttribute('data-theme', 'blackout');
-                        localStorage.setItem('theme', 'blackout');
-                        updateThemeButton();
-                        await logEasterEgg('blackout_mode_enabled');
-                        return '⚫ BLACKOUT MODE ACTIVATED!\n🖤 Pure darkness engaged\n💀 Matrix-style green accents\n🔴 Red danger highlights\n⚠️ This mode is terminal exclusive!';
-                    }
-
-                default:
-                    return `Command not found: ${command}\nType 'help' for available commands.`;
-            }
         }
 
         // Matrix effect
@@ -1766,7 +1671,8 @@ Good luck, detective! 🕵️‍♂️`;
                     easterEggsFound: easterEggsFound,
                     commandHistory: commandHistory,
                     timestamp: new Date().toISOString(),
-                    localDB: localDB
+                    localDB: localDB,
+                    firebaseConfig: 'Connected to Messages collection'
                 };
                 
                 const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -1792,36 +1698,11 @@ Good luck, detective! 🕵️‍♂️`;
         };
 
         window.testConnection = async function() {
-            try {
-                // Test Firebase connection
-                const testRef = collection(db, 'test');
-                const testDoc = {
-                    type: 'connection_test',
-                    timestamp: serverTimestamp(),
-                    userAgent: navigator.userAgent
-                };
-                
-                const docRef = await addDoc(testRef, testDoc);
-                console.log('Firebase test document created with ID: ', docRef.id);
-                
-                showNotification('✅ Firebase connection successful!');
-            } catch (error) {
-                console.error('Firebase connection failed:', error);
-                
-                // Fallback to local test
-                try {
-                    const key = 'self_test_' + Date.now();
-                    localStorage.setItem(key, 'ok');
-                    const val = localStorage.getItem(key);
-                    localStorage.removeItem(key);
-                    if (val === 'ok') {
-                        showNotification('⚠️ Firebase failed, localStorage OK');
-                    } else {
-                        throw new Error('mismatch');
-                    }
-                } catch (e) {
-                    showNotification('❌ All connections failed', 'error');
-                }
+            const result = await testFirebaseConnection();
+            if (result) {
+                showNotification('✅ Firebase Messages collection connection successful!');
+            } else {
+                showNotification('❌ Firebase Messages collection connection failed', 'error');
             }
         };
 
@@ -1835,6 +1716,7 @@ Good luck, detective! 🕵️‍♂️`;
             console.log('🔍 Code Inspector Activated!');
             console.log('🎯 Easter Egg: You\'re already inspecting the code!');
             console.log('🚀 BONUS: Want the ultimate challenge? Visit: begin/index.html');
+            console.log('🔥 Firebase: Connected to Messages collection');
             showNotification('Check the console for a surprise! 🕵️');
             logEasterEgg('code_inspector_used');
         };
@@ -1869,10 +1751,6 @@ Good luck, detective! 🕵️‍♂️`;
             }
         }
 
-        function generateSessionId() {
-            return 'session_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
-        }
-
         function loadEasterEggCount() {
             easterEggsFound = parseInt(localStorage.getItem('easterEggsFound') || '0');
             updateEasterEggCount();
@@ -1892,7 +1770,6 @@ Good luck, detective! 🕵️‍♂️`;
             if (notification && notificationText) {
                 notificationText.textContent = message;
                 
-                // Set background color based on type
                 if (type === 'error') {
                     notification.style.background = '#ff4757';
                 } else if (type === 'info') {
@@ -1907,7 +1784,6 @@ Good luck, detective! 🕵️‍♂️`;
                 
                 notification.classList.add('show');
                 
-                // Longer display time for important messages
                 const displayTime = type === 'error' ? 5000 : 4000;
                 setTimeout(() => {
                     notification.classList.remove('show');
@@ -1915,9 +1791,22 @@ Good luck, detective! 🕵️‍♂️`;
             }
         }
 
+        async function initializeDemoAccount() {
+            if (!localDB.users['Testuser']) {
+                localDB.users['Testuser'] = { 
+                    username: 'Testuser', 
+                    name: 'Demo User', 
+                    accountType: 'demo', 
+                    createdAt: Date.now(), 
+                    lastLogin: Date.now() 
+                };
+                persistLocalDB();
+            }
+        }
+
         // Konami Code Easter Egg
         let konamiCode = '';
-        const konamiSequence = 'ArrowUpArrowUpArrowDownArrowDownArrowLeftArrowRightArrowLeftArrowRightKeyBKeyA';
+        const konamiSequence = 'ArrowUpArrowUpArrowDownArrowDownArrowLeftArrowRightArrowLeftArightKeyBKeyA';
         
         document.addEventListener('keydown', function(event) {
             konamiCode += event.code;
@@ -1931,6 +1820,46 @@ Good luck, detective! 🕵️‍♂️`;
                 logEasterEgg('konami_code_activated');
                 konamiCode = '';
             }
+        });
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 App initializing...');
+            
+            initializeMatrix();
+            trackPageView();
+            updateSubmissionCount();
+            loadEasterEggCount();
+            initializeDemoAccount();
+            
+            // Test Firebase connection on page load
+            await testFirebaseConnection();
+            
+            // Setup form handlers
+            const contactForm = document.getElementById('contactForm');
+            const messageInput = document.getElementById('message');
+            
+            if (contactForm) {
+                console.log('✅ Contact form found, setting up event listener...');
+                contactForm.addEventListener('submit', handleFormSubmit);
+            } else {
+                console.error('❌ Contact form not found!');
+            }
+            
+            if (messageInput) {
+                messageInput.addEventListener('input', updateCharCount);
+            }
+            
+            // Setup theme
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeButton();
+            
+            // Refresh analytics
+            setTimeout(refreshAnalytics, 1000);
+            
+            console.log('✅ App initialized successfully!');
+            console.log('🔥 Firebase Messages collection ready!');
         });
 
         // Window resize handler for matrix
