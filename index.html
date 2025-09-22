@@ -886,7 +886,24 @@
         <span id="notificationText"></span>
     </div>
 
-    <script>
+    <script type="module">
+        // Firebase Configuration
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCejm0Ry18S1mlqYpnMRuIJGnQ-iDvu3EU",
+            authDomain: "custom-messages-84ec4.firebaseapp.com",
+            projectId: "custom-messages-84ec4",
+            storageBucket: "custom-messages-84ec4.firebasestorage.app",
+            messagingSenderId: "1079020496100",
+            appId: "1:1079020496100:web:d21ec1428327515e3df8f1"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
         // Global variables
         let devModeEnabled = false;
         let easterEggsFound = 0;
@@ -981,11 +998,43 @@
         }
 
         async function saveMessage(messageData) {
-            const id = 'msg_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
-            localDB.messages.push({ id, ...messageData, timestamp: Date.now(), sessionId });
-            persistLocalDB();
-            showNotification('Message saved locally! 🎉');
-            return id;
+            try {
+                // Add message to Firebase Firestore
+                const messagesRef = collection(db, 'Messages');
+                const messageDoc = {
+                    name: messageData.name,
+                    email: messageData.email,
+                    message: messageData.message,
+                    clientTimestamp: messageData.clientTimestamp,
+                    serverTimestamp: serverTimestamp(),
+                    sessionId: sessionId,
+                    userAgent: navigator.userAgent,
+                    ipAddress: null, // Will be set by server
+                    status: 'new',
+                    source: 'portfolio_contact_form'
+                };
+
+                const docRef = await addDoc(messagesRef, messageDoc);
+                console.log('Message saved to Firebase with ID: ', docRef.id);
+                
+                // Also save locally as backup
+                const id = 'msg_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
+                localDB.messages.push({ id, ...messageData, timestamp: Date.now(), sessionId });
+                persistLocalDB();
+                
+                showNotification('Message sent successfully! 🎉');
+                return docRef.id;
+            } catch (error) {
+                console.error('Error saving message to Firebase:', error);
+                
+                // Fallback to local storage if Firebase fails
+                const id = 'msg_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
+                localDB.messages.push({ id, ...messageData, timestamp: Date.now(), sessionId });
+                persistLocalDB();
+                
+                showNotification('Message saved locally (connection issue) 📡');
+                return id;
+            }
         }
 
         async function logEasterEgg(eggType) {
@@ -1471,17 +1520,35 @@ Good luck, detective! 🕵️‍♂️`;
 
         window.testConnection = async function() {
             try {
-                const key = 'self_test_' + Date.now();
-                localStorage.setItem(key, 'ok');
-                const val = localStorage.getItem(key);
-                localStorage.removeItem(key);
-                if (val === 'ok') {
-                    showNotification('✅ Local self-test passed!');
-                } else {
-                    throw new Error('mismatch');
+                // Test Firebase connection
+                const testRef = collection(db, 'test');
+                const testDoc = {
+                    type: 'connection_test',
+                    timestamp: serverTimestamp(),
+                    userAgent: navigator.userAgent
+                };
+                
+                const docRef = await addDoc(testRef, testDoc);
+                console.log('Firebase test document created with ID: ', docRef.id);
+                
+                showNotification('✅ Firebase connection successful!');
+            } catch (error) {
+                console.error('Firebase connection failed:', error);
+                
+                // Fallback to local test
+                try {
+                    const key = 'self_test_' + Date.now();
+                    localStorage.setItem(key, 'ok');
+                    const val = localStorage.getItem(key);
+                    localStorage.removeItem(key);
+                    if (val === 'ok') {
+                        showNotification('⚠️ Firebase failed, localStorage OK');
+                    } else {
+                        throw new Error('mismatch');
+                    }
+                } catch (e) {
+                    showNotification('❌ All connections failed', 'error');
                 }
-            } catch (e) {
-                showNotification('❌ Self-test failed', 'error');
             }
         };
 
