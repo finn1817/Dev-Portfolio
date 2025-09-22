@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a2e;
+            color: white;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #00ff88;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #00ff88;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+        button {
+            background: #00ff88;
+            color: black;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .log {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .error {
+            color: #ff4757;
+        }
+        .success {
+            color: #00ff88;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔥 Firebase Connection Test</h1>
+    
+    <form id="testForm">
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" value="Test User" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="test@example.com" required>
+        </div>
+        <div class="form-group">
+            <label for="message">Message:</label>
+            <textarea id="message" name="message" rows="4" required>This is a test message to verify Firebase connectivity.</textarea>
+        </div>
+        <button type="submit" id="submitBtn">Test Firebase Connection 🚀</button>
+    </form>
+    
+    <div class="log" id="log">Waiting for test...</div>
+
+    <script type="module">
+        const log = document.getElementById('log');
+        
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : '';
+            log.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`;
+            log.scrollTop = log.scrollHeight;
+        }
+        
+        addLog('🔥 Starting Firebase test...');
+        
+        let app, db, addDoc, collection, serverTimestamp;
+        
+        async function initializeFirebase() {
+            try {
+                addLog('📦 Loading Firebase modules...');
+                
+                const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js");
+                const firebaseFirestore = await import("https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js");
+                
+                addDoc = firebaseFirestore.addDoc;
+                collection = firebaseFirestore.collection;
+                serverTimestamp = firebaseFirestore.serverTimestamp;
+                const { getFirestore } = firebaseFirestore;
+
+                const firebaseConfig = {
+                    apiKey: "AIzaSyCejm0Ry18S1mlqYpnMRuIJGnQ-iDvu3EU",
+                    authDomain: "custom-messages-84ec4.firebaseapp.com",
+                    projectId: "custom-messages-84ec4",
+                    storageBucket: "custom-messages-84ec4.firebasestorage.app",
+                    messagingSenderId: "1079020496100",
+                    appId: "1:1079020496100:web:d21ec1428327515e3df8f1"
+                };
+
+                addLog('🔧 Initializing Firebase app...');
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                
+                addLog('✅ Firebase initialized successfully!', 'success');
+                
+                // Test connection
+                await testConnection();
+                
+                return true;
+            } catch (error) {
+                addLog(`❌ Firebase initialization failed: ${error.message}`, 'error');
+                console.error('Firebase error:', error);
+                return false;
+            }
+        }
+        
+        async function testConnection() {
+            try {
+                addLog('🔄 Testing Firebase connection...');
+                
+                const testRef = collection(db, 'test-connection');
+                const testDoc = {
+                    test: true,
+                    timestamp: serverTimestamp(),
+                    userAgent: navigator.userAgent,
+                    purpose: 'connection_test'
+                };
+                
+                const docRef = await addDoc(testRef, testDoc);
+                addLog(`✅ Connection test successful! Doc ID: ${docRef.id}`, 'success');
+                
+                return true;
+            } catch (error) {
+                addLog(`❌ Connection test failed: ${error.message}`, 'error');
+                console.error('Connection test error:', error);
+                return false;
+            }
+        }
+        
+        async function saveTestMessage(messageData) {
+            try {
+                addLog('💾 Saving message to Firebase...');
+                
+                if (!db || !addDoc || !collection || !serverTimestamp) {
+                    throw new Error('Firebase not properly initialized');
+                }
+                
+                const messagesRef = collection(db, 'Messages');
+                const messageDoc = {
+                    name: messageData.name,
+                    email: messageData.email,
+                    message: messageData.message,
+                    clientTimestamp: new Date().toISOString(),
+                    serverTimestamp: serverTimestamp(),
+                    sessionId: 'test_session_' + Date.now(),
+                    userAgent: navigator.userAgent,
+                    status: 'new',
+                    source: 'firebase_test_page'
+                };
+
+                addLog('📤 Adding document to Messages collection...');
+                const docRef = await addDoc(messagesRef, messageDoc);
+                
+                addLog(`✅ Message saved successfully! Doc ID: ${docRef.id}`, 'success');
+                addLog(`📍 Collection: Messages`, 'success');
+                addLog(`📝 Document contains: name, email, message, timestamps`, 'success');
+                
+                return docRef.id;
+            } catch (error) {
+                addLog(`❌ Error saving message: ${error.message}`, 'error');
+                console.error('Save message error:', error);
+                throw error;
+            }
+        }
+        
+        // Initialize Firebase when page loads
+        document.addEventListener('DOMContentLoaded', async function() {
+            await initializeFirebase();
+            
+            // Setup form handler
+            document.getElementById('testForm').addEventListener('submit', async function(event) {
+                event.preventDefault();
+                
+                const submitBtn = document.getElementById('submitBtn');
+                const originalText = submitBtn.textContent;
+                
+                try {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Testing... ⏳';
+                    
+                    addLog('🚀 Form submitted!');
+                    
+                    const formData = new FormData(event.target);
+                    const messageData = {
+                        name: formData.get('name'),
+                        email: formData.get('email'),
+                        message: formData.get('message')
+                    };
+                    
+                    addLog(`📊 Form data: ${JSON.stringify(messageData)}`);
+                    
+                    const result = await saveTestMessage(messageData);
+                    
+                    addLog(`🎉 SUCCESS! Message ID: ${result}`, 'success');
+                    
+                } catch (error) {
+                    addLog(`💥 FAILED: ${error.message}`, 'error');
+                } finally {
+                    setTimeout(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
+                    }, 1000);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
