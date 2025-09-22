@@ -1039,10 +1039,20 @@
             
             if (contactForm) {
                 console.log('✅ Contact form found, setting up event listener...');
-                contactForm.addEventListener('submit', function(event) {
-                    console.log('📝 Form submit triggered!');
-                    handleFormSubmit(event);
-                });
+                contactForm.addEventListener('submit', handleFormSubmit);
+                
+                // Also add direct onclick handler as backup
+                const submitBtn = contactForm.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.addEventListener('click', function(event) {
+                        console.log('📝 Submit button clicked!');
+                        // Only prevent default if form won't submit naturally
+                        if (event.target.closest('form')) {
+                            event.preventDefault();
+                            handleFormSubmit(event);
+                        }
+                    });
+                }
             } else {
                 console.error('❌ Contact form not found!');
             }
@@ -1336,8 +1346,19 @@ ${achievements.length > 0 ? achievements.map(a => `• ${a}`).join('\n') : '• 
 
             console.log('✅ Rate limit OK, processing form...');
 
+            // Get the form element - handle both form submit and button click events
+            const form = event.target.closest ? event.target.closest('form') : 
+                        event.target.tagName === 'FORM' ? event.target : 
+                        document.getElementById('contactForm');
+            
+            if (!form) {
+                console.error('❌ Could not find form element');
+                showNotification('❌ Form not found', 'error');
+                return;
+            }
+
             // Disable the submit button and show loading
-            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const submitBtn = form.querySelector('button[type="submit"]');
             const originalText = submitBtn ? submitBtn.textContent : 'Send Message 🚀';
             
             if (submitBtn) {
@@ -1345,7 +1366,7 @@ ${achievements.length > 0 ? achievements.map(a => `• ${a}`).join('\n') : '• 
                 submitBtn.textContent = 'Sending... ⏳';
             }
 
-            const formData = new FormData(event.target);
+            const formData = new FormData(form);
             const messageData = {
                 name: formData.get('name'),
                 email: formData.get('email'),
@@ -1377,7 +1398,7 @@ ${achievements.length > 0 ? achievements.map(a => `• ${a}`).join('\n') : '• 
                 }
                 
                 // Reset form and update counts
-                event.target.reset();
+                form.reset();
                 updateCharCount();
                 updateSubmissionCount();
                 await logEasterEgg('form_submission');
