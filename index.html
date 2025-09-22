@@ -1046,9 +1046,16 @@
                 return docRef.id;
                 
             } catch (error) {
-                console.error('❌ Error saving message:', error);
+                console.error('❌❌❌ SAVE MESSAGE ERROR ❌❌❌');
+                console.error('Error type:', typeof error);
+                console.error('Error name:', error.name);
+                console.error('Error message:', error.message);
+                console.error('Error code:', error.code);
+                console.error('Error stack:', error.stack);
+                console.error('Full error object:', error);
                 
                 // Simple backup to localStorage
+                console.log('💾 Attempting localStorage backup...');
                 try {
                     const backup = {
                         name: messageData.name,
@@ -1062,11 +1069,12 @@
                     backups.push(backup);
                     localStorage.setItem('contactBackups', JSON.stringify(backups));
                     
-                    console.log('💾 Backup saved to localStorage');
+                    console.log('✅ Backup saved to localStorage:', backup);
                 } catch (backupError) {
                     console.error('❌ Backup failed:', backupError);
                 }
                 
+                console.log('🔥🔥🔥 SAVE MESSAGE DEBUG END - ERROR 🔥🔥🔥');
                 throw error; // Re-throw to handle in form submit
             }
         }
@@ -1110,15 +1118,32 @@
             persistLocalDB();
         }
 
-        // Form handling - SIMPLIFIED and STABLE
+        // Form handling - WITH COMPREHENSIVE DEBUGGING
         async function handleFormSubmit(event) {
-            console.log('🔥 Form submission started!');
+            console.log('🔥🔥🔥 FORM SUBMISSION DEBUG START 🔥🔥🔥');
+            console.log('Event object:', event);
+            console.log('Event type:', event.type);
+            console.log('Event target:', event.target);
+            console.log('Event currentTarget:', event.currentTarget);
             
             // Prevent page refresh
-            event.preventDefault();
-            event.stopPropagation();
+            console.log('🛑 Attempting to prevent default behavior...');
+            try {
+                event.preventDefault();
+                console.log('✅ preventDefault() called successfully');
+            } catch (e) {
+                console.error('❌ Error calling preventDefault():', e);
+            }
+            
+            try {
+                event.stopPropagation();
+                console.log('✅ stopPropagation() called successfully');
+            } catch (e) {
+                console.error('❌ Error calling stopPropagation():', e);
+            }
 
             const form = document.getElementById('contactForm');
+            console.log('📋 Form element found:', form);
             if (!form) {
                 console.error('❌ Could not find form element');
                 showNotification('❌ Form not found', 'error');
@@ -1126,63 +1151,86 @@
             }
 
             const submitBtn = form.querySelector('button[type="submit"]');
+            console.log('🔘 Submit button found:', submitBtn);
             const originalText = 'Send Message 🚀';
             
             // Disable button to prevent double submission
             if (submitBtn) {
+                console.log('🔒 Disabling submit button...');
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Sending... ⏳';
                 submitBtn.style.opacity = '0.7';
+                console.log('✅ Submit button disabled');
             }
 
             try {
                 // Get form data
+                console.log('📝 Extracting form data...');
                 const nameField = form.querySelector('#name');
                 const emailField = form.querySelector('#email');
                 const messageField = form.querySelector('#message');
+                
+                console.log('📋 Form fields found:');
+                console.log('  - Name field:', nameField, 'Value:', nameField ? nameField.value : 'NOT FOUND');
+                console.log('  - Email field:', emailField, 'Value:', emailField ? emailField.value : 'NOT FOUND');
+                console.log('  - Message field:', messageField, 'Value:', messageField ? messageField.value : 'NOT FOUND');
 
                 const messageData = {
-                    name: nameField.value.trim(),
-                    email: emailField.value.trim(),
-                    message: messageField.value.trim()
+                    name: nameField ? nameField.value.trim() : '',
+                    email: emailField ? emailField.value.trim() : '',
+                    message: messageField ? messageField.value.trim() : ''
                 };
 
+                console.log('📊 Extracted message data:', messageData);
+
                 // Validate
+                console.log('✅ Validating form data...');
                 if (!messageData.name || !messageData.email || !messageData.message) {
+                    console.error('❌ Validation failed - missing fields');
                     throw new Error('Please fill in all required fields');
                 }
+                console.log('✅ Form validation passed');
 
-                console.log('📊 Form data collected:', messageData);
+                console.log('📤 Calling saveMessage function...');
                 showNotification('📤 Sending message...', 'info');
                 
                 // Save to Firebase
                 const result = await saveMessage(messageData);
+                console.log('✅ saveMessage completed with result:', result);
                 
                 // Success
                 showNotification('✅ Message sent successfully!', 'success');
                 
                 // Reset form
-                nameField.value = '';
-                emailField.value = '';
-                messageField.value = '';
+                console.log('🔄 Resetting form fields...');
+                if (nameField) nameField.value = '';
+                if (emailField) emailField.value = '';
+                if (messageField) messageField.value = '';
+                console.log('✅ Form reset completed');
                 
-                console.log('✅ Form submission completed! ID:', result);
+                console.log('🎉 Form submission completed successfully! ID:', result);
                 
             } catch (error) {
-                console.error('❌ Error submitting form:', error);
+                console.error('❌❌❌ FORM SUBMISSION ERROR ❌❌❌');
+                console.error('Error details:', error);
+                console.error('Error message:', error.message);
+                console.error('Error stack:', error.stack);
                 showNotification('❌ ' + error.message, 'error');
                 
             } finally {
                 // Re-enable button
+                console.log('🔓 Re-enabling submit button...');
                 setTimeout(() => {
                     if (submitBtn) {
                         submitBtn.disabled = false;
                         submitBtn.textContent = originalText;
                         submitBtn.style.opacity = '1';
+                        console.log('✅ Submit button re-enabled');
                     }
                 }, 2000);
             }
 
+            console.log('🔥🔥🔥 FORM SUBMISSION DEBUG END 🔥🔥🔥');
             return false;
         }
 
@@ -1745,23 +1793,60 @@ ${achievements.length > 0 ? achievements.map(a => `• ${a}`).join('\n') : '• 
             // Test Firebase connection on page load
             await testFirebaseConnection();
             
-            // Setup form handlers - SIMPLE and STABLE
+            // Setup form handlers - WITH DEBUGGING
+            console.log('🔧🔧🔧 FORM INITIALIZATION DEBUG START 🔧🔧🔧');
             const contactForm = document.getElementById('contactForm');
             const messageInput = document.getElementById('message');
             
+            console.log('📋 Contact form element:', contactForm);
+            console.log('📝 Message input element:', messageInput);
+            
             if (contactForm) {
                 console.log('✅ Contact form found, setting up event listener...');
+                console.log('🔍 Form HTML:', contactForm.outerHTML);
                 
                 // Add single event listener
                 contactForm.addEventListener('submit', function(e) {
-                    console.log('🔥 FORM SUBMIT EVENT DETECTED!');
+                    console.log('🔥🔥🔥 FORM SUBMIT EVENT DETECTED! 🔥🔥🔥');
+                    console.log('Event details:', e);
                     handleFormSubmit(e);
                     return false; // Prevent any default submission
                 });
                 
+                console.log('✅ Event listener attached successfully');
+                
+                // Also add click listener to submit button as backup
+                const submitBtn = contactForm.querySelector('button[type="submit"]');
+                console.log('🔘 Submit button found:', submitBtn);
+                
+                if (submitBtn) {
+                    submitBtn.addEventListener('click', function(e) {
+                        console.log('🔥🔥🔥 SUBMIT BUTTON CLICKED! 🔥🔥🔥');
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        // Create a synthetic submit event
+                        const syntheticEvent = {
+                            type: 'submit',
+                            preventDefault: () => {},
+                            stopPropagation: () => {},
+                            target: contactForm,
+                            currentTarget: contactForm
+                        };
+                        
+                        handleFormSubmit(syntheticEvent);
+                        return false;
+                    });
+                    console.log('✅ Submit button click listener attached');
+                }
+                
             } else {
                 console.error('❌ Contact form not found!');
+                console.log('🔍 Available forms:', document.querySelectorAll('form'));
+                console.log('🔍 All elements with ID:', document.querySelectorAll('[id]'));
             }
+            
+            console.log('🔧🔧🔧 FORM INITIALIZATION DEBUG END 🔧🔧🔧');
             
             if (messageInput) {
                 messageInput.addEventListener('input', updateCharCount);
