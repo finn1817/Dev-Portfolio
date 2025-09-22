@@ -960,6 +960,9 @@
             loadEasterEggCount();
             initializeDemoAccount();
             
+            // Test Firebase connection on page load
+            testFirebaseConnection();
+            
             // Setup form handlers
             document.getElementById('contactForm').addEventListener('submit', handleFormSubmit);
             document.getElementById('message').addEventListener('input', updateCharCount);
@@ -995,6 +998,41 @@
             };
             localDB.analytics.push(entry);
             persistLocalDB();
+        }
+
+        // Test Firebase connection on page load
+        async function testFirebaseConnection() {
+            try {
+                console.log('Testing Firebase connection...');
+                
+                // Simple test by creating a connection test document
+                const testRef = collection(db, 'test');
+                const testDoc = {
+                    type: 'connection_test',
+                    timestamp: serverTimestamp(),
+                    userAgent: navigator.userAgent,
+                    page: 'portfolio_load'
+                };
+                
+                const docRef = await addDoc(testRef, testDoc);
+                console.log('✅ Firebase connected successfully! Test doc ID:', docRef.id);
+                
+                // Show success notification
+                setTimeout(() => {
+                    showNotification('🔥 Firebase connected successfully!', 'success');
+                }, 2000);
+                
+                return true;
+            } catch (error) {
+                console.error('❌ Firebase connection failed:', error);
+                
+                // Show error notification
+                setTimeout(() => {
+                    showNotification('⚠️ Firebase connection failed - using local backup', 'error');
+                }, 2000);
+                
+                return false;
+            }
         }
 
         async function saveMessage(messageData) {
@@ -1152,6 +1190,12 @@ ${achievements.length > 0 ? achievements.map(a => `• ${a}`).join('\n') : '• 
                 return;
             }
 
+            // Disable the submit button and show loading
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending... ⏳';
+
             const formData = new FormData(event.target);
             const messageData = {
                 name: formData.get('name'),
@@ -1161,14 +1205,37 @@ ${achievements.length > 0 ? achievements.map(a => `• ${a}`).join('\n') : '• 
             };
 
             try {
-                await saveMessage(messageData);
+                // Show immediate feedback
+                showNotification('📤 Sending message to database...', 'info');
+                
+                // Wait for saveMessage to complete
+                const result = await saveMessage(messageData);
+                
+                // Add artificial delay for better UX (minimum 2 seconds)
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Success feedback
+                showNotification('✅ Message sent successfully to Firebase!', 'success');
+                
+                // Reset form and update counts
                 event.target.reset();
                 updateCharCount();
                 updateSubmissionCount();
                 await logEasterEgg('form_submission');
+                
             } catch (error) {
                 console.error('Error submitting form:', error);
-                showNotification('Error submitting form', 'error');
+                
+                // Add delay even for errors
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                showNotification('❌ Failed to send message to database', 'error');
+            } finally {
+                // Re-enable button after delay
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                }, 1000);
             }
         }
 
@@ -1618,12 +1685,25 @@ Good luck, detective! 🕵️‍♂️`;
             
             if (notification && notificationText) {
                 notificationText.textContent = message;
-                notification.style.background = type === 'error' ? '#ff4757' : 'var(--accent-color)';
+                
+                // Set background color based on type
+                if (type === 'error') {
+                    notification.style.background = '#ff4757';
+                } else if (type === 'info') {
+                    notification.style.background = '#3742fa';
+                } else if (type === 'success') {
+                    notification.style.background = 'var(--accent-color)';
+                } else {
+                    notification.style.background = 'var(--accent-color)';
+                }
+                
                 notification.classList.add('show');
                 
+                // Longer display time for important messages
+                const displayTime = type === 'error' ? 5000 : 4000;
                 setTimeout(() => {
                     notification.classList.remove('show');
-                }, 3000);
+                }, displayTime);
             }
         }
 
