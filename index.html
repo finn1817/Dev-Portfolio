@@ -952,8 +952,6 @@
         // Global variables
         let devModeEnabled = false;
         let easterEggsFound = 0;
-        let submissionCount = parseInt(localStorage.getItem('submissionCount') || '0');
-        let lastSubmissionTime = parseInt(localStorage.getItem('lastSubmissionTime') || '0');
         let sessionId = generateSessionId();
         let commandHistory = [];
         let currentUser = null;
@@ -1141,13 +1139,6 @@
                 if (window.event.returnValue !== undefined) window.event.returnValue = false;
             }
 
-            // Rate limiting check
-            if (!checkRateLimit()) {
-                console.log('❌ Rate limit exceeded');
-                showNotification('Rate limit exceeded. Please wait before sending another message.', 'error');
-                return false;
-            }
-
             const form = event.target || document.getElementById('contactForm');
             if (!form) {
                 console.error('❌ Could not find form element');
@@ -1202,8 +1193,6 @@
                 if (emailField) emailField.value = '';
                 if (messageField) messageField.value = '';
                 
-                updateSubmissionCount();
-                
                 console.log('✅ Form submission completed! ID:', result);
                 
             } catch (error) {
@@ -1222,41 +1211,6 @@
             }
 
             return false; // Always return false to prevent any form submission
-        }
-
-        function checkRateLimit() {
-            const now = Date.now();
-            const twoMinutes = 2 * 60 * 1000;
-            
-            if (now - lastSubmissionTime > twoMinutes) {
-                submissionCount = 0;
-                lastSubmissionTime = now;
-            }
-            
-            return submissionCount < 5;
-        }
-
-        function updateSubmissionCount() {
-            const now = Date.now();
-            const twoMinutes = 2 * 60 * 1000;
-            
-            if (now - lastSubmissionTime > twoMinutes) {
-                submissionCount = 0;
-            }
-            
-            if (submissionCount > 0) {
-                lastSubmissionTime = now;
-                submissionCount++;
-            } else {
-                submissionCount = 1;
-                lastSubmissionTime = now;
-            }
-            
-            localStorage.setItem('submissionCount', submissionCount.toString());
-            localStorage.setItem('lastSubmissionTime', lastSubmissionTime.toString());
-            
-            const countElement = document.getElementById('submissionCount');
-            if (countElement) countElement.textContent = submissionCount;
         }
 
         // Easter egg and event logging
@@ -1812,7 +1766,6 @@ ${achievements.length > 0 ? achievements.map(a => `• ${a}`).join('\n') : '• 
             
             initializeMatrix();
             trackPageView();
-            updateSubmissionCount();
             loadEasterEggCount();
             initializeDemoAccount();
             
