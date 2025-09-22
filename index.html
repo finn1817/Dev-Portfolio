@@ -887,22 +887,44 @@
     </div>
 
     <script type="module">
-        // Firebase Configuration
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+        console.log('🔥 Script module loading...');
+        
+        let app, db, addDoc, collection, serverTimestamp;
+        
+        // Dynamic Firebase import with error handling
+        async function initializeFirebase() {
+            try {
+                console.log('🔥 Loading Firebase modules...');
+                
+                const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js");
+                const firebaseFirestore = await import("https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js");
+                
+                // Extract functions
+                const { getFirestore } = firebaseFirestore;
+                addDoc = firebaseFirestore.addDoc;
+                collection = firebaseFirestore.collection;
+                serverTimestamp = firebaseFirestore.serverTimestamp;
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyCejm0Ry18S1mlqYpnMRuIJGnQ-iDvu3EU",
-            authDomain: "custom-messages-84ec4.firebaseapp.com",
-            projectId: "custom-messages-84ec4",
-            storageBucket: "custom-messages-84ec4.firebasestorage.app",
-            messagingSenderId: "1079020496100",
-            appId: "1:1079020496100:web:d21ec1428327515e3df8f1"
-        };
+                const firebaseConfig = {
+                    apiKey: "AIzaSyCejm0Ry18S1mlqYpnMRuIJGnQ-iDvu3EU",
+                    authDomain: "custom-messages-84ec4.firebaseapp.com",
+                    projectId: "custom-messages-84ec4",
+                    storageBucket: "custom-messages-84ec4.firebasestorage.app",
+                    messagingSenderId: "1079020496100",
+                    appId: "1:1079020496100:web:d21ec1428327515e3df8f1"
+                };
 
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+                console.log('🔥 Initializing Firebase...');
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                console.log('✅ Firebase initialized successfully!');
+                return true;
+            } catch (error) {
+                console.error('❌ Firebase initialization failed:', error);
+                console.log('📱 Will use local storage fallback for all operations');
+                return false;
+            }
+        }
 
         // Global variables
         let devModeEnabled = false;
@@ -953,7 +975,13 @@
         };
 
         // Initialize app
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 App initializing...');
+            
+            // Initialize Firebase first
+            const firebaseReady = await initializeFirebase();
+            console.log('Firebase ready:', firebaseReady);
+            
             initializeMatrix();
             trackPageView();
             updateSubmissionCount();
@@ -961,11 +989,27 @@
             initializeDemoAccount();
             
             // Test Firebase connection on page load
-            testFirebaseConnection();
+            if (firebaseReady) {
+                testFirebaseConnection();
+            }
             
-            // Setup form handlers
-            document.getElementById('contactForm').addEventListener('submit', handleFormSubmit);
-            document.getElementById('message').addEventListener('input', updateCharCount);
+            // Setup form handlers with error checking
+            const contactForm = document.getElementById('contactForm');
+            const messageInput = document.getElementById('message');
+            
+            if (contactForm) {
+                console.log('✅ Contact form found, setting up event listener...');
+                contactForm.addEventListener('submit', function(event) {
+                    console.log('📝 Form submit triggered!');
+                    handleFormSubmit(event);
+                });
+            } else {
+                console.error('❌ Contact form not found!');
+            }
+            
+            if (messageInput) {
+                messageInput.addEventListener('input', updateCharCount);
+            }
             
             // Setup theme
             const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -974,6 +1018,8 @@
             
             // Refresh analytics
             setTimeout(refreshAnalytics, 1000);
+            
+            console.log('✅ App initialized successfully!');
         });
 
         // Analytics functions
@@ -1003,7 +1049,12 @@
         // Test Firebase connection on page load
         async function testFirebaseConnection() {
             try {
-                console.log('Testing Firebase connection...');
+                console.log('🔥 Testing Firebase connection...');
+                
+                // Check if Firebase is available
+                if (!db || !addDoc || !collection || !serverTimestamp) {
+                    throw new Error('Firebase not properly initialized');
+                }
                 
                 // Simple test by creating a connection test document
                 const testRef = collection(db, 'test');
@@ -1037,40 +1088,48 @@
 
         async function saveMessage(messageData) {
             try {
-                // Add message to Firebase Firestore
-                const messagesRef = collection(db, 'Messages');
-                const messageDoc = {
-                    name: messageData.name,
-                    email: messageData.email,
-                    message: messageData.message,
-                    clientTimestamp: messageData.clientTimestamp,
-                    serverTimestamp: serverTimestamp(),
-                    sessionId: sessionId,
-                    userAgent: navigator.userAgent,
-                    ipAddress: null, // Will be set by server
-                    status: 'new',
-                    source: 'portfolio_contact_form'
-                };
+                console.log('💾 Attempting to save message...');
+                
+                // Check if Firebase is available
+                if (db && addDoc && collection && serverTimestamp) {
+                    console.log('🔥 Using Firebase...');
+                    // Add message to Firebase Firestore
+                    const messagesRef = collection(db, 'Messages');
+                    const messageDoc = {
+                        name: messageData.name,
+                        email: messageData.email,
+                        message: messageData.message,
+                        clientTimestamp: messageData.clientTimestamp,
+                        serverTimestamp: serverTimestamp(),
+                        sessionId: sessionId,
+                        userAgent: navigator.userAgent,
+                        ipAddress: null, // Will be set by server
+                        status: 'new',
+                        source: 'portfolio_contact_form'
+                    };
 
-                const docRef = await addDoc(messagesRef, messageDoc);
-                console.log('Message saved to Firebase with ID: ', docRef.id);
-                
-                // Also save locally as backup
-                const id = 'msg_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
-                localDB.messages.push({ id, ...messageData, timestamp: Date.now(), sessionId });
-                persistLocalDB();
-                
-                showNotification('Message sent successfully! 🎉');
-                return docRef.id;
+                    const docRef = await addDoc(messagesRef, messageDoc);
+                    console.log('✅ Message saved to Firebase with ID: ', docRef.id);
+                    
+                    // Also save locally as backup
+                    const id = 'msg_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
+                    localDB.messages.push({ id, ...messageData, timestamp: Date.now(), sessionId });
+                    persistLocalDB();
+                    
+                    return docRef.id;
+                } else {
+                    console.log('📱 Firebase not available, using local storage...');
+                    throw new Error('Firebase not initialized');
+                }
             } catch (error) {
-                console.error('Error saving message to Firebase:', error);
+                console.error('❌ Error saving message to Firebase:', error);
                 
                 // Fallback to local storage if Firebase fails
                 const id = 'msg_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
                 localDB.messages.push({ id, ...messageData, timestamp: Date.now(), sessionId });
                 persistLocalDB();
                 
-                showNotification('Message saved locally (connection issue) 📡');
+                console.log('✅ Message saved locally with ID:', id);
                 return id;
             }
         }
@@ -1183,18 +1242,30 @@ ${achievements.length > 0 ? achievements.map(a => `• ${a}`).join('\n') : '• 
 
         // Form handling
         async function handleFormSubmit(event) {
+            console.log('🔥 handleFormSubmit called!', event);
+            
+            // Prevent default form submission
             event.preventDefault();
+            event.stopPropagation();
+            
+            console.log('✅ Default prevented, checking rate limit...');
             
             if (!checkRateLimit()) {
+                console.log('❌ Rate limit exceeded');
                 showNotification('Rate limit exceeded. Please wait before sending another message.', 'error');
                 return;
             }
 
+            console.log('✅ Rate limit OK, processing form...');
+
             // Disable the submit button and show loading
             const submitBtn = event.target.querySelector('button[type="submit"]');
-            const originalText = submitBtn.textContent;
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Sending... ⏳';
+            const originalText = submitBtn ? submitBtn.textContent : 'Send Message 🚀';
+            
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending... ⏳';
+            }
 
             const formData = new FormData(event.target);
             const messageData = {
@@ -1204,12 +1275,16 @@ ${achievements.length > 0 ? achievements.map(a => `• ${a}`).join('\n') : '• 
                 clientTimestamp: new Date().toISOString()
             };
 
+            console.log('📊 Form data collected:', messageData);
+
             try {
                 // Show immediate feedback
                 showNotification('📤 Sending message to database...', 'info');
                 
+                console.log('🔄 Calling saveMessage...');
                 // Wait for saveMessage to complete
                 const result = await saveMessage(messageData);
+                console.log('✅ saveMessage completed:', result);
                 
                 // Add artificial delay for better UX (minimum 2 seconds)
                 await new Promise(resolve => setTimeout(resolve, 2000));
@@ -1223,8 +1298,10 @@ ${achievements.length > 0 ? achievements.map(a => `• ${a}`).join('\n') : '• 
                 updateSubmissionCount();
                 await logEasterEgg('form_submission');
                 
+                console.log('✅ Form submission completed successfully!');
+                
             } catch (error) {
-                console.error('Error submitting form:', error);
+                console.error('❌ Error submitting form:', error);
                 
                 // Add delay even for errors
                 await new Promise(resolve => setTimeout(resolve, 2000));
@@ -1233,8 +1310,10 @@ ${achievements.length > 0 ? achievements.map(a => `• ${a}`).join('\n') : '• 
             } finally {
                 // Re-enable button after delay
                 setTimeout(() => {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = originalText;
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
+                    }
                 }, 1000);
             }
         }
