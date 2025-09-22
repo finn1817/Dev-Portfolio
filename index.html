@@ -22,6 +22,26 @@
             --shadow: 0 8px 32px rgba(0, 255, 136, 0.2);
         }
 
+        [data-theme="light"] {
+            --bg-gradient: linear-gradient(135deg, #f0f2f5 0%, #e4e9f0 50%, #d6dce8 100%);
+            --text-color: #333333;
+            --accent-color: #0066cc;
+            --secondary-color: #ff6b35;
+            --card-bg: rgba(0, 0, 0, 0.05);
+            --border-color: rgba(0, 102, 204, 0.3);
+            --shadow: 0 8px 32px rgba(0, 102, 204, 0.2);
+        }
+
+        [data-theme="blackout"] {
+            --bg-gradient: linear-gradient(135deg, #000000 0%, #0a0a0a 50%, #111111 100%);
+            --text-color: #00ff00;
+            --accent-color: #00ff00;
+            --secondary-color: #ff0040;
+            --card-bg: rgba(0, 255, 0, 0.05);
+            --border-color: rgba(0, 255, 0, 0.5);
+            --shadow: 0 8px 32px rgba(0, 255, 0, 0.3);
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: var(--bg-gradient);
@@ -30,6 +50,7 @@
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
+            transition: all 0.3s ease;
         }
 
         .matrix-bg {
@@ -705,7 +726,7 @@
         }
     </style>
 </head>
-<body>
+<body data-theme="dark">
     <canvas class="matrix-bg" id="matrixCanvas"></canvas>
     
     <nav class="nav">
@@ -916,7 +937,7 @@
                     appId: "1:1079020496100:web:d21ec1428327515e3df8f1"
                 };
 
-                console.log('� Initializing Firebase app...');
+                console.log('🔥 Initializing Firebase app...');
                 app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 console.log('✅ Firebase initialized successfully!');
@@ -1680,7 +1701,8 @@ Good luck, detective! 🕵️‍♂️`;
         // Theme functions
         window.toggleTheme = function() {
             const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            const newTheme = currentTheme === 'light' ? 'dark' : 
+                            currentTheme === 'dark' ? 'light' : 'dark';
             
             document.documentElement.setAttribute('data-theme', newTheme);
             localStorage.setItem('theme', newTheme);
@@ -1875,6 +1897,8 @@ Good luck, detective! 🕵️‍♂️`;
                     notification.style.background = '#ff4757';
                 } else if (type === 'info') {
                     notification.style.background = '#3742fa';
+                } else if (type === 'warning') {
+                    notification.style.background = '#ffa502';
                 } else if (type === 'success') {
                     notification.style.background = 'var(--accent-color)';
                 } else {
