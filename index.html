@@ -1028,21 +1028,12 @@
                     throw new Error('Database not initialized');
                 }
 
-                // Only save essential contact form data
+                // Only save the essential contact form data as requested
                 const essentialData = {
-                    // Core contact information
                     name: String(messageData.name || '').trim(),
                     email: String(messageData.email || '').trim(),
                     message: String(messageData.message || '').trim(),
-                    
-                    // Basic tracking
-                    messageId: generateDocumentId(),
-                    submittedAt: new Date().toISOString(),
-                    serverTimestamp: serverTimestamp(),
-                    
-                    // Simple status
-                    status: 'new',
-                    source: 'portfolio_contact'
+                    timestamp: serverTimestamp()
                 };
 
                 console.log('📝 Saving essential data only:', essentialData);
@@ -1119,34 +1110,22 @@
             persistLocalDB();
         }
 
-        // Form handling - CRASH-PROOF and SIMPLIFIED
+        // Form handling - SIMPLIFIED and STABLE
         async function handleFormSubmit(event) {
             console.log('🔥 Form submission started!');
             
-            // CRITICAL: Prevent any form submission or page refresh
-            try {
-                event.preventDefault();
-                event.stopPropagation();
-                event.stopImmediatePropagation();
-            } catch (e) {
-                console.error('Error preventing default:', e);
-            }
+            // Prevent page refresh
+            event.preventDefault();
+            event.stopPropagation();
 
-            // Additional safeguard against page refresh
-            if (typeof window !== 'undefined' && window.event) {
-                window.event.cancelBubble = true;
-                if (window.event.preventDefault) window.event.preventDefault();
-                if (window.event.returnValue !== undefined) window.event.returnValue = false;
-            }
-
-            const form = event.target || document.getElementById('contactForm');
+            const form = document.getElementById('contactForm');
             if (!form) {
                 console.error('❌ Could not find form element');
                 showNotification('❌ Form not found', 'error');
                 return false;
             }
 
-            const submitBtn = form.querySelector('button[type="submit"]') || form.querySelector('.cta-button');
+            const submitBtn = form.querySelector('button[type="submit"]');
             const originalText = 'Send Message 🚀';
             
             // Disable button to prevent double submission
@@ -1157,15 +1136,15 @@
             }
 
             try {
-                // Get form data safely
-                const nameField = form.querySelector('input[name="name"]') || form.querySelector('#name');
-                const emailField = form.querySelector('input[name="email"]') || form.querySelector('#email');
-                const messageField = form.querySelector('textarea[name="message"]') || form.querySelector('#message');
+                // Get form data
+                const nameField = form.querySelector('#name');
+                const emailField = form.querySelector('#email');
+                const messageField = form.querySelector('#message');
 
                 const messageData = {
-                    name: (nameField && nameField.value || '').trim(),
-                    email: (emailField && emailField.value || '').trim(),
-                    message: (messageField && messageField.value || '').trim()
+                    name: nameField.value.trim(),
+                    email: emailField.value.trim(),
+                    message: messageField.value.trim()
                 };
 
                 // Validate
@@ -1176,22 +1155,16 @@
                 console.log('📊 Form data collected:', messageData);
                 showNotification('📤 Sending message...', 'info');
                 
-                // Short delay for UX
-                await new Promise(resolve => setTimeout(resolve, 800));
-                
                 // Save to Firebase
                 const result = await saveMessage(messageData);
-                
-                // Success delay
-                await new Promise(resolve => setTimeout(resolve, 1200));
                 
                 // Success
                 showNotification('✅ Message sent successfully!', 'success');
                 
                 // Reset form
-                if (nameField) nameField.value = '';
-                if (emailField) emailField.value = '';
-                if (messageField) messageField.value = '';
+                nameField.value = '';
+                emailField.value = '';
+                messageField.value = '';
                 
                 console.log('✅ Form submission completed! ID:', result);
                 
@@ -1200,7 +1173,7 @@
                 showNotification('❌ ' + error.message, 'error');
                 
             } finally {
-                // Always re-enable button after delay
+                // Re-enable button
                 setTimeout(() => {
                     if (submitBtn) {
                         submitBtn.disabled = false;
@@ -1210,7 +1183,7 @@
                 }, 2000);
             }
 
-            return false; // Always return false to prevent any form submission
+            return false;
         }
 
         // Easter egg and event logging
@@ -1772,43 +1745,19 @@ ${achievements.length > 0 ? achievements.map(a => `• ${a}`).join('\n') : '• 
             // Test Firebase connection on page load
             await testFirebaseConnection();
             
-            // Setup form handlers - CRASH-PROOF VERSION
+            // Setup form handlers - SIMPLE and STABLE
             const contactForm = document.getElementById('contactForm');
             const messageInput = document.getElementById('message');
             
             if (contactForm) {
-                console.log('✅ Contact form found, setting up crash-proof event listener...');
+                console.log('✅ Contact form found, setting up event listener...');
                 
-                // Remove any existing event listeners to prevent conflicts
-                const newForm = contactForm.cloneNode(true);
-                contactForm.parentNode.replaceChild(newForm, contactForm);
-                
-                // Add single, crash-proof event listener
-                newForm.addEventListener('submit', function(e) {
+                // Add single event listener
+                contactForm.addEventListener('submit', function(e) {
                     console.log('🔥 FORM SUBMIT EVENT DETECTED!');
                     handleFormSubmit(e);
                     return false; // Prevent any default submission
                 });
-                
-                // Backup: Also handle button clicks directly
-                const submitBtn = newForm.querySelector('button[type="submit"]') || newForm.querySelector('.cta-button');
-                if (submitBtn) {
-                    submitBtn.addEventListener('click', function(e) {
-                        console.log('🔥 SUBMIT BUTTON CLICKED!');
-                        e.preventDefault();
-                        e.stopPropagation();
-                        
-                        // Create a fake submit event
-                        const fakeEvent = {
-                            preventDefault: () => {},
-                            stopPropagation: () => {},
-                            stopImmediatePropagation: () => {},
-                            target: newForm
-                        };
-                        handleFormSubmit(fakeEvent);
-                        return false;
-                    });
-                }
                 
             } else {
                 console.error('❌ Contact form not found!');
