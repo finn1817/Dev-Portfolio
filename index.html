@@ -11,6 +11,37 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --bg-gradient: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            --text-color: #ffffff;
+            --accent-color: #00ff88;
+            --secondary-color: #ff6b35;
+            --warning-color: #ffd23f;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(0, 255, 136, 0.3);
+            --shadow: 0 8px 32px rgba(0, 255, 136, 0.2);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
         .auth-toggle-btn {
             background: none;
             border: none;
@@ -64,20 +95,57 @@
             box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
         }
 
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .nav .left {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
+            color: black;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 1.2rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 0.5rem;
+            margin: 0;
+            padding: 0;
+        }
+
         .hero {
-            min-height: calc(100vh - 62px); /* account for fixed nav */
+            min-height: calc(100vh - 62px);
             display: flex;
             flex-direction: column;
-            justify-content: flex-start; /* start a little lower so not covered */
+            justify-content: center;
             align-items: center;
             text-align: center;
             position: relative;
-            padding: 2.2rem 2rem 2rem; /* ensure breathing room */
-            margin-top: 8px;
+            padding: 4rem 2rem 2rem;
+            margin-top: 62px;
         }
 
         .hero h1 {
-            font-size: 3rem; /* reduced title size */
+            font-size: 3rem;
             margin-bottom: 0.6rem;
             background: linear-gradient(45deg, var(--accent-color), var(--secondary-color), #ffd700);
             -webkit-background-clip: text;
@@ -100,7 +168,7 @@
         }
 
         .hero .subtitle {
-            font-size: 1.05rem; /* reduced subtitle */
+            font-size: 1.05rem;
             margin-bottom: 2rem;
             opacity: 0.9;
             font-weight: 300;
@@ -151,6 +219,7 @@
             padding: 4rem 2rem;
             max-width: 1200px;
             margin: 0 auto;
+            margin-top: 62px;
         }
 
         .card {
@@ -444,6 +513,13 @@
             transform: translateY(-2px);
         }
 
+        .char-counter {
+            text-align: right;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            margin-top: 0.5rem;
+        }
+
         .rate-limit {
             margin-top: 1rem;
             padding: 0.5rem;
@@ -505,7 +581,7 @@
             overflow-y: auto;
             padding: 1rem;
             backdrop-filter: blur(20px);
-            display: none; /* Hidden by default */
+            display: none;
         }
 
         .dev-panel.active {
@@ -513,7 +589,7 @@
         }
 
         .dev-panel.enabled {
-            display: block; /* Only show when dev mode is enabled */
+            display: block;
         }
 
         .analytics-widget {
@@ -580,7 +656,7 @@
             right: 20px;
             padding: 1rem 1.5rem;
             background: var(--accent-color);
-            color: var(--bg-color);
+            color: #000;
             border-radius: 4px;
             z-index: 2000;
             transform: translateX(400px);
@@ -591,7 +667,6 @@
             transform: translateX(0);
         }
 
-        /* SPA Section Management */
         .section-content {
             display: none;
             transition: opacity 0.3s ease;
@@ -602,11 +677,8 @@
             opacity: 1;
         }
 
-        #dynamic-content iframe {
-            width: 100%;
-            border: none;
-            min-height: 100vh;
-            background: transparent;
+        .embedded-section {
+            padding: 2rem 0;
         }
 
         @media (max-width: 768px) {
@@ -637,7 +709,10 @@
     <canvas class="matrix-bg" id="matrixCanvas"></canvas>
     
     <nav class="nav">
-        <div class="left"><div class="logo">DF</div><span id="authStatus" style="display:none; font-size:0.9rem; opacity:0.85; margin-left:6px;"></span></div>
+        <div class="left">
+            <div class="logo">DF</div>
+            <span id="authStatus" style="display:none; font-size:0.9rem; opacity:0.85; margin-left:6px;"></span>
+        </div>
         <ul class="nav-links">
             <li><a href="#" onclick="showSection('home')" class="nav-tab active" data-section="home">Home</a></li>
             <li><a href="#" onclick="showSection('about')" class="nav-tab" data-section="about">About</a></li>
@@ -649,7 +724,7 @@
 
     <!-- Main Content Container -->
     <div id="main-content">
-        <!-- Home Section (default visible) -->
+        <!-- Home Section -->
         <section id="home" class="hero section-content active">
             <h1>Dan Finn</h1>
             <p class="subtitle">Student Developer & Code Wizard</p>
@@ -661,88 +736,81 @@
             </div>
         </section>
 
-        <!-- Dynamic Content Container for loaded pages -->
-        <div id="dynamic-content" class="section-content">
-            <!-- About Section Content (embedded) -->
-            <div id="about-content" class="embedded-section" style="display: none;">
-                <div class="section">
-                    <div class="card">
-                        <h2>About Me 👨‍💻</h2>
-                        <p>I'm a Student Programmer that's always working on different web projects. I work on coding my own helpful and fun projects to get better at what I do, all with user-friendly design, and... 🎯 lots of hidden surprises!</p>
-                        
-                        <div class="skills-grid">
-                            <div class="skill-card">
-                                <h3>HTML, CSS, & JS</h3>
-                                <div class="skill-level">⭐⭐⭐⭐⭐</div>
-                            </div>
-                            <div class="skill-card">
-                                <h3>Database Experience</h3>
-                                <div class="skill-level">⭐⭐⭐⭐⭐</div>
-                            </div>
-                            <div class="skill-card">
-                                <h3>Python</h3>
-                                <div class="skill-level">⭐⭐⭐⭐⭐</div>
-                            </div>
-                            <div class="skill-card">
-                                <h3>C++</h3>
-                                <div class="skill-level">⭐⭐⭐⭐⭐</div>
-                            </div>
-                            <div class="skill-card">
-                                <h3>Auth & Security</h3>
-                                <div class="skill-level">⭐⭐⭐⭐⭐</div>
-                            </div>
-                            <div class="skill-card">
-                                <h3>AI Integration</h3>
-                                <div class="skill-level">⭐⭐⭐⭐⭐</div>
-                            </div>
-                            <div class="skill-card">
-                                <h3>Dynamic web Dev ability</h3>
-                                <div class="skill-level">⭐⭐⭐⭐⭐</div>
-                            </div>
-                            <div class="skill-card">
-                                <h3>AI - For Planning & In Dev</h3>
-                                <div class="skill-level">⭐⭐⭐⭐⭐</div>
-                            </div>
-                            <div class="skill-card">
-                                <h3>UI - Functionality & Appearance</h3>
-                                <div class="skill-level">⭐⭐⭐⭐⭐</div>
-                            </div>
-                        </div>
+        <!-- About Section -->
+        <section id="about" class="section section-content">
+            <div class="card">
+                <h2>About Me 👨‍💻</h2>
+                <p>I'm a Student Programmer that's always working on different web projects. I work on coding my own helpful and fun projects to get better at what I do, all with user-friendly design, and... 🎯 lots of hidden surprises!</p>
+                
+                <div class="skills-grid">
+                    <div class="skill-card">
+                        <h3>HTML, CSS, & JS</h3>
+                        <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                    </div>
+                    <div class="skill-card">
+                        <h3>Database Experience</h3>
+                        <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                    </div>
+                    <div class="skill-card">
+                        <h3>Python</h3>
+                        <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                    </div>
+                    <div class="skill-card">
+                        <h3>C++</h3>
+                        <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                    </div>
+                    <div class="skill-card">
+                        <h3>Auth & Security</h3>
+                        <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                    </div>
+                    <div class="skill-card">
+                        <h3>AI Integration</h3>
+                        <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                    </div>
+                    <div class="skill-card">
+                        <h3>Dynamic Web Dev</h3>
+                        <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                    </div>
+                    <div class="skill-card">
+                        <h3>AI Planning & Development</h3>
+                        <div class="skill-level">⭐⭐⭐⭐⭐</div>
+                    </div>
+                    <div class="skill-card">
+                        <h3>UI Design & Functionality</h3>
+                        <div class="skill-level">⭐⭐⭐⭐⭐</div>
                     </div>
                 </div>
             </div>
+        </section>
 
-            <!-- Projects Section Content (embedded) -->
-            <div id="projects-content" class="embedded-section" style="display: none;">
-                <div class="section">
-                    <h2>My Projects</h2>
-                    <div class="projects-grid">
-                        <div class="project-card">
-                            <h3>🎮 Secret Game Project</h3>
-                            <p>A mysterious project that... only appears when you solve the puzzle</p>
-                            <button class="btn" onclick="unlockSecretProject()">Learn More</button>
-                        </div>
-                        <div class="project-card">
-                            <h3>💻 Code Inspector Tool</h3>
-                            <p>Perfect for developers who love to peek behind the curtain!</p>
-                            <button class="btn" onclick="inspectCode()">View Project</button>
-                        </div>
-                        <div class="project-card">
-                            <h3>🔍 Easter Egg Hunter</h3>
-                            <p>A tool for finding hidden gems in websites... just like this one!</p>
-                            <button class="btn" onclick="huntEasterEggs()">Explore</button>
-                        </div>
-                        <div class="project-card">
-                            <h3>🚀 Live Analytics (Demo)</h3>
-                            <p>Local tracking demo dashboard (no external services required)</p>
-                            <button class="btn" onclick="showAnalytics()">View Analytics</button>
-                        </div>
-                    </div>
+        <!-- Projects Section -->
+        <section id="projects" class="section section-content">
+            <h2>My Projects</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <h3>🎮 Secret Game Project</h3>
+                    <p>A mysterious project that... only appears when you solve the puzzle</p>
+                    <button class="btn" onclick="unlockSecretProject()">Learn More</button>
+                </div>
+                <div class="project-card">
+                    <h3>💻 Code Inspector Tool</h3>
+                    <p>Perfect for developers who love to peek behind the curtain!</p>
+                    <button class="btn" onclick="inspectCode()">View Project</button>
+                </div>
+                <div class="project-card">
+                    <h3>🔍 Easter Egg Hunter</h3>
+                    <p>A tool for finding hidden gems in websites... just like this one!</p>
+                    <button class="btn" onclick="huntEasterEggs()">Explore</button>
+                </div>
+                <div class="project-card">
+                    <h3>🚀 Live Analytics (Demo)</h3>
+                    <p>Local tracking demo dashboard (no external services required)</p>
+                    <button class="btn" onclick="showAnalytics()">View Analytics</button>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- Contact Section (kept on main page) -->
+        <!-- Contact Section -->
         <section id="contact" class="section section-content">
             <div class="card">
                 <h2>Get In Touch</h2>
@@ -772,6 +840,43 @@
         </section>
     </div>
 
+    <!-- Terminal -->
+    <div class="terminal" id="terminal">
+        <div class="terminal-header">
+            <span>🔧 Dan's Terminal v1.0</span>
+            <button class="terminal-close" onclick="closeTerminal()">×</button>
+        </div>
+        <div class="terminal-body">
+            <div id="terminalOutput">
+                <div>Welcome to Dan's Portfolio Terminal! 🚀</div>
+                <div>Type 'help' for available commands.</div>
+            </div>
+            <div class="terminal-input">
+                <span class="terminal-prompt">user@portfolio:~$</span>
+                <input type="text" id="terminalInput" onkeypress="handleTerminalInput(event)" placeholder="Enter command...">
+            </div>
+        </div>
+    </div>
+
+    <!-- Dev Panel -->
+    <div class="dev-panel" id="devPanel">
+        <h3>🔧 Developer Panel</h3>
+        <div class="analytics-widget">
+            <h4>📊 Analytics</h4>
+            <p>Page Views: <span id="pageViews">0</span></p>
+            <p>Active Users: <span id="activeUsers">0</span></p>
+            <p>Messages: <span id="messageCount">0</span></p>
+            <p>Easter Eggs: <span id="easterEggCount">0</span></p>
+            <button class="btn" onclick="refreshAnalytics()">Refresh</button>
+        </div>
+        <div class="analytics-widget">
+            <h4>🛠️ Tools</h4>
+            <button class="btn" onclick="exportData()">Export Data</button>
+            <button class="btn" onclick="clearCache()">Clear Cache</button>
+            <button class="btn" onclick="testConnection()">Test Connection</button>
+            <button class="btn btn-secondary" onclick="resetEasterEggs()">Reset Easter Eggs</button>
+        </div>
+    </div>
     
     <button class="floating-button" onclick="activateTerminal()" title="Open Terminal">
         🔧
@@ -781,26 +886,7 @@
         <span id="notificationText"></span>
     </div>
 
-    
-
-    <script type="module">
-        // Firebase removed: using local in-memory/localStorage stubs instead
-        // Simple local stores
-        const localDB = {
-            analytics: JSON.parse(localStorage.getItem('local_analytics') || '[]'),
-            messages: JSON.parse(localStorage.getItem('local_messages') || '[]'),
-            users: JSON.parse(localStorage.getItem('local_users') || '{}'),
-            events: JSON.parse(localStorage.getItem('local_events') || '{}'),
-            progress: JSON.parse(localStorage.getItem('local_progress') || '{}')
-        };
-        function persistLocalDB(){
-            localStorage.setItem('local_analytics', JSON.stringify(localDB.analytics));
-            localStorage.setItem('local_messages', JSON.stringify(localDB.messages));
-            localStorage.setItem('local_users', JSON.stringify(localDB.users));
-            localStorage.setItem('local_events', JSON.stringify(localDB.events));
-            localStorage.setItem('local_progress', JSON.stringify(localDB.progress));
-        }
-
+    <script>
         // Global variables
         let devModeEnabled = false;
         let easterEggsFound = 0;
@@ -809,102 +895,88 @@
         let sessionId = generateSessionId();
         let commandHistory = [];
         let currentUser = null;
-
-        // Cookie helpers (fallback for auth persistence)
-        function setCookie(name, value, days = 30) {
-            const expires = new Date(Date.now() + days * 864e5).toUTCString();
-            document.cookie = `${name}=${encodeURIComponent(value)}; Expires=${expires}; Path=/; SameSite=Lax`;
-        }
-
-        function getCookie(name) {
-            return document.cookie
-                .split('; ')
-                .find(row => row.startsWith(name + '='))
-                ?.split('=')[1];
-        }
-
-        function deleteCookie(name) {
-            document.cookie = `${name}=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax`;
-        }
-
-        // Robust auth functions (delegate to shared Auth util)
-        function loadUserFromStorage() {
-            currentUser = (window.Auth && Auth.load()) || null;
-            return !!currentUser;
-        }
-
-        function saveUserToStorage(user) {
-            currentUser = (window.Auth && Auth.save(user)) || user || null;
-        }
-
-        // SPA Management
         let currentSection = 'home';
 
-        // SPA Functions
-        window.showSection = async function(section) {
+        // Local storage database simulation
+        const localDB = {
+            analytics: JSON.parse(localStorage.getItem('local_analytics') || '[]'),
+            messages: JSON.parse(localStorage.getItem('local_messages') || '[]'),
+            users: JSON.parse(localStorage.getItem('local_users') || '{}'),
+            events: JSON.parse(localStorage.getItem('local_events') || '{}'),
+            progress: JSON.parse(localStorage.getItem('local_progress') || '{}')
+        };
+
+        function persistLocalDB(){
+            localStorage.setItem('local_analytics', JSON.stringify(localDB.analytics));
+            localStorage.setItem('local_messages', JSON.stringify(localDB.messages));
+            localStorage.setItem('local_users', JSON.stringify(localDB.users));
+            localStorage.setItem('local_events', JSON.stringify(localDB.events));
+            localStorage.setItem('local_progress', JSON.stringify(localDB.progress));
+        }
+
+        // SPA Navigation
+        window.showSection = function(section) {
             // Remove active class from all nav tabs
             document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
             
             // Add active class to clicked tab
-            document.querySelector(`[data-section="${section}"]`).classList.add('active');
+            const targetTab = document.querySelector(`[data-section="${section}"]`);
+            if (targetTab) targetTab.classList.add('active');
             
             // Hide all sections
             document.querySelectorAll('.section-content').forEach(content => content.classList.remove('active'));
-            document.querySelectorAll('.embedded-section').forEach(content => content.style.display = 'none');
             
-            // Update current section
-            currentSection = section;
-            
-            if (section === 'home') {
-                document.getElementById('home').classList.add('active');
-            } else if (section === 'contact') {
-                document.getElementById('contact').classList.add('active');
-            } else if (section === 'about') {
-                document.getElementById('dynamic-content').classList.add('active');
-                document.getElementById('about-content').style.display = 'block';
-                trackSectionView('about');
-            } else if (section === 'projects') {
-                document.getElementById('dynamic-content').classList.add('active');
-                document.getElementById('projects-content').style.display = 'block';
-                trackSectionView('projects');
+            // Show target section
+            const targetSection = document.getElementById(section);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                currentSection = section;
+                trackSectionView(section);
             }
         };
 
-        // Track section views (local)
-        async function trackSectionView(section) {
-            const entry = { type: 'section_view', section, timestamp: Date.now(), userAgent: navigator.userAgent, sessionId };
-            localDB.analytics.push(entry);
-            persistLocalDB();
-        }
-
-        // Attempt load immediately so UI using currentUser has state ASAP
-        loadUserFromStorage();
-
         // Initialize app
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Ensure state is present (in case DOMContentLoaded is late/early)
-            if (!currentUser) loadUserFromStorage();
+        document.addEventListener('DOMContentLoaded', function() {
             initializeMatrix();
             trackPageView();
             updateSubmissionCount();
             loadEasterEggCount();
-            setupRealTimeListeners();
-            initializeDemoAccount(); // Initialize demo account (local)
+            initializeDemoAccount();
             
             // Setup form handlers
             document.getElementById('contactForm').addEventListener('submit', handleFormSubmit);
             document.getElementById('message').addEventListener('input', updateCharCount);
             
-            // Setup theme from localStorage
+            // Setup theme
             const savedTheme = localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
             updateThemeButton();
-            if (typeof updateAuthUI === 'function') updateAuthUI();
+            
+            // Refresh analytics
+            setTimeout(refreshAnalytics, 1000);
         });
 
-        // Local analytics
+        // Analytics functions
         async function trackPageView() {
-            localDB.analytics.push({ type: 'page_view', page: 'index', timestamp: Date.now(), sessionId, userAgent: navigator.userAgent });
+            localDB.analytics.push({ 
+                type: 'page_view', 
+                page: 'index', 
+                timestamp: Date.now(), 
+                sessionId, 
+                userAgent: navigator.userAgent 
+            });
+            persistLocalDB();
+        }
+
+        async function trackSectionView(section) {
+            const entry = { 
+                type: 'section_view', 
+                section, 
+                timestamp: Date.now(), 
+                userAgent: navigator.userAgent, 
+                sessionId 
+            };
+            localDB.analytics.push(entry);
             persistLocalDB();
         }
 
@@ -929,35 +1001,17 @@
         async function saveCommand(command, output) {
             const uid = (currentUser && currentUser.username) || 'anonymous';
             if (!localDB.events[uid]) localDB.events[uid] = [];
-            localDB.events[uid].push({ type: 'command', command, output, timestamp: Date.now(), sessionId, devMode: devModeEnabled });
+            localDB.events[uid].push({ 
+                type: 'command', 
+                command, 
+                output, 
+                timestamp: Date.now(), 
+                sessionId, 
+                devMode: devModeEnabled 
+            });
             persistLocalDB();
         }
 
-    // Auth UI helpers (demo only; not secure)
-
-        // Demo account initialization
-        async function initializeDemoAccount() {
-            // Seed a local demo user for UX hints
-            if (!localDB.users['Testuser']) {
-                localDB.users['Testuser'] = { username: 'Testuser', name: 'Demo User', accountType: 'demo', createdAt: Date.now(), lastLogin: Date.now() };
-                persistLocalDB();
-            }
-        }
-
-        function updateAuthUI() {
-            const status = document.getElementById('authStatus');
-            if (!status) return;
-            status.style.display = 'none';
-            status.textContent = '';
-        }
-
-        function validPassword(pw) {
-            return /[A-Z]/.test(pw) && /[a-z]/.test(pw) && /\d/.test(pw) && /[^A-Za-z0-9]/.test(pw) && pw.length >= 4;
-        }
-
-        // Auth handlers removed entirely
-
-        // Analytics helper
         async function getAnalytics() {
             const analytics = { pageViews: 0, activeUsers: 0, messageCount: 0, easterEggCount: 0 };
             const recent = localDB.analytics.slice(-500);
@@ -971,31 +1025,43 @@
             return analytics;
         }
 
-    // Hunt progress tracking
         async function getHuntProgress() {
             const uid = (currentUser && currentUser.username) || 'anonymous';
             const progress = localDB.progress[uid] || [];
             const events = localDB.events[uid] || [];
             let highestLevel = 'start';
             const completedLevels = new Set();
+            
             progress.forEach(p=>{
                 const lvl = (p.level||'').toLowerCase();
-                if (lvl.includes('four')) { highestLevel = 'COMPLETE'; completedLevels.add('four'); }
-                else if (lvl.includes('three')) { if (highestLevel!=='COMPLETE') highestLevel='advancement-three'; completedLevels.add('three'); }
-                else if (lvl.includes('two')) { if (!highestLevel.includes('three') && highestLevel!=='COMPLETE') highestLevel='advancement-two'; completedLevels.add('two'); }
-                else if (lvl.includes('one') && highestLevel==='start') { highestLevel='advancement-one'; completedLevels.add('one'); }
+                if (lvl.includes('four')) { 
+                    highestLevel = 'COMPLETE'; 
+                    completedLevels.add('four'); 
+                } else if (lvl.includes('three')) { 
+                    if (highestLevel!=='COMPLETE') highestLevel='advancement-three'; 
+                    completedLevels.add('three'); 
+                } else if (lvl.includes('two')) { 
+                    if (!highestLevel.includes('three') && highestLevel!=='COMPLETE') highestLevel='advancement-two'; 
+                    completedLevels.add('two'); 
+                } else if (lvl.includes('one') && highestLevel==='start') { 
+                    highestLevel='advancement-one'; 
+                    completedLevels.add('one'); 
+                }
             });
+            
             let progressPercentage = 0;
             if (highestLevel === 'COMPLETE') progressPercentage = 100;
             else if (highestLevel.includes('three')) progressPercentage = 75;
             else if (highestLevel.includes('two')) progressPercentage = 50;
             else if (highestLevel.includes('one')) progressPercentage = 25;
+            
             const achievements = [...new Set(events.map(e=>{
                 if (e.type==='console_access_hunt_page') return '🕵️ Console Detective';
                 if (e.type==='advancement_completed') return '🏆 Chain Master';
                 if (e.action==='hunt_started') return '🎯 Hunt Initiated';
                 return null;
             }).filter(Boolean))];
+            
             return `🎯 HUNT PROGRESS (local)
 
 📊 ADVANCEMENT PROGRESS:
@@ -1015,8 +1081,18 @@ ${achievements.length > 0 ? achievements.map(a => `• ${a}`).join('\n') : '• 
 • Visit begin/index.html to start the hunt`;
         }
 
-        // Real-time listeners
-        function setupRealTimeListeners() { /* no-op: realtime removed */ }
+        async function initializeDemoAccount() {
+            if (!localDB.users['Testuser']) {
+                localDB.users['Testuser'] = { 
+                    username: 'Testuser', 
+                    name: 'Demo User', 
+                    accountType: 'demo', 
+                    createdAt: Date.now(), 
+                    lastLogin: Date.now() 
+                };
+                persistLocalDB();
+            }
+        }
 
         // Form handling
         async function handleFormSubmit(event) {
@@ -1043,10 +1119,10 @@ ${achievements.length > 0 ? achievements.map(a => `• ${a}`).join('\n') : '• 
                 await logEasterEgg('form_submission');
             } catch (error) {
                 console.error('Error submitting form:', error);
+                showNotification('Error submitting form', 'error');
             }
         }
 
-        // Rate limiting
         function checkRateLimit() {
             const now = Date.now();
             const twoMinutes = 2 * 60 * 1000;
@@ -1097,24 +1173,19 @@ ${achievements.length > 0 ? achievements.map(a => `• ${a}`).join('\n') : '• 
                 const input = event.target.value.trim();
                 const output = document.getElementById('terminalOutput');
                 
-                // Add command to history
                 commandHistory.push(input);
                 
-                // Display command
                 const commandDiv = document.createElement('div');
                 commandDiv.innerHTML = `<span style="color: #00ff41;">user@portfolio:~$</span> ${input}`;
                 output.appendChild(commandDiv);
                 
-                // Process command
                 const response = await processCommand(input);
                 const responseDiv = document.createElement('div');
                 responseDiv.innerHTML = response;
                 output.appendChild(responseDiv);
                 
-                // Save command (local)
                 await saveCommand(input, response);
                 
-                // Clear input and scroll to bottom
                 event.target.value = '';
                 output.scrollTop = output.scrollHeight;
             }
@@ -1211,10 +1282,8 @@ Good luck, detective! 🕵️‍♂️`;
                         devModeEnabled = true;
                         await logEasterEgg('dev_mode_enabled');
                         showNotification('🔧 Super Dev Mode Activated!');
-                        // Show dev panel button
                         const devPanelBtn = document.getElementById('dev-panel-btn');
                         if (devPanelBtn) devPanelBtn.style.display = 'inline-block';
-                        // Enable dev panel
                         const devPanel = document.getElementById('devPanel');
                         if (devPanel) devPanel.classList.add('enabled');
                         return '🎉 SUPER DEV MODE ACTIVATED!\n✅ Analytics access granted\n✅ Database tools unlocked\n✅ Advanced features enabled\n✅ Export capabilities available\n✅ Dev Panel button now visible!';
@@ -1263,6 +1332,8 @@ Good luck, detective! 🕵️‍♂️`;
         // Matrix effect
         function initializeMatrix() {
             const canvas = document.getElementById('matrixCanvas');
+            if (!canvas) return;
+            
             const ctx = canvas.getContext('2d');
             
             canvas.width = window.innerWidth;
@@ -1306,10 +1377,9 @@ Good luck, detective! 🕵️‍♂️`;
             }, 10000);
         }
 
-        // UI Functions
+        // Theme functions
         window.toggleTheme = function() {
             const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-            // Only toggle between light and dark (not blackout)
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
             
             document.documentElement.setAttribute('data-theme', newTheme);
@@ -1322,6 +1392,8 @@ Good luck, detective! 🕵️‍♂️`;
         function updateThemeButton() {
             const theme = document.documentElement.getAttribute('data-theme') || 'dark';
             const button = document.querySelector('.theme-toggle');
+            if (!button) return;
+            
             if (theme === 'light') {
                 button.textContent = '🌙 Dark';
             } else if (theme === 'blackout') {
@@ -1331,27 +1403,86 @@ Good luck, detective! 🕵️‍♂️`;
             }
         }
 
-        window.scrollToProjects = function() {
-            showSection('projects');
-        };
-
+        // Dev panel functions
         window.toggleDevPanel = function() {
-            document.getElementById('devPanel').classList.toggle('active');
-            logEasterEgg('dev_panel_toggled');
+            const panel = document.getElementById('devPanel');
+            if (panel) {
+                panel.classList.toggle('active');
+                logEasterEgg('dev_panel_toggled');
+            }
         };
 
-        window.generateEasterEgg = function() {
-            const easterEggs = [
-                '🎯 Found: The secret is in the source code!',
-                '🔍 Discovery: Try the Konami code!',
-                '🎮 Hidden: There\'s a secret game mode!',
-                '💎 Gem: Check the console for messages!',
-                '🗝️ Key: The terminal has super powers!'
-            ];
+        window.refreshAnalytics = async function() {
+            const analytics = await getAnalytics();
+            if (analytics) {
+                const pageViewsEl = document.getElementById('pageViews');
+                const activeUsersEl = document.getElementById('activeUsers');
+                const messageCountEl = document.getElementById('messageCount');
+                
+                if (pageViewsEl) pageViewsEl.textContent = analytics.pageViews;
+                if (activeUsersEl) activeUsersEl.textContent = analytics.activeUsers;
+                if (messageCountEl) messageCountEl.textContent = analytics.messageCount;
+            }
+        };
+
+        window.resetEasterEggs = function() {
+            easterEggsFound = 0;
+            localStorage.setItem('easterEggsFound', '0');
+            updateEasterEggCount();
+            showNotification('Easter egg count reset!');
+        };
+
+        window.exportData = async function() {
+            if (!devModeEnabled) {
+                showNotification('🔒 Dev mode required for export', 'error');
+                return;
+            }
             
-            const randomEgg = easterEggs[Math.floor(Math.random() * easterEggs.length)];
-            showNotification(randomEgg);
-            logEasterEgg('random_easter_egg');
+            try {
+                const data = {
+                    sessionId: sessionId,
+                    easterEggsFound: easterEggsFound,
+                    commandHistory: commandHistory,
+                    timestamp: new Date().toISOString(),
+                    localDB: localDB
+                };
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `dan-finn-portfolio-data-${Date.now()}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                showNotification('📤 Data exported successfully!');
+                logEasterEgg('data_exported');
+            } catch (error) {
+                showNotification('Error exporting data', 'error');
+            }
+        };
+
+        window.clearCache = function() {
+            localStorage.clear();
+            sessionStorage.clear();
+            showNotification('🗑️ Cache cleared!');
+            logEasterEgg('cache_cleared');
+        };
+
+        window.testConnection = async function() {
+            try {
+                const key = 'self_test_' + Date.now();
+                localStorage.setItem(key, 'ok');
+                const val = localStorage.getItem(key);
+                localStorage.removeItem(key);
+                if (val === 'ok') {
+                    showNotification('✅ Local self-test passed!');
+                } else {
+                    throw new Error('mismatch');
+                }
+            } catch (e) {
+                showNotification('❌ Self-test failed', 'error');
+            }
         };
 
         // Project functions
@@ -1389,78 +1520,13 @@ Good luck, detective! 🕵️‍♂️`;
             logEasterEgg('analytics_viewed');
         };
 
-        // Dev panel functions
-        window.refreshAnalytics = async function() {
-            const analytics = await getAnalytics();
-            if (analytics) {
-                document.getElementById('pageViews').textContent = analytics.pageViews;
-                document.getElementById('activeUsers').textContent = analytics.activeUsers;
-                document.getElementById('messageCount').textContent = analytics.messageCount;
-            }
-        };
-
-        window.resetEasterEggs = function() {
-            easterEggsFound = 0;
-            localStorage.setItem('easterEggsFound', '0');
-            updateEasterEggCount();
-            showNotification('Easter egg count reset!');
-        };
-
-        window.exportData = async function() {
-            if (!devModeEnabled) {
-                showNotification('🔒 Dev mode required for export', 'error');
-                return;
-            }
-            
-            try {
-                const data = {
-                    sessionId: sessionId,
-                    easterEggsFound: easterEggsFound,
-                    commandHistory: commandHistory,
-                    timestamp: new Date().toISOString()
-                };
-                
-                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `dan-finn-portfolio-data-${Date.now()}.json`;
-                a.click();
-                URL.revokeObjectURL(url);
-                
-                showNotification('📤 Data exported successfully!');
-                logEasterEgg('data_exported');
-            } catch (error) {
-                showNotification('Error exporting data', 'error');
-            }
-        };
-
-        window.clearCache = function() {
-            localStorage.clear();
-            sessionStorage.clear();
-            showNotification('🗑️ Cache cleared!');
-            logEasterEgg('cache_cleared');
-        };
-
-        window.testConnection = async function() {
-            // Local self-test: try localStorage round-trip
-            try {
-                const key = 'self_test_' + Date.now();
-                localStorage.setItem(key, 'ok');
-                const val = localStorage.getItem(key);
-                localStorage.removeItem(key);
-                if (val === 'ok') showNotification('✅ Local self-test passed!');
-                else throw new Error('mismatch');
-            } catch (e) {
-                showNotification('❌ Self-test failed', 'error');
-            }
-        };
-
         // Utility functions
         function updateCharCount() {
             const textarea = document.getElementById('message');
             const charCount = document.getElementById('charCount');
-            charCount.textContent = textarea.value.length;
+            if (textarea && charCount) {
+                charCount.textContent = textarea.value.length;
+            }
         }
 
         function generateSessionId() {
@@ -1473,20 +1539,25 @@ Good luck, detective! 🕵️‍♂️`;
         }
 
         function updateEasterEggCount() {
-            document.getElementById('easterEggCount').textContent = easterEggsFound;
+            const easterEggCountEl = document.getElementById('easterEggCount');
+            if (easterEggCountEl) {
+                easterEggCountEl.textContent = easterEggsFound;
+            }
         }
 
         function showNotification(message, type = 'success') {
             const notification = document.getElementById('notification');
             const notificationText = document.getElementById('notificationText');
             
-            notificationText.textContent = message;
-            notification.style.background = type === 'error' ? '#ff4757' : 'var(--accent-color)';
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
+            if (notification && notificationText) {
+                notificationText.textContent = message;
+                notification.style.background = type === 'error' ? '#ff4757' : 'var(--accent-color)';
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
         }
 
         // Konami Code Easter Egg
@@ -1507,13 +1578,14 @@ Good luck, detective! 🕵️‍♂️`;
             }
         });
 
-        // Initialize analytics on load
-        setTimeout(() => { refreshAnalytics(); }, 1000);
-
-        // Make functions globally available
-        // db removed
-        window.devModeEnabled = () => devModeEnabled;
-        window.getSessionId = () => sessionId;
+        // Window resize handler for matrix
+        window.addEventListener('resize', function() {
+            const canvas = document.getElementById('matrixCanvas');
+            if (canvas) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+        });
     </script>
 </body>
 </html>
