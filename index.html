@@ -895,6 +895,8 @@
         async function initializeFirebase() {
             try {
                 console.log('🔥 Loading Firebase modules...');
+                console.log('🌐 Current origin:', window.location.origin);
+                console.log('🌐 Current protocol:', window.location.protocol);
                 
                 const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js");
                 const firebaseFirestore = await import("https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js");
@@ -914,14 +916,52 @@
                     appId: "1:1079020496100:web:d21ec1428327515e3df8f1"
                 };
 
-                console.log('🔥 Initializing Firebase...');
+                console.log('� Initializing Firebase app...');
                 app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 console.log('✅ Firebase initialized successfully!');
+                
+                // Show notification about protocol
+                if (window.location.protocol === 'file:') {
+                    console.warn('⚠️ Running on file:// protocol - Firebase may have limitations');
+                    setTimeout(() => {
+                        showNotification('⚠️ Local file detected - Firebase may be limited', 'info');
+                    }, 3000);
+                }
+                
                 return true;
             } catch (error) {
                 console.error('❌ Firebase initialization failed:', error);
+                console.error('Error details:', {
+                    name: error.name,
+                    message: error.message,
+                    code: error.code,
+                    stack: error.stack
+                });
                 console.log('📱 Will use local storage fallback for all operations');
+                
+                // Check if we're on dfinn.me domain
+                const isDfinnMe = window.location.hostname === 'dfinn.me' || 
+                                window.location.hostname === 'www.dfinn.me' ||
+                                window.location.hostname.endsWith('.dfinn.me');
+                
+                console.log('🌐 Is dfinn.me domain:', isDfinnMe);
+                
+                // Show appropriate error message based on domain
+                if (isDfinnMe && (error.message.includes('CORS') || error.message.includes('network'))) {
+                    setTimeout(() => {
+                        showNotification('🚨 CORS/Domain issue on dfinn.me - check Firebase authorized domains', 'error');
+                    }, 2000);
+                } else if (error.message.includes('CORS') || error.message.includes('network')) {
+                    setTimeout(() => {
+                        showNotification('🌐 Network/CORS issue - using local storage', 'error');
+                    }, 2000);
+                } else {
+                    setTimeout(() => {
+                        showNotification('⚠️ Firebase unavailable - using local storage', 'error');
+                    }, 2000);
+                }
+                
                 return false;
             }
         }
@@ -1089,6 +1129,8 @@
         async function saveMessage(messageData) {
             try {
                 console.log('💾 Attempting to save message...');
+                console.log('🌐 Protocol:', window.location.protocol);
+                console.log('🌐 Origin:', window.location.origin);
                 
                 // Check if Firebase is available
                 if (db && addDoc && collection && serverTimestamp) {
@@ -1103,11 +1145,14 @@
                         serverTimestamp: serverTimestamp(),
                         sessionId: sessionId,
                         userAgent: navigator.userAgent,
+                        origin: window.location.origin,
+                        protocol: window.location.protocol,
                         ipAddress: null, // Will be set by server
                         status: 'new',
                         source: 'portfolio_contact_form'
                     };
 
+                    console.log('📤 Sending to Firebase with data:', messageDoc);
                     const docRef = await addDoc(messagesRef, messageDoc);
                     console.log('✅ Message saved to Firebase with ID: ', docRef.id);
                     
@@ -1123,10 +1168,33 @@
                 }
             } catch (error) {
                 console.error('❌ Error saving message to Firebase:', error);
+                console.error('Error details:', {
+                    name: error.name,
+                    message: error.message,
+                    code: error.code,
+                    stack: error.stack
+                });
+                
+                // Check for specific error types
+                if (error.message.includes('CORS') || 
+                    error.message.includes('network') ||
+                    error.message.includes('fetch') ||
+                    error.code === 'unavailable') {
+                    console.log('🌐 Network/CORS issue detected');
+                }
                 
                 // Fallback to local storage if Firebase fails
                 const id = 'msg_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
-                localDB.messages.push({ id, ...messageData, timestamp: Date.now(), sessionId });
+                localDB.messages.push({ 
+                    id, 
+                    ...messageData, 
+                    timestamp: Date.now(), 
+                    sessionId,
+                    origin: window.location.origin,
+                    protocol: window.location.protocol,
+                    savedLocally: true,
+                    firebaseError: error.message
+                });
                 persistLocalDB();
                 
                 console.log('✅ Message saved locally with ID:', id);
@@ -1289,8 +1357,14 @@ ${achievements.length > 0 ? achievements.map(a => `• ${a}`).join('\n') : '• 
                 // Add artificial delay for better UX (minimum 2 seconds)
                 await new Promise(resolve => setTimeout(resolve, 2000));
                 
-                // Success feedback
-                showNotification('✅ Message sent successfully to Firebase!', 'success');
+                // Success feedback - check if it was saved to Firebase or locally
+                if (result && result.length > 20) {
+                    // Firebase document IDs are typically longer
+                    showNotification('✅ Message sent successfully to Firebase!', 'success');
+                } else {
+                    // Local storage backup
+                    showNotification('✅ Message saved locally (Firebase unavailable)', 'info');
+                }
                 
                 // Reset form and update counts
                 event.target.reset();

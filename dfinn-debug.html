@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dfinn.me Firebase Debug</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a2e;
+            color: white;
+        }
+        .debug-info {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: monospace;
+        }
+        .error { color: #ff4757; }
+        .success { color: #00ff88; }
+        .warning { color: #ffd23f; }
+        button {
+            background: #00ff88;
+            color: black;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            margin: 0.5rem;
+        }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .form-test {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            border: 1px solid #00ff88;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔥 dfinn.me Firebase Debug Tool</h1>
+    
+    <div class="debug-info" id="debugInfo">
+        Loading debug information...
+    </div>
+    
+    <button onclick="testFirebaseConnection()">Test Firebase Connection</button>
+    <button onclick="testFormSubmission()">Test Form Submission</button>
+    <button onclick="clearDebugLog()">Clear Log</button>
+    
+    <div class="form-test">
+        <h3>Quick Form Test</h3>
+        <input type="text" id="testName" placeholder="Test Name" value="Debug User">
+        <input type="email" id="testEmail" placeholder="Test Email" value="debug@dfinn.me">
+        <textarea id="testMessage" placeholder="Test Message" rows="3">This is a debug test from dfinn.me domain.</textarea>
+        <button onclick="submitTestForm()">Submit Test Form</button>
+    </div>
+    
+    <div class="debug-info" id="debugLog">
+        <strong>Debug Log:</strong><br>
+    </div>
+
+    <script type="module">
+        let debugLog = [];
+        
+        function addDebugLog(message, type = 'info') {
+            const timestamp = new Date().toISOString();
+            const className = type === 'error' ? 'error' : type === 'success' ? 'success' : type === 'warning' ? 'warning' : '';
+            debugLog.push(`<span class="${className}">[${timestamp}] ${message}</span>`);
+            
+            const logElement = document.getElementById('debugLog');
+            logElement.innerHTML = '<strong>Debug Log:</strong><br>' + debugLog.join('<br>');
+            
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        function displayDebugInfo() {
+            const info = {
+                'Current URL': window.location.href,
+                'Protocol': window.location.protocol,
+                'Hostname': window.location.hostname,
+                'Origin': window.location.origin,
+                'User Agent': navigator.userAgent,
+                'Is dfinn.me': window.location.hostname === 'dfinn.me' || window.location.hostname.endsWith('.dfinn.me'),
+                'Timestamp': new Date().toISOString()
+            };
+            
+            let infoHtml = '<strong>Environment Debug Info:</strong><br>';
+            for (const [key, value] of Object.entries(info)) {
+                infoHtml += `<strong>${key}:</strong> ${value}<br>`;
+            }
+            
+            document.getElementById('debugInfo').innerHTML = infoHtml;
+            addDebugLog('Debug info loaded');
+        }
+        
+        let app, db, addDoc, collection, serverTimestamp;
+        
+        async function initializeFirebase() {
+            try {
+                addDebugLog('Loading Firebase modules...', 'info');
+                
+                const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js");
+                const firebaseFirestore = await import("https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js");
+                
+                addDoc = firebaseFirestore.addDoc;
+                collection = firebaseFirestore.collection;
+                serverTimestamp = firebaseFirestore.serverTimestamp;
+                const { getFirestore } = firebaseFirestore;
+
+                const firebaseConfig = {
+                    apiKey: "AIzaSyCejm0Ry18S1mlqYpnMRuIJGnQ-iDvu3EU",
+                    authDomain: "custom-messages-84ec4.firebaseapp.com",
+                    projectId: "custom-messages-84ec4",
+                    storageBucket: "custom-messages-84ec4.firebasestorage.app",
+                    messagingSenderId: "1079020496100",
+                    appId: "1:1079020496100:web:d21ec1428327515e3df8f1"
+                };
+
+                addDebugLog('Initializing Firebase...', 'info');
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                
+                addDebugLog('✅ Firebase initialized successfully!', 'success');
+                return true;
+            } catch (error) {
+                addDebugLog(`❌ Firebase initialization failed: ${error.message}`, 'error');
+                addDebugLog(`Error code: ${error.code}`, 'error');
+                addDebugLog(`Error name: ${error.name}`, 'error');
+                return false;
+            }
+        }
+        
+        window.testFirebaseConnection = async function() {
+            try {
+                addDebugLog('Testing Firebase connection...', 'info');
+                
+                if (!db) {
+                    const success = await initializeFirebase();
+                    if (!success) {
+                        addDebugLog('Firebase not available for connection test', 'error');
+                        return;
+                    }
+                }
+                
+                const testRef = collection(db, 'dfinn-debug-test');
+                const testDoc = {
+                    timestamp: serverTimestamp(),
+                    domain: window.location.hostname,
+                    origin: window.location.origin,
+                    userAgent: navigator.userAgent,
+                    test: 'connection_test_dfinn_me'
+                };
+                
+                addDebugLog('Sending test document to Firestore...', 'info');
+                const docRef = await addDoc(testRef, testDoc);
+                addDebugLog(`✅ Connection test successful! Doc ID: ${docRef.id}`, 'success');
+                
+            } catch (error) {
+                addDebugLog(`❌ Connection test failed: ${error.message}`, 'error');
+                addDebugLog(`Error code: ${error.code}`, 'error');
+                
+                if (error.message.includes('CORS')) {
+                    addDebugLog('🚨 CORS error detected - dfinn.me may not be authorized in Firebase', 'warning');
+                }
+            }
+        };
+        
+        window.testFormSubmission = async function() {
+            try {
+                addDebugLog('Testing form submission to Messages collection...', 'info');
+                
+                if (!db) {
+                    const success = await initializeFirebase();
+                    if (!success) {
+                        addDebugLog('Firebase not available for form test', 'error');
+                        return;
+                    }
+                }
+                
+                const messagesRef = collection(db, 'Messages');
+                const messageDoc = {
+                    name: 'Debug Test User',
+                    email: 'debug@dfinn.me',
+                    message: 'This is a debug test message from dfinn.me',
+                    clientTimestamp: new Date().toISOString(),
+                    serverTimestamp: serverTimestamp(),
+                    domain: window.location.hostname,
+                    origin: window.location.origin,
+                    source: 'dfinn_debug_tool'
+                };
+                
+                addDebugLog('Sending message to Messages collection...', 'info');
+                const docRef = await addDoc(messagesRef, messageDoc);
+                addDebugLog(`✅ Form submission test successful! Message ID: ${docRef.id}`, 'success');
+                
+            } catch (error) {
+                addDebugLog(`❌ Form submission test failed: ${error.message}`, 'error');
+                addDebugLog(`Error code: ${error.code}`, 'error');
+            }
+        };
+        
+        window.submitTestForm = async function() {
+            const name = document.getElementById('testName').value;
+            const email = document.getElementById('testEmail').value;
+            const message = document.getElementById('testMessage').value;
+            
+            try {
+                addDebugLog(`Testing form with data: ${name}, ${email}`, 'info');
+                
+                if (!db) {
+                    const success = await initializeFirebase();
+                    if (!success) {
+                        addDebugLog('Firebase not available for custom form test', 'error');
+                        return;
+                    }
+                }
+                
+                const messagesRef = collection(db, 'Messages');
+                const messageDoc = {
+                    name: name,
+                    email: email,
+                    message: message,
+                    clientTimestamp: new Date().toISOString(),
+                    serverTimestamp: serverTimestamp(),
+                    domain: window.location.hostname,
+                    origin: window.location.origin,
+                    source: 'dfinn_debug_custom_form'
+                };
+                
+                addDebugLog('Submitting custom form data...', 'info');
+                const docRef = await addDoc(messagesRef, messageDoc);
+                addDebugLog(`✅ Custom form submitted successfully! ID: ${docRef.id}`, 'success');
+                
+            } catch (error) {
+                addDebugLog(`❌ Custom form submission failed: ${error.message}`, 'error');
+                addDebugLog(`Error code: ${error.code}`, 'error');
+            }
+        };
+        
+        window.clearDebugLog = function() {
+            debugLog = [];
+            document.getElementById('debugLog').innerHTML = '<strong>Debug Log:</strong><br>';
+        };
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            displayDebugInfo();
+            initializeFirebase();
+        });
+    </script>
+</body>
+</html>
