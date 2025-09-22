@@ -419,6 +419,23 @@
         // Global variables
         let currentUser = null;
 
+        // Cookie helpers (fallback for auth persistence)
+        function setCookie(name, value, days = 30) {
+            const expires = new Date(Date.now() + days * 864e5).toUTCString();
+            document.cookie = `${name}=${encodeURIComponent(value)}; Expires=${expires}; Path=/; SameSite=Lax`;
+        }
+
+        function getCookie(name) {
+            return document.cookie
+                .split('; ')
+                .find(row => row.startsWith(name + '='))
+                ?.split('=')[1];
+        }
+
+        function deleteCookie(name) {
+            document.cookie = `${name}=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax`;
+        }
+
         // Robust auth functions
         function loadUserFromStorage() {
             try {
@@ -426,6 +443,18 @@
                 console.log('Debug: Raw localStorage auth_user =', stored);
                 
                 if (!stored || stored === 'null' || stored === 'undefined') {
+                    // Cookie fallback
+                    const cookieVal = getCookie('auth_user');
+                    if (cookieVal) {
+                        try {
+                            currentUser = JSON.parse(decodeURIComponent(cookieVal));
+                            console.log('Debug: Loaded user from cookie =', currentUser);
+                            localStorage.setItem('auth_user', JSON.stringify(currentUser));
+                            return true;
+                        } catch (e) {
+                            console.warn('Debug: Failed to parse cookie user:', e);
+                        }
+                    }
                     currentUser = null;
                     return false;
                 }
@@ -437,6 +466,7 @@
                 console.error('Debug: Failed to parse auth_user from localStorage:', e);
                 currentUser = null;
                 localStorage.removeItem('auth_user'); // Clear corrupted data
+                deleteCookie('auth_user');
                 return false;
             }
         }
@@ -614,10 +644,13 @@
         `;
         document.head.appendChild(style);
 
+        // Try to load immediately (before DOM ready) to avoid race conditions
+        loadUserFromStorage();
+
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             // Load auth state using robust function
-            loadUserFromStorage();
+            if (!currentUser) loadUserFromStorage();
             
             initializeMatrix();
             updateAuthStatus();

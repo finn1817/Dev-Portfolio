@@ -50,13 +50,17 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     
-    let currentUser = null;
+  let currentUser = null;
+  function getCookie(name){return document.cookie.split('; ').find(r=>r.startsWith(name+'='))?.split('=')[1]}
+  function deleteCookie(name){document.cookie=`${name}=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax`}
     
     // Robust auth functions
     function loadUserFromStorage() {
       try {
         const stored = localStorage.getItem('auth_user');
         if (!stored || stored === 'null' || stored === 'undefined') {
+          const cookieVal=getCookie('auth_user');
+          if (cookieVal){ try{ currentUser=JSON.parse(decodeURIComponent(cookieVal)); localStorage.setItem('auth_user', JSON.stringify(currentUser)); return true;}catch(e){}}
           currentUser = null;
           return false;
         }
@@ -66,6 +70,7 @@
         console.error('Failed to parse auth_user:', e);
         currentUser = null;
         localStorage.removeItem('auth_user');
+        deleteCookie('auth_user');
         return false;
       }
     }
@@ -107,8 +112,11 @@
       }
     }
 
+    // Load ASAP
+    loadUserFromStorage();
+
     document.addEventListener('DOMContentLoaded', function() {
-      loadUserFromStorage();
+      if (!currentUser) loadUserFromStorage();
       updateAuthStatus();
       trackProgress();
     });

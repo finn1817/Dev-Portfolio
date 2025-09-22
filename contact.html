@@ -552,6 +552,18 @@
         let messageStats = { total: 0, today: 0, avgResponse: '24h' };
         let currentUser = null;
 
+        // Cookie helpers (fallback for auth persistence)
+        function setCookie(name, value, days = 30) {
+            const expires = new Date(Date.now() + days * 864e5).toUTCString();
+            document.cookie = `${name}=${encodeURIComponent(value)}; Expires=${expires}; Path=/; SameSite=Lax`;
+        }
+        function getCookie(name) {
+            return document.cookie.split('; ').find(r=>r.startsWith(name+'='))?.split('=')[1];
+        }
+        function deleteCookie(name) {
+            document.cookie = `${name}=; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Path=/; SameSite=Lax`;
+        }
+
         // Robust auth functions
         function loadUserFromStorage() {
             try {
@@ -559,6 +571,17 @@
                 console.log('Raw localStorage auth_user:', stored);
                 
                 if (!stored || stored === 'null' || stored === 'undefined') {
+                    // Cookie fallback
+                    const cookieVal = getCookie('auth_user');
+                    if (cookieVal) {
+                        try {
+                            currentUser = JSON.parse(decodeURIComponent(cookieVal));
+                            localStorage.setItem('auth_user', JSON.stringify(currentUser));
+                            return true;
+                        } catch (e) {
+                            console.warn('Failed parsing cookie auth_user:', e);
+                        }
+                    }
                     currentUser = null;
                     return false;
                 }
@@ -570,6 +593,7 @@
                 console.error('Failed to parse auth_user from localStorage:', e);
                 currentUser = null;
                 localStorage.removeItem('auth_user'); // Clear corrupted data
+                deleteCookie('auth_user');
                 return false;
             }
         }
@@ -578,10 +602,12 @@
             if (user) {
                 currentUser = user;
                 localStorage.setItem('auth_user', JSON.stringify(user));
+                setCookie('auth_user', JSON.stringify(user));
                 console.log('Saved user to localStorage:', user);
             } else {
                 currentUser = null;
                 localStorage.removeItem('auth_user');
+                deleteCookie('auth_user');
                 console.log('Removed user from localStorage');
             }
         }
@@ -600,9 +626,12 @@
             }
         }
 
+        // Attempt to load immediately for consistency
+        loadUserFromStorage();
+
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
-            loadUserFromStorage(); // Load auth state first
+            if (!currentUser) loadUserFromStorage(); // Load auth state first
             setupFormHandlers();
             updateSubmissionCount();
             loadTheme();
