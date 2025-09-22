@@ -1093,7 +1093,41 @@
         let lastSubmissionTime = parseInt(localStorage.getItem('lastSubmissionTime') || '0');
         let sessionId = generateSessionId();
     let commandHistory = [];
-    let currentUser = JSON.parse(localStorage.getItem('auth_user') || 'null');
+    let currentUser = null;
+
+        // Robust auth functions
+        function loadUserFromStorage() {
+            try {
+                const stored = localStorage.getItem('auth_user');
+                console.log('Raw localStorage auth_user:', stored);
+                
+                if (!stored || stored === 'null' || stored === 'undefined') {
+                    currentUser = null;
+                    return false;
+                }
+                
+                currentUser = JSON.parse(stored);
+                console.log('Parsed currentUser:', currentUser);
+                return currentUser !== null;
+            } catch (e) {
+                console.error('Failed to parse auth_user from localStorage:', e);
+                currentUser = null;
+                localStorage.removeItem('auth_user'); // Clear corrupted data
+                return false;
+            }
+        }
+
+        function saveUserToStorage(user) {
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('auth_user', JSON.stringify(user));
+                console.log('Saved user to localStorage:', user);
+            } else {
+                currentUser = null;
+                localStorage.removeItem('auth_user');
+                console.log('Removed user from localStorage');
+            }
+        }
 
         // SPA Management
         let currentSection = 'home';
@@ -1144,6 +1178,7 @@
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', async function() {
+            loadUserFromStorage(); // Load auth state first
             initializeMatrix();
             trackPageView();
             updateSubmissionCount();
@@ -1307,7 +1342,7 @@
                 status.style.display = 'inline';
                 status.textContent = `Signed in as ${currentUser.username}`;
                 btn.textContent = 'Sign Out';
-                btn.onclick = () => { currentUser = null; localStorage.removeItem('auth_user'); updateAuthUI(); };
+                btn.onclick = () => { saveUserToStorage(null); updateAuthUI(); };
             } else {
                 status.style.display = 'none';
                 status.textContent = '';
@@ -1382,7 +1417,7 @@
                     });
                     
                     currentUser = { username };
-                    localStorage.setItem('auth_user', JSON.stringify(currentUser));
+                    saveUserToStorage(currentUser);
                     closeAuth();
                     updateAuthUI();
                     showNotification(`Account created successfully! Welcome, ${username}!`);
@@ -1433,7 +1468,7 @@
                     } catch (_) {}
 
                     currentUser = { username };
-                    localStorage.setItem('auth_user', JSON.stringify(currentUser));
+                    saveUserToStorage(currentUser);
                     closeAuth();
                     updateAuthUI();
                     showNotification(`Welcome back, ${username}!`);

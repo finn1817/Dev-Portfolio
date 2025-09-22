@@ -417,17 +417,36 @@
         const db = getFirestore(app);
 
         // Global variables
-        let currentUser = JSON.parse(localStorage.getItem('auth_user') || 'null');
+        let currentUser = null;
+
+        // Robust auth functions
+        function loadUserFromStorage() {
+            try {
+                const stored = localStorage.getItem('auth_user');
+                console.log('Debug: Raw localStorage auth_user =', stored);
+                
+                if (!stored || stored === 'null' || stored === 'undefined') {
+                    currentUser = null;
+                    return false;
+                }
+                
+                currentUser = JSON.parse(stored);
+                console.log('Debug: Parsed currentUser =', currentUser);
+                return currentUser !== null;
+            } catch (e) {
+                console.error('Debug: Failed to parse auth_user from localStorage:', e);
+                currentUser = null;
+                localStorage.removeItem('auth_user'); // Clear corrupted data
+                return false;
+            }
+        }
 
         // Auth status display
         function updateAuthStatus() {
             const authStatus = document.getElementById('authStatus');
             if (!authStatus) return;
             
-            // Debug: Check localStorage
-            const storedUser = localStorage.getItem('auth_user');
-            console.log('Debug: localStorage auth_user =', storedUser);
-            console.log('Debug: currentUser =', currentUser);
+            console.log('Debug: updateAuthStatus called, currentUser =', currentUser);
             
             if (currentUser) {
                 authStatus.textContent = `${currentUser.username}`;
@@ -597,17 +616,8 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            // Re-check localStorage in case of navigation issues
-            const storedUser = localStorage.getItem('auth_user');
-            if (storedUser && storedUser !== 'null') {
-                try {
-                    currentUser = JSON.parse(storedUser);
-                    console.log('Debug: Reloaded user from localStorage:', currentUser);
-                } catch (e) {
-                    console.log('Debug: Failed to parse stored user:', e);
-                    currentUser = null;
-                }
-            }
+            // Load auth state using robust function
+            loadUserFromStorage();
             
             initializeMatrix();
             updateAuthStatus();

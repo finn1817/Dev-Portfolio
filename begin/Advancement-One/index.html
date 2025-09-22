@@ -50,7 +50,29 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     
-    let currentUser = JSON.parse(localStorage.getItem('auth_user') || 'null');
+    let currentUser = null;
+    
+    // Robust auth functions
+    function loadUserFromStorage() {
+      try {
+        const stored = localStorage.getItem('auth_user');
+        console.log('Debug: Raw localStorage auth_user =', stored);
+        
+        if (!stored || stored === 'null' || stored === 'undefined') {
+          currentUser = null;
+          return false;
+        }
+        
+        currentUser = JSON.parse(stored);
+        console.log('Debug: Parsed currentUser =', currentUser);
+        return currentUser !== null;
+      } catch (e) {
+        console.error('Debug: Failed to parse auth_user from localStorage:', e);
+        currentUser = null;
+        localStorage.removeItem('auth_user'); // Clear corrupted data
+        return false;
+      }
+    }
     
     function generateSessionId() {
       return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -90,15 +112,8 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-      // Re-check localStorage in case of navigation issues
-      const storedUser = localStorage.getItem('auth_user');
-      if (storedUser && storedUser !== 'null') {
-        try {
-          currentUser = JSON.parse(storedUser);
-        } catch (e) {
-          currentUser = null;
-        }
-      }
+      // Load auth state using robust function
+      loadUserFromStorage();
       
       updateAuthStatus();
       trackProgress();

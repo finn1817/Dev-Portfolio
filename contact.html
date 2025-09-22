@@ -550,7 +550,41 @@
         let lastSubmissionTime = parseInt(localStorage.getItem('lastSubmissionTime') || '0');
         let sessionId = generateSessionId();
         let messageStats = { total: 0, today: 0, avgResponse: '24h' };
-        let currentUser = JSON.parse(localStorage.getItem('auth_user') || 'null');
+        let currentUser = null;
+
+        // Robust auth functions
+        function loadUserFromStorage() {
+            try {
+                const stored = localStorage.getItem('auth_user');
+                console.log('Raw localStorage auth_user:', stored);
+                
+                if (!stored || stored === 'null' || stored === 'undefined') {
+                    currentUser = null;
+                    return false;
+                }
+                
+                currentUser = JSON.parse(stored);
+                console.log('Parsed currentUser:', currentUser);
+                return currentUser !== null;
+            } catch (e) {
+                console.error('Failed to parse auth_user from localStorage:', e);
+                currentUser = null;
+                localStorage.removeItem('auth_user'); // Clear corrupted data
+                return false;
+            }
+        }
+
+        function saveUserToStorage(user) {
+            if (user) {
+                currentUser = user;
+                localStorage.setItem('auth_user', JSON.stringify(user));
+                console.log('Saved user to localStorage:', user);
+            } else {
+                currentUser = null;
+                localStorage.removeItem('auth_user');
+                console.log('Removed user from localStorage');
+            }
+        }
 
         // Auth status display
         function updateAuthStatus() {
@@ -568,13 +602,14 @@
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
+            loadUserFromStorage(); // Load auth state first
             setupFormHandlers();
             updateSubmissionCount();
             loadTheme();
             trackPageView();
             setupRealTimeListeners();
             loadAnalytics();
-            updateAuthStatus(); // Add auth status check
+            updateAuthStatus(); // Update auth display
         });
 
         // Firebase Functions
