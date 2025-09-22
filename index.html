@@ -969,11 +969,15 @@
         };
 
         function persistLocalDB(){
-            localStorage.setItem('local_analytics', JSON.stringify(localDB.analytics));
-            localStorage.setItem('local_messages', JSON.stringify(localDB.messages));
-            localStorage.setItem('local_users', JSON.stringify(localDB.users));
-            localStorage.setItem('local_events', JSON.stringify(localDB.events));
-            localStorage.setItem('local_progress', JSON.stringify(localDB.progress));
+            try {
+                localStorage.setItem('local_analytics', JSON.stringify(localDB.analytics || []));
+                localStorage.setItem('local_messages', JSON.stringify(localDB.messages || []));
+                localStorage.setItem('local_users', JSON.stringify(localDB.users || {}));
+                localStorage.setItem('local_events', JSON.stringify(localDB.events || {}));
+                localStorage.setItem('local_progress', JSON.stringify(localDB.progress || {}));
+            } catch (error) {
+                console.warn('Failed to persist local database:', error);
+            }
         }
 
         // Test Firebase connection
@@ -1021,42 +1025,47 @@
             try {
                 console.log('💾 Saving message to Firebase Messages collection...');
                 
-                // Create comprehensive message document with unique fields
+                // Validate Firebase availability
+                if (!db || !addDoc || !collection || !serverTimestamp) {
+                    throw new Error('Firebase not properly initialized');
+                }
+                
+                // Create comprehensive message document with safe field access
                 const messageDocument = {
-                    // User input data
-                    fullName: messageData.name,
-                    emailAddress: messageData.email,
-                    messageContent: messageData.message,
+                    // User input data - safely get values
+                    fullName: String(messageData.name || '').trim(),
+                    emailAddress: String(messageData.email || '').trim(),
+                    messageContent: String(messageData.message || '').trim(),
                     
                     // Timestamp fields
-                    clientTimestamp: messageData.clientTimestamp,
+                    clientTimestamp: messageData.clientTimestamp || new Date().toISOString(),
                     serverTimestamp: serverTimestamp(),
                     submittedAt: new Date().toISOString(),
                     
                     // Session and tracking data
-                    sessionId: sessionId,
+                    sessionId: sessionId || generateSessionId(),
                     messageId: generateDocumentId(),
-                    submissionNumber: submissionCount + 1,
+                    submissionNumber: (submissionCount || 0) + 1,
                     
-                    // Browser and environment data
-                    userAgent: navigator.userAgent,
-                    browserLanguage: navigator.language,
-                    screenResolution: `${screen.width}x${screen.height}`,
-                    viewportSize: `${window.innerWidth}x${window.innerHeight}`,
-                    platform: navigator.platform,
-                    cookieEnabled: navigator.cookieEnabled,
+                    // Browser and environment data - safe access
+                    userAgent: navigator.userAgent || 'unknown',
+                    browserLanguage: navigator.language || 'unknown',
+                    screenResolution: `${screen.width || 0}x${screen.height || 0}`,
+                    viewportSize: `${window.innerWidth || 0}x${window.innerHeight || 0}`,
+                    platform: navigator.platform || 'unknown',
+                    cookieEnabled: navigator.cookieEnabled || false,
                     
-                    // Page and site data
-                    currentPage: window.location.href,
+                    // Page and site data - safe access
+                    currentPage: window.location.href || 'unknown',
                     referrer: document.referrer || 'direct',
-                    pageTitle: document.title,
-                    origin: window.location.origin,
-                    protocol: window.location.protocol,
-                    hostname: window.location.hostname,
+                    pageTitle: document.title || 'unknown',
+                    origin: window.location.origin || 'unknown',
+                    protocol: window.location.protocol || 'unknown',
+                    hostname: window.location.hostname || 'unknown',
                     
                     // Form and interaction data
                     formSubmissionMethod: 'portfolio_contact_form',
-                    characterCount: messageData.message.length,
+                    characterCount: String(messageData.message || '').length,
                     formValidated: true,
                     
                     // Status and metadata
@@ -1066,11 +1075,11 @@
                     source: 'dan_finn_portfolio',
                     category: 'contact_inquiry',
                     
-                    // Additional tracking
-                    timeOnPageBeforeSubmit: Date.now() - performance.timing.navigationStart,
-                    easterEggsFound: easterEggsFound,
-                    devModeEnabled: devModeEnabled,
-                    currentTheme: document.documentElement.getAttribute('data-theme'),
+                    // Additional tracking - safe access
+                    timeOnPageBeforeSubmit: Date.now() - (performance.timing?.navigationStart || Date.now()),
+                    easterEggsFound: easterEggsFound || 0,
+                    devModeEnabled: devModeEnabled || false,
+                    currentTheme: document.documentElement.getAttribute('data-theme') || 'dark',
                     
                     // IP will be added by Firebase Functions if configured
                     ipAddress: null,
@@ -1079,44 +1088,54 @@
 
                 console.log('📤 Sending to Firebase Messages collection:', messageDocument);
                 
-                // Add to Messages collection
-                const docRef = await addDoc(collection(db, 'Messages'), messageDocument);
+                // Add to Messages collection with timeout
+                const messagesRef = collection(db, 'Messages');
+                const docRef = await addDoc(messagesRef, messageDocument);
                 console.log('✅ Message saved to Firebase Messages collection with ID:', docRef.id);
                 
-                // Also save to local backup
-                const localId = generateDocumentId();
-                localDB.messages.push({ 
-                    id: localId, 
-                    firebaseId: docRef.id,
-                    ...messageData, 
-                    timestamp: Date.now(), 
-                    sessionId,
-                    savedToFirebase: true
-                });
-                persistLocalDB();
+                // Save to local backup with error handling
+                try {
+                    const localId = generateDocumentId();
+                    localDB.messages.push({ 
+                        id: localId, 
+                        firebaseId: docRef.id,
+                        ...messageData, 
+                        timestamp: Date.now(), 
+                        sessionId: sessionId || generateSessionId(),
+                        savedToFirebase: true
+                    });
+                    persistLocalDB();
+                } catch (localError) {
+                    console.warn('Local backup save failed:', localError);
+                }
                 
                 return docRef.id;
                 
             } catch (error) {
                 console.error('❌ Error saving to Firebase Messages collection:', error);
                 
-                // Fallback to local storage
-                const localId = generateDocumentId();
-                localDB.messages.push({ 
-                    id: localId,
-                    ...messageData, 
-                    timestamp: Date.now(), 
-                    sessionId,
-                    origin: window.location.origin,
-                    protocol: window.location.protocol,
-                    savedToFirebase: false,
-                    firebaseError: error.message,
-                    userAgent: navigator.userAgent,
-                    errorTimestamp: new Date().toISOString()
-                });
-                persistLocalDB();
+                // Fallback to local storage with error handling
+                try {
+                    const localId = generateDocumentId();
+                    localDB.messages.push({ 
+                        id: localId,
+                        ...messageData, 
+                        timestamp: Date.now(), 
+                        sessionId: sessionId || generateSessionId(),
+                        origin: window.location.origin || 'unknown',
+                        protocol: window.location.protocol || 'unknown',
+                        savedToFirebase: false,
+                        firebaseError: error.message || 'Unknown error',
+                        userAgent: navigator.userAgent || 'unknown',
+                        errorTimestamp: new Date().toISOString()
+                    });
+                    persistLocalDB();
+                    
+                    console.log('✅ Message saved locally with ID:', localId);
+                } catch (localError) {
+                    console.error('❌ Both Firebase and local storage failed:', localError);
+                }
                 
-                console.log('✅ Message saved locally with ID:', localId);
                 throw error; // Re-throw to handle in form submit
             }
         }
@@ -1160,7 +1179,7 @@
             persistLocalDB();
         }
 
-        // Form handling with enhanced error handling
+        // Form handling with enhanced error handling and crash prevention
         async function handleFormSubmit(event) {
             console.log('🔥 Form submission started!');
             
@@ -1183,26 +1202,48 @@
             const submitBtn = form.querySelector('button[type="submit"]');
             const originalText = submitBtn ? submitBtn.textContent : 'Send Message 🚀';
             
+            // Disable button immediately to prevent double submission
             if (submitBtn) {
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Sending... ⏳';
                 submitBtn.classList.add('pulse');
             }
 
+            // Add minimum waiting period before processing
+            await new Promise(resolve => setTimeout(resolve, 500));
+
             const formData = new FormData(form);
             const messageData = {
-                name: formData.get('name'),
-                email: formData.get('email'),
-                message: formData.get('message'),
+                name: formData.get('name') || '',
+                email: formData.get('email') || '',
+                message: formData.get('message') || '',
                 clientTimestamp: new Date().toISOString()
             };
+
+            // Validate form data
+            if (!messageData.name.trim() || !messageData.email.trim() || !messageData.message.trim()) {
+                console.error('❌ Form validation failed - missing required fields');
+                showNotification('❌ Please fill in all required fields', 'error');
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                    submitBtn.classList.remove('pulse');
+                }
+                return;
+            }
 
             console.log('📊 Form data collected:', messageData);
 
             try {
                 showNotification('📤 Sending message to Firebase Messages collection...', 'info');
                 
+                // Add processing delay for better UX
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
                 const result = await saveMessage(messageData);
+                
+                // Add success delay
+                await new Promise(resolve => setTimeout(resolve, 1500));
                 
                 // Success - Firebase save worked
                 showNotification('✅ Message sent successfully to Firebase Messages collection!', 'success');
@@ -1211,32 +1252,46 @@
                 form.reset();
                 updateCharCount();
                 updateSubmissionCount();
-                await logEasterEgg('form_submission_success');
+                
+                try {
+                    await logEasterEgg('form_submission_success');
+                } catch (eggError) {
+                    console.warn('Easter egg logging failed:', eggError);
+                }
                 
                 console.log('✅ Form submission completed successfully! Firebase ID:', result);
                 
             } catch (error) {
                 console.error('❌ Error submitting form:', error);
                 
+                // Add error delay
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
                 // Check if message was saved locally as backup
-                if (localDB.messages.length > 0) {
-                    const lastMessage = localDB.messages[localDB.messages.length - 1];
-                    if (lastMessage.sessionId === sessionId && !lastMessage.savedToFirebase) {
-                        showNotification('⚠️ Firebase failed, but message saved locally as backup', 'warning');
+                try {
+                    if (localDB.messages && localDB.messages.length > 0) {
+                        const lastMessage = localDB.messages[localDB.messages.length - 1];
+                        if (lastMessage.sessionId === sessionId && !lastMessage.savedToFirebase) {
+                            showNotification('⚠️ Firebase failed, but message saved locally as backup', 'warning');
+                        } else {
+                            showNotification('❌ Failed to send message to Firebase', 'error');
+                        }
                     } else {
                         showNotification('❌ Failed to send message to Firebase', 'error');
                     }
-                } else {
+                } catch (localError) {
+                    console.error('Error checking local backup:', localError);
                     showNotification('❌ Failed to send message to Firebase', 'error');
                 }
             } finally {
-                setTimeout(() => {
-                    if (submitBtn) {
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = originalText;
-                        submitBtn.classList.remove('pulse');
-                    }
-                }, 1000);
+                // Final waiting period before re-enabling button
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                    submitBtn.classList.remove('pulse');
+                }
             }
         }
 
@@ -1842,6 +1897,19 @@ ${achievements.length > 0 ? achievements.map(a => `• ${a}`).join('\n') : '• 
             if (contactForm) {
                 console.log('✅ Contact form found, setting up event listener...');
                 contactForm.addEventListener('submit', handleFormSubmit);
+                
+                // Add debug listener to see if submission is triggered
+                contactForm.addEventListener('submit', function(e) {
+                    console.log('🔥 FORM SUBMIT EVENT DETECTED!', e);
+                });
+                
+                // Test button click detection
+                const submitBtn = contactForm.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.addEventListener('click', function(e) {
+                        console.log('🔥 SUBMIT BUTTON CLICKED!', e);
+                    });
+                }
             } else {
                 console.error('❌ Contact form not found!');
             }
