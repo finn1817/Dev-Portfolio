@@ -11,231 +11,6 @@
             box-sizing: border-box;
         }
 
-        :root {
-            --bg-gradient: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
-            --text-color: #ffffff;
-            --accent-color: #3b82f6;
-            --secondary-color: #6366f1;
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --border-color: rgba(255, 255, 255, 0.1);
-            --nav-bg: rgba(0, 0, 0, 0.8);
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
-
-        [data-theme="light"] {
-            --bg-gradient: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            --text-color: #2d3748;
-            --accent-color: #3b82f6;
-            --secondary-color: #6366f1;
-            --card-bg: rgba(255, 255, 255, 0.8);
-            --border-color: rgba(0, 0, 0, 0.1);
-            --nav-bg: rgba(255, 255, 255, 0.9);
-            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }
-
-        [data-theme="blackout"] {
-            --bg-gradient: linear-gradient(135deg, #000000 0%, #0a0a0a 100%);
-            --text-color: #ffffff;
-            --accent-color: #00ff00;
-            --secondary-color: #ff0040;
-            --card-bg: rgba(0, 0, 0, 0.8);
-            --border-color: rgba(0, 255, 0, 0.3);
-            --nav-bg: rgba(0, 0, 0, 0.95);
-            --shadow: 0 8px 32px rgba(0, 255, 0, 0.2);
-        }
-
-        body {
-            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--bg-gradient);
-            color: var(--text-color);
-            line-height: 1.6;
-            transition: all 0.3s ease;
-            overflow-x: hidden;
-            min-height: 100vh;
-            padding-top: 62px; /* ensure fixed nav does not cover content */
-        }
-
-        .matrix-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.1;
-        }
-
-        .nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            padding: 0.5rem 1.2rem; /* reduced padding */
-            background: var(--nav-bg);
-            backdrop-filter: blur(12px);
-            z-index: 1000;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            box-shadow: var(--shadow);
-            height: 60px;
-        }
-
-        .logo {
-            font-size: 1.2rem; /* smaller logo */
-            font-weight: 800;
-            background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .logo:hover {
-            opacity: 0.8;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 1rem;
-            list-style: none;
-        }
-
-        .left { display: flex; align-items: center; gap: 0.75rem; }
-        .auth-button { background: transparent; color: var(--text-color); border: 1px solid var(--border-color); padding: 0.35rem 0.8rem; border-radius: 20px; cursor: pointer; font-size: 0.85rem; }
-        .auth-button:hover { border-color: var(--accent-color); color: var(--accent-color); }
-
-        /* Auth Modal Styles */
-        .auth-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(5px);
-        }
-
-        .auth-modal.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .auth-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 2rem;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: var(--shadow);
-            backdrop-filter: blur(20px);
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-        }
-
-        .auth-modal.active .auth-card {
-            transform: scale(1);
-        }
-
-        .auth-card h3 {
-            text-align: center;
-            margin-bottom: 1.5rem;
-            color: var(--text-color);
-            font-size: 1.5rem;
-        }
-
-        .auth-input {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            background: var(--card-bg);
-            color: var(--text-color);
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-            transition: border-color 0.3s ease;
-        }
-
-        .auth-input:focus {
-            outline: none;
-            border-color: var(--accent-color);
-        }
-
-        .auth-input::placeholder {
-            color: var(--text-color);
-            opacity: 0.6;
-        }
-
-        .auth-row {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .auth-row .auth-input {
-            flex: 1;
-        }
-
-        .auth-hint {
-            font-size: 0.8rem;
-            color: var(--text-color);
-            opacity: 0.7;
-            margin-bottom: 1rem;
-            text-align: center;
-        }
-
-        .auth-actions {
-            display: flex;
-            gap: 0.8rem;
-            justify-content: space-between;
-        }
-
-        .auth-primary, .auth-secondary {
-            flex: 1;
-            padding: 0.8rem;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .auth-primary {
-            background: var(--accent-color);
-            color: white;
-        }
-
-        .auth-primary:hover {
-            background: var(--secondary-color);
-            transform: translateY(-2px);
-        }
-
-        .auth-secondary {
-            background: transparent;
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-        }
-
-        .auth-secondary:hover {
-            border-color: var(--accent-color);
-            color: var(--accent-color);
-        }
-
-        .auth-mode-toggle {
-            text-align: center;
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border-color);
-        }
-
         .auth-toggle-btn {
             background: none;
             border: none;
@@ -1071,8 +846,9 @@
     <script src="auth.js"></script>
     <script type="module">
         // Firebase Configuration
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, where, updateDoc, deleteDoc, doc, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, where, updateDoc, deleteDoc, doc, serverTimestamp, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, setPersistence, browserLocalPersistence, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCejm0Ry18S1mlqYpnMRuIJGnQ-iDvu3EU",
@@ -1085,7 +861,9 @@
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+    await setPersistence(auth, browserLocalPersistence);
 
         // Global variables
         let devModeEnabled = false;
@@ -1094,7 +872,7 @@
         let lastSubmissionTime = parseInt(localStorage.getItem('lastSubmissionTime') || '0');
         let sessionId = generateSessionId();
     let commandHistory = [];
-    let currentUser = (window.Auth && Auth.getUser()) || null;
+    let currentUser = null;
 
         // Cookie helpers (fallback for auth persistence)
         function setCookie(name, value, days = 30) {
@@ -1315,17 +1093,16 @@
                 const snapshot = await getDocs(usersQuery);
                 
                 if (snapshot.empty) {
-                    // Create demo account if it doesn't exist
-                    await addDoc(collection(db, 'users'), { 
-                        username: 'Testuser', 
-                        password: btoa('Password1!'),
-                        name: 'Demo User', 
-                        phone: null, 
+                    // Create demo profile doc if it doesn't exist (no password stored here)
+                    await setDoc(doc(db, 'users', 'Testuser'), {
+                        username: 'Testuser',
+                        name: 'Demo User',
+                        phone: null,
                         createdAt: serverTimestamp(),
                         accountType: 'demo',
                         lastLogin: serverTimestamp()
-                    });
-                    console.log('Demo account initialized');
+                    }, { merge: true });
+                    console.log('Demo user profile initialized');
                 }
             } catch (error) {
                 console.log('Demo account initialization failed:', error);
@@ -1340,7 +1117,7 @@
                 status.style.display = 'inline';
                 status.textContent = `Signed in as ${currentUser.username}`;
                 btn.textContent = 'Sign Out';
-                btn.onclick = () => { if (window.Auth) Auth.clear(); currentUser = null; updateAuthUI(); };
+                btn.onclick = async () => { try { await signOut(auth); } catch(_){} };
             } else {
                 status.style.display = 'none';
                 status.textContent = '';
@@ -1365,6 +1142,12 @@
             }
         }
 
+        // Convert username to a synthetic email for Firebase Auth
+        function usernameToEmail(u){
+            const base = (u || '').trim();
+            return `${base}@users.dfinn.local`;
+        }
+
         window.handleAuth = async function() {
             const username = document.getElementById('authUsername').value.trim();
             const password = document.getElementById('authPassword').value;
@@ -1373,157 +1156,82 @@
             const phone = document.getElementById('authPhone').value.trim();
 
             // Validation
-            if (!username) { 
-                showNotification('Username required', 'error'); 
-                return; 
-            }
-            
-            if (username.length < 3) {
-                showNotification('Username must be at least 3 characters', 'error');
-                return;
-            }
-            
-            if (!validPassword(password)) { 
-                showNotification('Password must include upper, lower, number, special and be 4+ chars', 'error'); 
-                return; 
-            }
+            if (!username) { showNotification('Username required', 'error'); return; }
+            if (username.length < 3) { showNotification('Username must be at least 3 characters', 'error'); return; }
+            if (!validPassword(password)) { showNotification('Password must include upper, lower, number, special and be 4+ chars', 'error'); return; }
 
             if (isCreateMode) {
-                // Create Account mode
-                if (password !== confirmPassword) {
-                    showNotification('Passwords do not match', 'error');
-                    return;
-                }
-
-                // Check if username already exists
+                if (password !== confirmPassword) { showNotification('Passwords do not match', 'error'); return; }
                 const userExists = await checkUsernameExists(username);
-                if (userExists) {
-                    showNotification('Username already exists. Please choose a different one.', 'error');
-                    return;
-                }
-
-                // Create new account
+                if (userExists) { showNotification('Username already exists. Please choose a different one.', 'error'); return; }
                 try {
-                    await addDoc(collection(db, 'users'), { 
-                        username, 
-                        password: btoa(password), // Basic encoding (not secure for production)
-                        name: name || null, 
-                        phone: phone || null, 
-                        createdAt: serverTimestamp(),
-                        accountType: 'created',
-                        lastLogin: serverTimestamp()
-                    });
-                    
-                    currentUser = { username };
-                    saveUserToStorage(currentUser);
-                    closeAuth();
-                    updateAuthUI();
-                    showNotification(`Account created successfully! Welcome, ${username}!`);
-                    
-                    // Track account creation
+                    const email = usernameToEmail(username);
+                    const cred = await createUserWithEmailAndPassword(auth, email, password);
+                    await updateProfile(cred.user, { displayName: username });
                     try {
-                        await addDoc(collection(db, 'users', username, 'events'), {
-                            type: 'account_created',
-                            timestamp: serverTimestamp(),
-                            sessionId: sessionId
-                        });
-                    } catch (_) {}
-                    
-                } catch (error) {
-                    console.error('Error creating account:', error);
-                    showNotification('Error creating account. Please try again.', 'error');
+                        await setDoc(doc(db, 'users', username), {
+                            username,
+                            name: name || null,
+                            phone: phone || null,
+                            createdAt: serverTimestamp(),
+                            accountType: 'created',
+                            lastLogin: serverTimestamp()
+                        }, { merge: true });
+                    } catch(_) {}
+                    showNotification(`Account created successfully! Welcome, ${username}!`);
+                    closeAuth();
+                } catch (e) {
+                    console.error('Auth sign up failed', e);
+                    showNotification('Sign up failed: ' + (e.message || ''), 'error');
                 }
             } else {
-                // Sign In mode
                 try {
-                    // Check if user exists and password matches
-                    const usersQuery = query(
-                        collection(db, 'users'), 
-                        where('username', '==', username), 
-                        limit(1)
-                    );
-                    const snapshot = await getDocs(usersQuery);
-                    
-                    if (snapshot.empty) {
-                        showNotification('Username not found. Please create an account first.', 'error');
-                        return;
-                    }
-                    
-                    // Verify password
-                    const userData = snapshot.docs[0].data();
-                    const storedPassword = atob(userData.password || '');
-                    
-                    if (storedPassword !== password) {
-                        showNotification('Incorrect password', 'error');
-                        return;
-                    }
-                    
-                    // Update last login
-                    try {
-                        await updateDoc(snapshot.docs[0].ref, {
-                            lastLogin: serverTimestamp()
-                        });
-                    } catch (_) {}
-
-                    currentUser = { username };
-                    saveUserToStorage(currentUser);
-                    closeAuth();
-                    updateAuthUI();
+                    const email = usernameToEmail(username);
+                    await signInWithEmailAndPassword(auth, email, password);
                     showNotification(`Welcome back, ${username}!`);
-                    
-                    // Track sign in
-                    try {
-                        await addDoc(collection(db, 'users', username, 'events'), {
-                            type: 'sign_in',
-                            timestamp: serverTimestamp(),
-                            sessionId: sessionId
-                        });
-                    } catch (_) {}
-                    
-                } catch (error) {
-                    console.error('Error signing in:', error);
-                    showNotification('Error signing in. Please try again.', 'error');
+                    closeAuth();
+                } catch (e) {
+                    console.error('Auth sign in failed', e);
+                    showNotification('Sign in failed: ' + (e.message || ''), 'error');
                 }
             }
         };
 
+        // Keep UI and a small local mirror in sync with Firebase Auth
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = { username: user.displayName || (user.email ? user.email.split('@')[0] : 'user'), uid: user.uid };
+                try { localStorage.setItem('auth_user', JSON.stringify(currentUser)); } catch(_){}
+                updateAuthUI();
+            } else {
+                currentUser = null;
+                try { localStorage.removeItem('auth_user'); } catch(_){}
+                updateAuthUI();
+            }
+        });
+
+        // Analytics helper
         async function getAnalytics() {
             try {
-                const analytics = {
-                    pageViews: 0,
-                    messageCount: 0,
-                    easterEggCount: 0,
-                    activeUsers: 0
-                };
-
-                // Get page views
-                const pageViewsQuery = query(collection(db, 'analytics'), orderBy('timestamp', 'desc'), limit(100));
+                const analytics = { pageViews: 0, activeUsers: 0, messageCount: 0, easterEggCount: 0 };
+                const pageViewsQuery = query(collection(db, 'analytics'), where('type', '==', 'page_view'), orderBy('timestamp', 'desc'), limit(500));
                 const pageViewsSnapshot = await getDocs(pageViewsQuery);
                 analytics.pageViews = pageViewsSnapshot.docs.length;
-
-                // Get unique sessions (active users)
                 const uniqueSessions = new Set();
-                pageViewsSnapshot.docs.forEach(doc => {
-                    if (doc.data().sessionId) {
-                        uniqueSessions.add(doc.data().sessionId);
-                    }
+                pageViewsSnapshot.docs.forEach(d => {
+                    const sid = d.data().sessionId;
+                    if (sid) uniqueSessions.add(sid);
                 });
                 analytics.activeUsers = uniqueSessions.size;
-
-                // Get message count
                 const messagesQuery = query(collection(db, 'messages'), orderBy('timestamp', 'desc'), limit(50));
                 const messagesSnapshot = await getDocs(messagesQuery);
                 analytics.messageCount = messagesSnapshot.docs.length;
-
-                // Get easter egg count (user-scoped only)
-                analytics.easterEggCount = 0;
                 if (currentUser) {
                     try {
                         const eggsSnap = await getDocs(query(collection(db, 'users', currentUser.username, 'events'), orderBy('timestamp', 'desc'), limit(50)));
                         analytics.easterEggCount = eggsSnap.docs.filter(d => !!d.data().type || d.data().action === 'hunt_started').length;
                     } catch (_) { /* ignore */ }
                 }
-
                 return analytics;
             } catch (error) {
                 console.error('Error getting analytics:', error);
@@ -1531,7 +1239,7 @@
             }
         }
 
-        // Hunt progress tracking
+    // Hunt progress tracking
         async function getHuntProgress() {
             if (!currentUser) {
                 return `🎯 HUNT PROGRESS TRACKING
@@ -1540,7 +1248,7 @@
 
 To sign in:
 1. Click the "Sign In" button (top-left)
-2. Create an account or use demo: Testuser / Password1!
+2. Create an account (use any username + strong password)
 3. Your progress will be automatically tracked across all hunt pages
 
 Once signed in, this command will show:
