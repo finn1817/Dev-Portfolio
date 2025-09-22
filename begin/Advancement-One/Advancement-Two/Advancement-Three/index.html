@@ -90,6 +90,16 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+      // Re-check localStorage in case of navigation issues
+      const storedUser = localStorage.getItem('auth_user');
+      if (storedUser && storedUser !== 'null') {
+        try {
+          currentUser = JSON.parse(storedUser);
+        } catch (e) {
+          currentUser = null;
+        }
+      }
+      
       updateAuthStatus();
       trackProgress();
     });

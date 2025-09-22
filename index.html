@@ -1149,6 +1149,7 @@
             updateSubmissionCount();
             loadEasterEggCount();
             setupRealTimeListeners();
+            initializeDemoAccount(); // Initialize demo account
             
             // Setup form handlers
             document.getElementById('contactForm').addEventListener('submit', handleFormSubmit);
@@ -1270,6 +1271,34 @@
             }
         };
 
+        // Demo account initialization
+        async function initializeDemoAccount() {
+            try {
+                const usersQuery = query(
+                    collection(db, 'users'), 
+                    where('username', '==', 'Testuser'), 
+                    limit(1)
+                );
+                const snapshot = await getDocs(usersQuery);
+                
+                if (snapshot.empty) {
+                    // Create demo account if it doesn't exist
+                    await addDoc(collection(db, 'users'), { 
+                        username: 'Testuser', 
+                        password: btoa('Password1!'),
+                        name: 'Demo User', 
+                        phone: null, 
+                        createdAt: serverTimestamp(),
+                        accountType: 'demo',
+                        lastLogin: serverTimestamp()
+                    });
+                    console.log('Demo account initialized');
+                }
+            } catch (error) {
+                console.log('Demo account initialization failed:', error);
+            }
+        }
+
         function updateAuthUI() {
             const status = document.getElementById('authStatus');
             const btn = document.getElementById('authBtn');
@@ -1383,40 +1412,25 @@
                     const snapshot = await getDocs(usersQuery);
                     
                     if (snapshot.empty) {
-                        // Special case for Testuser/Password1! (demo account)
-                        if (username === 'Testuser' && password === 'Password1!') {
-                            try {
-                                await addDoc(collection(db, 'users'), { 
-                                    username: 'Testuser', 
-                                    password: btoa('Password1!'),
-                                    name: name || null, 
-                                    phone: phone || null, 
-                                    createdAt: serverTimestamp(),
-                                    accountType: 'demo',
-                                    lastLogin: serverTimestamp()
-                                });
-                            } catch (_) {}
-                        } else {
-                            showNotification('Username not found. Please create an account first.', 'error');
-                            return;
-                        }
-                    } else {
-                        // Verify password
-                        const userData = snapshot.docs[0].data();
-                        const storedPassword = atob(userData.password || '');
-                        
-                        if (storedPassword !== password) {
-                            showNotification('Incorrect password', 'error');
-                            return;
-                        }
-                        
-                        // Update last login
-                        try {
-                            await updateDoc(snapshot.docs[0].ref, {
-                                lastLogin: serverTimestamp()
-                            });
-                        } catch (_) {}
+                        showNotification('Username not found. Please create an account first.', 'error');
+                        return;
                     }
+                    
+                    // Verify password
+                    const userData = snapshot.docs[0].data();
+                    const storedPassword = atob(userData.password || '');
+                    
+                    if (storedPassword !== password) {
+                        showNotification('Incorrect password', 'error');
+                        return;
+                    }
+                    
+                    // Update last login
+                    try {
+                        await updateDoc(snapshot.docs[0].ref, {
+                            lastLogin: serverTimestamp()
+                        });
+                    } catch (_) {}
 
                     currentUser = { username };
                     localStorage.setItem('auth_user', JSON.stringify(currentUser));
