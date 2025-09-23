@@ -19,12 +19,13 @@
     .auth-status.signed-in{border-color:var(--accent);color:var(--accent)}
     .auth-status.signed-out{opacity:0.6;color:#ffd23f}
     
-    /* Hidden image reveal system */
-    .secret-reveal{position:absolute;top:1.5rem;right:1.5rem;z-index:100;cursor:pointer}
-    .secret-image{width:120px;height:auto;border-radius:8px;transition:opacity 0.3s ease;border:2px solid rgba(0,255,136,0.3)}
-    .secret-image:hover{opacity:0.3}
-    .secret-text{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;background:rgba(15,42,63,0.95);border-radius:8px;color:var(--accent);font-size:0.8rem;font-weight:600;opacity:0;transition:opacity 0.3s ease;pointer-events:none;text-align:center;padding:0.8rem;line-height:1.3;border:2px solid var(--accent);word-break:break-all;min-width:200px}
-    .secret-reveal:hover .secret-text{opacity:1}
+  /* Hidden image reveal system (tooltip positioned to the left and selectable) */
+  .secret-reveal{position:absolute;top:1.5rem;right:1.5rem;z-index:100;cursor:pointer;display:flex;align-items:center}
+  .secret-image{width:140px;height:auto;border-radius:8px;transition:opacity 0.2s ease;border:2px solid rgba(0,255,136,0.3);box-shadow:0 6px 18px rgba(0,0,0,0.4)}
+  .secret-image:hover{opacity:0.25}
+  /* Tooltip to the left of the image so it's readable and copyable */
+  .secret-text{position:absolute;right:calc(100% + 12px);top:50%;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;background:rgba(10,22,30,0.98);border-radius:8px;color:var(--accent);font-size:0.95rem;font-weight:600;opacity:0;transition:opacity 0.18s ease;pointer-events:auto;text-align:left;padding:0.9rem 1rem;line-height:1.25;border:2px solid rgba(0,255,136,0.25);white-space:nowrap;max-width:560px;overflow:auto}
+  .secret-reveal:hover .secret-text{opacity:1}
     
     .hunt-progress{position:absolute;top:1.5rem;left:1.5rem;background:var(--card);border:1px solid rgba(255,107,53,0.3);border-radius:20px;padding:0.6rem 1.2rem;font-size:0.85rem;z-index:100;color:var(--secondary)}
   </style>
