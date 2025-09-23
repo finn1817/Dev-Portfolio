@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Terminal Access — Level 3</title>
+  <style>
+    :root{--bg:#051a2a;--card:#0b2b3f;--accent:#4ecdc4;--text:#fff;--secondary:#44a08d}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#041620 0%,#082435 100%);color:var(--text);min-height:100vh;padding:2rem}
+    .container{max-width:1000px;margin:0 auto;background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));border-radius:16px;padding:2.5rem;border:1px solid rgba(78,205,196,0.08)}
+    
+    h1{margin:0 0 1rem;font-size:2.2rem;color:var(--accent);text-align:center}
+    .subtitle{text-align:center;color:var(--secondary);margin-bottom:2rem}
+    
+    .terminal{background:#000;border:2px solid rgba(78,205,196,0.3);border-radius:10px;padding:1.5rem;margin:2rem 0;font-family:monospace;min-height:400px;overflow-y:auto}
+    .terminal-header{color:var(--accent);margin-bottom:1rem;border-bottom:1px solid rgba(78,205,196,0.2);padding-bottom:0.5rem}
+    .terminal-line{color:#00ff00;margin:0.3rem 0;font-size:0.95rem}
+    .terminal-error{color:#ff6b6b}
+    .terminal-warning{color:#ffd36b}
+    .terminal-input{background:transparent;border:none;color:#fff;font-family:inherit;width:80%;outline:none;font-size:0.95rem}
+    .terminal-prompt{color:var(--accent)}
+    
+    .dev-image{text-align:center;margin:2rem 0}
+    .dev-image img{max-width:150px;border:2px solid rgba(78,205,196,0.2);border-radius:50%}
+    
+    .access-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin:2rem 0}
+    .access-btn{background:linear-gradient(90deg,var(--accent),var(--secondary));border:none;padding:1rem;border-radius:8px;color:#001;font-weight:700;cursor:pointer}
+    
+    .back-btn{display:inline-block;margin-top:2rem;background:transparent;border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:0.8rem 1.5rem;border-radius:8px;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>💻 Terminal Access</h1>
+    <div class="subtitle">Hacker terminal interface - execute commands to find the path forward.</div>
+    
+    <div class="dev-image">
+      <img src="https://github.com/finn1817/Dev-Portfolio/blob/main/Images/developer.png?raw=true" alt="Developer" onclick="devClick()">
+      <div style="margin-top:1rem;font-size:0.9rem;opacity:0.7;">System Administrator</div>
+    </div>
+    
+    <div class="terminal" id="terminal">
+      <div class="terminal-header">FINN_SYSTEMS_TERMINAL v3.1.4 - ACCESS LEVEL: GUEST</div>
+      <div class="terminal-line">Last login: Mon Sep 22 2025 14:33:01</div>
+      <div class="terminal-line">Welcome to the advancement hunt terminal</div>
+      <div class="terminal-line">Type 'help' for available commands</div>
+      <div class="terminal-line terminal-warning">WARNING: This terminal has limited access privileges</div>
+      <div class="terminal-line">
+        <span class="terminal-prompt">guest@finn-hunt:~$ </span>
+        <input type="text" class="terminal-input" id="terminalInput" onkeypress="handleCommand(event)">
+      </div>
+    </div>
+    
+    <div class="access-grid">
+      <button class="access-btn" onclick="quickAccess('scan')">Quick Scan</button>
+      <button class="access-btn" onclick="quickAccess('files')">List Files</button>
+      <button class="access-btn" onclick="quickAccess('processes')">Show Processes</button>
+      <button class="access-btn" onclick="quickAccess('network')">Network Status</button>
+    </div>
+    
+    <div style="text-align:center;">
+      <a class="back-btn" href="index.html">← Return to Level Three</a>
+    </div>
+  </div>
+
+  <script>
+    let commandCount = 0;
+    let devClicks = 0;
+    
+    function addTerminalLine(text, className = 'terminal-line') {
+      const terminal = document.getElementById('terminal');
+      const line = document.createElement('div');
+      line.className = className;
+      line.textContent = text;
+      terminal.insertBefore(line, terminal.lastElementChild);
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+    
+    function devClick() {
+      devClicks++;
+      if (devClicks === 1) {
+        addTerminalLine('Developer image clicked. Hidden protocol activated.', 'terminal-line terminal-warning');
+      } else if (devClicks === 5) {
+        addTerminalLine('SYSTEM: Terminal access is limited. Real access requires vault clearance.', 'terminal-line terminal-error');
+        addTerminalLine('HINT: Try the secret vault or pattern lock for elevated privileges.', 'terminal-line terminal-warning');
+      }
+    }
+    
+    function handleCommand(event) {
+      if (event.key === 'Enter') {
+        const input = event.target;
+        const command = input.value.toLowerCase().trim();
+        
+        addTerminalLine(`guest@finn-hunt:~$ ${input.value}`);
+        
+        commandCount++;
+        executeCommand(command);
+        
+        input.value = '';
+      }
+    }
+    
+    function executeCommand(command) {
+      switch(command) {
+        case 'help':
+          addTerminalLine('Available commands: ls, pwd, whoami, sudo, exit, scan, vault, level4');
+          break;
+        case 'ls':
+          addTerminalLine('total 8');
+          addTerminalLine('-rw-r--r-- 1 guest guest 1337 Sep 22 14:33 restricted.txt');
+          addTerminalLine('-rw-r--r-- 1 guest guest  256 Sep 22 14:33 hunt_progress.log');
+          addTerminalLine('drwxr-xr-x 2 guest guest 4096 Sep 22 14:33 vault_access/');
+          break;
+        case 'pwd':
+          addTerminalLine('/home/guest/hunt_terminal');
+          break;
+        case 'whoami':
+          addTerminalLine('guest');
+          addTerminalLine('Access Level: LIMITED');
+          break;
+        case 'sudo':
+          addTerminalLine('Sorry, user guest is not in the sudoers file.', 'terminal-line terminal-error');
+          addTerminalLine('This incident will be reported.', 'terminal-line terminal-error');
+          break;
+        case 'scan':
+          addTerminalLine('Scanning system...');
+          setTimeout(() => {
+            addTerminalLine('Found: 3 advancement paths active');
+            addTerminalLine('Path 1: secret-vault.html (REQUIRES ELEVATION)');
+            addTerminalLine('Path 2: pattern-lock.html (INTERACTIVE)');
+            addTerminalLine('Path 3: debug-console.html (DEVELOPER ACCESS)');
+          }, 1500);
+          break;
+        case 'vault':
+          addTerminalLine('Vault access requires special clearance.', 'terminal-line terminal-warning');
+          addTerminalLine('Hint: Look for hidden triggers on the main Level 3 page.', 'terminal-line terminal-warning');
+          break;
+        case 'level4':
+          addTerminalLine('Level 4 access denied from this terminal.', 'terminal-line terminal-error');
+          addTerminalLine('Advancement requires completion of 3-stage verification.', 'terminal-line terminal-warning');
+          break;
+        case 'exit':
+          addTerminalLine('Logout');
+          setTimeout(() => window.location.href = 'index.html', 1000);
+          break;
+        default:
+          addTerminalLine(`bash: ${command}: command not found`, 'terminal-line terminal-error');
+          if (commandCount > 5) {
+            addTerminalLine('HINT: This terminal is a training simulation. Real progress requires other paths.', 'terminal-line terminal-warning');
+          }
+      }
+    }
+    
+    function quickAccess(type) {
+      switch(type) {
+        case 'scan':
+          executeCommand('scan');
+          break;
+        case 'files':
+          executeCommand('ls');
+          break;
+        case 'processes':
+          addTerminalLine('PID  COMMAND');
+          addTerminalLine('1337 hunt_monitor');
+          addTerminalLine('2048 vault_guardian');
+          addTerminalLine('4096 pattern_analyzer');
+          break;
+        case 'network':
+          addTerminalLine('Interface: eth0');
+          addTerminalLine('Status: CONNECTED');
+          addTerminalLine('Vault tunnels: 3 active');
+          addTerminalLine('Advancement routes: MULTIPLE');
+          break;
+      }
+    }
+  </script>
+</body>
+</html>

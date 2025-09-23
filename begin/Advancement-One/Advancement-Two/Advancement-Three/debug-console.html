@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Debug Console — Level 3</title>
+  <style>
+    :root{--bg:#0d1117;--card:#161b22;--accent:#f78166;--text:#c9d1d9;--secondary:#ffd700}
+    body{margin:0;font-family:'Courier New',monospace;background:linear-gradient(180deg,#0d1117 0%,#161b22 100%);color:var(--text);min-height:100vh;padding:1rem}
+    .container{max-width:1200px;margin:0 auto;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:15px;padding:2rem;border:1px solid rgba(247,129,102,0.1)}
+    
+    h1{margin:0 0 1rem;font-size:2rem;color:var(--accent);text-align:center;font-family:system-ui}
+    .subtitle{text-align:center;color:var(--secondary);margin-bottom:2rem;font-family:system-ui}
+    .stage-indicator{text-align:center;margin:1rem 0;color:var(--accent);font-weight:bold;font-size:1.1rem;font-family:system-ui}
+    
+    .debug-interface{background:#000;border:2px solid rgba(247,129,102,0.3);border-radius:10px;padding:1.5rem;margin:2rem 0;min-height:500px;position:relative}
+    .debug-header{color:var(--accent);border-bottom:1px solid rgba(247,129,102,0.2);padding-bottom:0.5rem;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center}
+    .debug-status{color:var(--secondary);font-size:0.9rem}
+    
+    .code-blocks{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0}
+    .code-block{background:rgba(247,129,102,0.05);border:1px solid rgba(247,129,102,0.2);border-radius:8px;padding:1rem;font-size:0.85rem;cursor:pointer}
+    .code-block:hover{border-color:rgba(247,129,102,0.4)}
+    .code-block.executed{background:rgba(255,215,0,0.1);border-color:rgba(255,215,0,0.4)}
+    
+    .terminal-area{background:rgba(0,0,0,0.5);border:1px solid rgba(247,129,102,0.2);border-radius:8px;padding:1rem;margin:1rem 0;min-height:200px;overflow-y:auto}
+    .terminal-input{background:transparent;border:none;color:var(--text);font-family:inherit;width:100%;outline:none;font-size:0.9rem}
+    .terminal-line{margin:0.2rem 0;font-size:0.85rem}
+    .terminal-prompt{color:var(--accent)}
+    .terminal-output{color:#4fc3f7}
+    .terminal-error{color:#ff6b6b}
+    .terminal-success{color:#4caf50}
+    
+    .advancement-gateway{text-align:center;margin:2rem 0;padding:2rem;background:linear-gradient(135deg,rgba(247,129,102,0.1),rgba(255,215,0,0.1));border-radius:15px;border:2px solid rgba(247,129,102,0.3);display:none}
+    .gateway-btn{background:linear-gradient(90deg,var(--accent),var(--secondary));border:none;padding:1.2rem 3rem;border-radius:12px;color:#000;font-weight:800;cursor:pointer;font-size:1.2rem;font-family:system-ui}
+    
+    .back-btn{display:inline-block;margin-top:2rem;background:transparent;border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:0.8rem 1.5rem;border-radius:8px;text-decoration:none;font-family:system-ui}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🐛 Debug Console</h1>
+    <div class="subtitle">Developer tools interface - execute debug commands to complete final verification.</div>
+    <div class="stage-indicator">ADVANCEMENT PROGRESS: Stage 3 of 3 - FINAL STAGE</div>
+    
+    <div class="debug-interface">
+      <div class="debug-header">
+        <span>FINN_DEBUG_CONSOLE v3.7.2</span>
+        <span class="debug-status" id="debugStatus">READY</span>
+      </div>
+      
+      <div class="code-blocks">
+        <div class="code-block" onclick="executeCode(1)">
+          <div style="color:var(--secondary);margin-bottom:0.5rem;">Block A: Advancement Verification</div>
+          <div>function verifyAdvancement() {</div>
+          <div>&nbsp;&nbsp;return checkStageCompletion();</div>
+          <div>}</div>
+        </div>
+        
+        <div class="code-block" onclick="executeCode(2)">
+          <div style="color:var(--secondary);margin-bottom:0.5rem;">Block B: Level 4 Gateway</div>
+          <div>const level4Path = {</div>
+          <div>&nbsp;&nbsp;route: 'Advancement-Four/',</div>
+          <div>&nbsp;&nbsp;access: 'granted'</div>
+          <div>};</div>
+        </div>
+        
+        <div class="code-block" onclick="executeCode(3)">
+          <div style="color:var(--secondary);margin-bottom:0.5rem;">Block C: Portal Initialization</div>
+          <div>initializePortal({</div>
+          <div>&nbsp;&nbsp;target: level4Path.route,</div>
+          <div>&nbsp;&nbsp;authorization: true</div>
+          <div>});</div>
+        </div>
+        
+        <div class="code-block" onclick="executeCode(4)">
+          <div style="color:var(--secondary);margin-bottom:0.5rem;">Block D: Final Execution</div>
+          <div>if (allStagesComplete()) {</div>
+          <div>&nbsp;&nbsp;activateLevel4Portal();</div>
+          <div>}</div>
+        </div>
+      </div>
+      
+      <div class="terminal-area" id="terminalArea">
+        <div class="terminal-line terminal-output">Debug Console initialized</div>
+        <div class="terminal-line terminal-output">Stages 1-2 verification: COMPLETE</div>
+        <div class="terminal-line terminal-output">Stage 3 debug mode: ACTIVE</div>
+        <div class="terminal-line terminal-output">Execute code blocks to proceed...</div>
+        <div class="terminal-line">
+          <span class="terminal-prompt">debug> </span>
+          <input type="text" class="terminal-input" id="terminalInput" onkeypress="handleTerminalInput(event)" placeholder="Enter debug commands...">
+        </div>
+      </div>
+    </div>
+    
+    <div class="advancement-gateway" id="advancementGateway">
+      <h3>🎉 FINAL STAGE COMPLETE!</h3>
+      <p>All 3 stages verified. Level 4 portal is now active.</p>
+      <button class="gateway-btn" onclick="proceedToLevel4()">ADVANCE TO LEVEL 4</button>
+    </div>
+    
+    <div style="text-align:center;">
+      <a class="back-btn" href="index.html">← Return to Level Three</a>
+    </div>
+  </div>
+
+  <script>
+    let executedBlocks = [];
+    let terminalCommands = 0;
+    
+    function addTerminalLine(text, className = 'terminal-output') {
+      const terminal = document.getElementById('terminalArea');
+      const line = document.createElement('div');
+      line.className = `terminal-line ${className}`;
+      line.textContent = text;
+      terminal.insertBefore(line, terminal.lastElementChild);
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+    
+    function executeCode(blockNum) {
+      if (executedBlocks.includes(blockNum)) {
+        addTerminalLine(`Block ${String.fromCharCode(64 + blockNum)} already executed.`, 'terminal-error');
+        return;
+      }
+      
+      executedBlocks.push(blockNum);
+      const block = document.querySelectorAll('.code-block')[blockNum - 1];
+      block.classList.add('executed');
+      
+      switch(blockNum) {
+        case 1:
+          addTerminalLine('Executing advancement verification...', 'terminal-output');
+          setTimeout(() => {
+            addTerminalLine('✓ Stage 1 (secret-vault): VERIFIED', 'terminal-success');
+            addTerminalLine('✓ Stage 2 (map-assembly): VERIFIED', 'terminal-success');
+            addTerminalLine('✓ Stage 3 (debug-console): IN PROGRESS', 'terminal-output');
+          }, 1500);
+          break;
+          
+        case 2:
+          addTerminalLine('Loading Level 4 gateway configuration...', 'terminal-output');
+          setTimeout(() => {
+            addTerminalLine('✓ Level 4 path located: Advancement-Four/index.html', 'terminal-success');
+            addTerminalLine('✓ Access permissions: GRANTED', 'terminal-success');
+          }, 1200);
+          break;
+          
+        case 3:
+          addTerminalLine('Initializing advancement portal...', 'terminal-output');
+          setTimeout(() => {
+            addTerminalLine('✓ Portal initialization successful', 'terminal-success');
+            addTerminalLine('✓ Target route validated', 'terminal-success');
+            addTerminalLine('✓ Authorization confirmed', 'terminal-success');
+          }, 2000);
+          break;
+          
+        case 4:
+          addTerminalLine('Executing final verification sequence...', 'terminal-output');
+          setTimeout(() => {
+            addTerminalLine('✓ All stages complete: TRUE', 'terminal-success');
+            addTerminalLine('✓ Level 4 portal: ACTIVATED', 'terminal-success');
+            addTerminalLine('🎉 ADVANCEMENT SEQUENCE COMPLETE!', 'terminal-success');
+            
+            document.getElementById('debugStatus').textContent = 'COMPLETE';
+            checkFinalCompletion();
+          }, 2500);
+          break;
+      }
+    }
+    
+    function checkFinalCompletion() {
+      if (executedBlocks.length === 4) {
+        setTimeout(() => {
+          addTerminalLine('='.repeat(50), 'terminal-success');
+          addTerminalLine('LEVEL 3 ADVANCEMENT: COMPLETE', 'terminal-success');
+          addTerminalLine('LEVEL 4 ACCESS: GRANTED', 'terminal-success');
+          addTerminalLine('='.repeat(50), 'terminal-success');
+          
+          document.getElementById('advancementGateway').style.display = 'block';
+        }, 1000);
+      }
+    }
+    
+    function handleTerminalInput(event) {
+      if (event.key === 'Enter') {
+        const input = event.target;
+        const command = input.value.toLowerCase().trim();
+        
+        addTerminalLine(`debug> ${input.value}`, 'terminal-prompt');
+        terminalCommands++;
+        
+        switch(command) {
+          case 'help':
+            addTerminalLine('Available: status, execute, level4, complete, clear');
+            break;
+          case 'status':
+            addTerminalLine(`Executed blocks: ${executedBlocks.length}/4`);
+            addTerminalLine(`Terminal commands: ${terminalCommands}`);
+            break;
+          case 'execute':
+            addTerminalLine('Use code blocks above to execute debug sequences.');
+            break;
+          case 'level4':
+            if (executedBlocks.length === 4) {
+              addTerminalLine('Level 4 access: AVAILABLE');
+              addTerminalLine('Use the advancement gateway to proceed.');
+            } else {
+              addTerminalLine('Level 4 access: DENIED (execute all code blocks first)');
+            }
+            break;
+          case 'complete':
+            if (executedBlocks.length === 4) {
+              addTerminalLine('All stages complete! Ready for Level 4.');
+            } else {
+              addTerminalLine(`Completion: ${executedBlocks.length}/4 blocks executed`);
+            }
+            break;
+          case 'clear':
+            document.getElementById('terminalArea').innerHTML = `
+              <div class="terminal-line terminal-output">Terminal cleared</div>
+              <div class="terminal-line">
+                <span class="terminal-prompt">debug> </span>
+                <input type="text" class="terminal-input" id="terminalInput" onkeypress="handleTerminalInput(event)" placeholder="Enter debug commands...">
+              </div>
+            `;
+            break;
+          default:
+            addTerminalLine(`Unknown command: ${command}`, 'terminal-error');
+        }
+        
+        input.value = '';
+      }
+    }
+    
+    function proceedToLevel4() {
+      addTerminalLine('Initiating Level 4 transition...', 'terminal-success');
+      addTerminalLine('Redirecting to Advancement-Four/index.html...', 'terminal-success');
+      
+      setTimeout(() => {
+        window.location.href = 'Advancement-Four/index.html';
+      }, 2000);
+    }
+  </script>
+</body>
+</html>

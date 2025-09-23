@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pattern Lock — Level 3</title>
+  <style>
+    :root{--bg:#1a0b30;--card:#2b1343;--accent:#667eea;--text:#fff;--secondary:#764ba2}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#1a0b30 0%,#2b1343 100%);color:var(--text);min-height:100vh;padding:2rem}
+    .container{max-width:800px;margin:0 auto;background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));border-radius:16px;padding:2.5rem;border:1px solid rgba(102,126,234,0.08);text-align:center}
+    
+    h1{margin:0 0 1rem;font-size:2.2rem;color:var(--accent)}
+    .subtitle{color:var(--secondary);margin-bottom:2rem}
+    
+    .pattern-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;max-width:300px;margin:2rem auto;aspect-ratio:1}
+    .pattern-dot{width:80px;height:80px;border:3px solid rgba(102,126,234,0.3);border-radius:50%;background:rgba(102,126,234,0.1);cursor:pointer;transition:all 0.3s ease;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:bold}
+    .pattern-dot:hover{border-color:var(--accent);background:rgba(102,126,234,0.2)}
+    .pattern-dot.active{border-color:var(--accent);background:var(--accent);color:#001}
+    .pattern-dot.correct{border-color:#4ecdc4;background:#4ecdc4;color:#001}
+    .pattern-dot.wrong{border-color:#ff6b6b;background:#ff6b6b;color:#001}
+    
+    .pattern-display{background:rgba(0,0,0,0.3);border:2px solid rgba(102,126,234,0.3);border-radius:10px;padding:1.5rem;margin:2rem 0;font-family:monospace;font-size:1.1rem}
+    
+    .attempts-display{margin:1rem 0;color:var(--secondary)}
+    .hint-section{background:rgba(102,126,234,0.08);border:1px solid rgba(102,126,234,0.25);border-radius:10px;padding:1rem;margin:2rem 0;display:none}
+    
+    .control-buttons{display:flex;gap:1rem;justify-content:center;margin:2rem 0}
+    .ctrl-btn{background:linear-gradient(90deg,var(--accent),var(--secondary));border:none;padding:0.8rem 1.5rem;border-radius:8px;color:#001;font-weight:700;cursor:pointer}
+    
+    .back-btn{display:inline-block;margin-top:2rem;background:transparent;border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:0.8rem 1.5rem;border-radius:8px;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔢 Pattern Lock</h1>
+    <div class="subtitle">Enter the correct sequence to unlock the path forward.</div>
+    
+    <div class="pattern-display" id="patternDisplay">
+      Pattern Sequence: [ _ _ _ _ _ ]
+      <br>
+      Attempts: <span id="attemptCount">0</span> / 5
+    </div>
+    
+    <div class="pattern-grid" id="patternGrid">
+      <div class="pattern-dot" data-number="1" onclick="selectDot(1)">1</div>
+      <div class="pattern-dot" data-number="2" onclick="selectDot(2)">2</div>
+      <div class="pattern-dot" data-number="3" onclick="selectDot(3)">3</div>
+      <div class="pattern-dot" data-number="4" onclick="selectDot(4)">4</div>
+      <div class="pattern-dot" data-number="5" onclick="selectDot(5)">5</div>
+      <div class="pattern-dot" data-number="6" onclick="selectDot(6)">6</div>
+      <div class="pattern-dot" data-number="7" onclick="selectDot(7)">7</div>
+      <div class="pattern-dot" data-number="8" onclick="selectDot(8)">8</div>
+      <div class="pattern-dot" data-number="9" onclick="selectDot(9)">9</div>
+    </div>
+    
+    <div class="control-buttons">
+      <button class="ctrl-btn" onclick="clearPattern()">Clear</button>
+      <button class="ctrl-btn" onclick="submitPattern()">Submit</button>
+      <button class="ctrl-btn" onclick="showHint()">Hint</button>
+    </div>
+    
+    <div class="hint-section" id="hintSection">
+      <strong>Pattern Hint:</strong> <span id="hintText"></span>
+    </div>
+    
+    <div style="text-align:center;">
+      <a class="back-btn" href="index.html">← Return to Level Three</a>
+    </div>
+  </div>
+
+  <script>
+    let currentPattern = [];
+    let attempts = 0;
+    let hintLevel = 0;
+    
+    const correctPatterns = [
+      [1, 5, 9], // diagonal
+      [3, 5, 7], // diagonal
+      [2, 4, 6, 8], // cross
+      [1, 2, 3, 6, 9], // L shape
+    ];
+    
+    const hints = [
+      "Try a diagonal pattern...",
+      "The pattern might be geometric - think shapes.",
+      "Cross patterns and L-shapes are common in security systems.",
+      "This lock is a decoy. Real advancement requires the vault access.",
+      "Final hint: Pattern locks lead nowhere. Find the secret vault for real progress."
+    ];
+    
+    function selectDot(number) {
+      if (currentPattern.length >= 5) return;
+      if (currentPattern.includes(number)) return;
+      
+      currentPattern.push(number);
+      updateDisplay();
+      
+      const dot = document.querySelector(`[data-number="${number}"]`);
+      dot.classList.add('active');
+    }
+    
+    function updateDisplay() {
+      const display = document.getElementById('patternDisplay');
+      const pattern = currentPattern.map(n => n).join(' ');
+      const blanks = Array(5 - currentPattern.length).fill('_').join(' ');
+      
+      display.innerHTML = `
+        Pattern Sequence: [ ${pattern} ${blanks} ]
+        <br>
+        Attempts: <span id="attemptCount">${attempts}</span> / 5
+      `;
+    }
+    
+    function clearPattern() {
+      currentPattern = [];
+      document.querySelectorAll('.pattern-dot').forEach(dot => {
+        dot.classList.remove('active', 'correct', 'wrong');
+      });
+      updateDisplay();
+    }
+    
+    function submitPattern() {
+      if (currentPattern.length < 3) {
+        alert('Pattern must be at least 3 dots long.');
+        return;
+      }
+      
+      attempts++;
+      
+      // Check if pattern matches any correct patterns
+      let isCorrect = correctPatterns.some(pattern => 
+        pattern.length === currentPattern.length && 
+        pattern.every((val, index) => val === currentPattern[index])
+      );
+      
+      if (isCorrect) {
+        // Mark as correct but reveal it's a decoy
+        document.querySelectorAll('.pattern-dot.active').forEach(dot => {
+          dot.classList.remove('active');
+          dot.classList.add('correct');
+        });
+        
+        setTimeout(() => {
+          alert('Pattern correct! But wait... this lock is a decoy. The real path requires vault access.');
+          showDecoyMessage();
+        }, 1000);
+      } else {
+        // Mark as wrong
+        document.querySelectorAll('.pattern-dot.active').forEach(dot => {
+          dot.classList.remove('active');
+          dot.classList.add('wrong');
+        });
+        
+        setTimeout(() => {
+          clearPattern();
+          if (attempts >= 5) {
+            alert('Max attempts reached. This pattern lock is a decoy - try the secret vault instead.');
+          }
+        }, 1500);
+      }
+      
+      updateDisplay();
+    }
+    
+    function showHint() {
+      hintLevel = Math.min(hintLevel + 1, hints.length - 1);
+      document.getElementById('hintText').textContent = hints[hintLevel];
+      document.getElementById('hintSection').style.display = 'block';
+    }
+    
+    function showDecoyMessage() {
+      document.getElementById('hintText').textContent = 'DECOY DETECTED: This pattern lock is a distraction. Real advancement requires secret vault clearance.';
+      document.getElementById('hintSection').style.display = 'block';
+    }
+  </script>
+</body>
+</html>

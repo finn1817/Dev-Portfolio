@@ -28,10 +28,33 @@
   
   <div class="card">
     <h1>🎯 Advancement Three</h1>
-    <p>Outstanding work! You're doing great and have reached the penultimate step of the advancement chain. You're proving yourself to be a true digital detective. Proceed to the final advancement when ready.</p>
-    <button class="btn" id="nextBtn">→ Advancement Four</button>
-    <div class="meta">Progress: 3 / 4 | Hunt Level: Three</div>
+    <p>Oh dang, good stuff. Think you can keep going? Level 3 is where I separate the rookies from the legends. This one's about to get wild.</p>
+    
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin:2rem 0;">
+      <button class="btn" onclick="window.location.href='cipher-challenge.html'" style="background:linear-gradient(90deg,#ff6b6b,#ff8e53);">🔐 Cipher Challenge</button>
+      <button class="btn" onclick="window.location.href='terminal-access.html'" style="background:linear-gradient(90deg,#4ecdc4,#44a08d);">💻 Terminal Access</button>
+      <button class="btn" onclick="window.location.href='pattern-lock.html'" style="background:linear-gradient(90deg,#667eea,#764ba2);">🔢 Pattern Lock</button>
+      <button class="btn" onclick="window.location.href='map-assembly.html'" style="background:linear-gradient(90deg,#f093fb,#f5576c);">🗺️ Map Assembly</button>
+    </div>
+    
+    <!-- Hidden trigger for secret vault - made slightly more visible for testing -->
+    <div style="position:absolute;bottom:10px;right:10px;width:30px;height:30px;opacity:0.05;cursor:pointer;background:rgba(255,255,255,0.1);border-radius:50%;" onclick="secretClick()" id="secretTrigger" title="Secret trigger (7 clicks)"></div>
+    
+    <div class="meta">Progress: 3 / 4 | Hunt Level: Three | Paths: Multiple</div>
   </div>
+  
+  <!-- Global secret click function for the hidden trigger -->
+  <script>
+    let secretClicks = 0;
+    function secretClick() {
+      secretClicks++;
+      console.log(`Secret clicks: ${secretClicks}/7`);
+      if (secretClicks === 7) {
+        console.log('Redirecting to secret vault...');
+        window.location.href = 'secret-vault.html';
+      }
+    }
+  </script>
   
   <script type="module">
     // Firebase removed: local storage tracking
@@ -70,7 +93,7 @@
       trackProgress();
     });
 
-    document.getElementById('nextBtn').addEventListener('click', ()=>{
+    document.getElementById('nextBtn')?.addEventListener('click', ()=>{
       window.location.href = 'Advancement-Four/index.html';
     });
   </script>

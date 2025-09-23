@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cipher Challenge — Level 3</title>
+  <style>
+    :root{--bg:#0b1730;--card:#13243d;--accent:#ff6b6b;--text:#fff;--secondary:#ffd36b}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#1a0404 0%,#2b0808 100%);color:var(--text);min-height:100vh;padding:2rem}
+    .container{max-width:1000px;margin:0 auto;background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));border-radius:16px;padding:2.5rem;border:1px solid rgba(255,107,107,0.08)}
+    
+    h1{margin:0 0 1rem;font-size:2.2rem;color:var(--accent);text-align:center}
+    .subtitle{text-align:center;color:var(--secondary);margin-bottom:2rem}
+    
+    .cipher-display{background:#000;border:2px solid rgba(255,107,107,0.3);border-radius:10px;padding:2rem;margin:2rem 0;text-align:center;font-family:monospace;font-size:1.2rem;color:#ff6b6b}
+    
+    .key-image{text-align:center;margin:2rem 0}
+    .key-image img{max-width:200px;border:2px solid rgba(255,107,107,0.2);border-radius:10px}
+    
+    .input-section{display:grid;grid-template-columns:1fr auto;gap:1rem;margin:2rem 0}
+    .cipher-input{background:rgba(255,255,255,0.05);border:1px solid rgba(255,107,107,0.3);color:var(--text);padding:1rem;border-radius:8px;font-size:1.1rem}
+    .decode-btn{background:linear-gradient(90deg,var(--accent),var(--secondary));border:none;padding:1rem 2rem;border-radius:8px;color:#001;font-weight:700;cursor:pointer}
+    
+    .attempts{text-align:center;margin:1rem 0;color:var(--secondary)}
+    .hint-box{background:rgba(255,107,107,0.08);border:1px solid rgba(255,107,107,0.25);border-radius:10px;padding:1rem;margin:2rem 0;display:none}
+    
+    .back-btn{display:inline-block;margin-top:2rem;background:transparent;border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:0.8rem 1.5rem;border-radius:8px;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔐 Cipher Challenge</h1>
+    <div class="subtitle">Decode the encrypted message using the visual key below.</div>
+    
+    <div class="cipher-display" id="cipherText">
+      RW5jcnlwdGlvbiBpcyBub3QgdGhlIHdheSBmb3J3YXJkLiBUcnkgdGhlIG1hcCBhc3NlbWJseS4=
+    </div>
+    
+    <div class="key-image">
+      <img src="https://github.com/finn1817/Dev-Portfolio/blob/main/Images/encryption-key-black.jpg?raw=true" alt="Cipher Key" onclick="keyClick()">
+      <div style="margin-top:1rem;font-size:0.9rem;opacity:0.7;">Click the key for hints</div>
+    </div>
+    
+    <div class="input-section">
+      <input type="text" class="cipher-input" id="decryptInput" placeholder="Enter your decoded message...">
+      <button class="decode-btn" onclick="attemptDecode()">Decode</button>
+    </div>
+    
+    <div class="attempts" id="attemptCounter">Attempts: 0/5</div>
+    
+    <div class="hint-box" id="hintBox">
+      <strong>Hint:</strong> <span id="hintText"></span>
+    </div>
+    
+    <div style="text-align:center;">
+      <a class="back-btn" href="index.html">← Return to Level Three</a>
+    </div>
+  </div>
+
+  <script>
+    let attempts = 0;
+    let keyClicks = 0;
+    
+    const hints = [
+      "This might be Base64 encoded...",
+      "Try decoding: RW5jcnlwdGlvbiBpcyBub3QgdGhlIHdheSBmb3J3YXJkLiBUcnkgdGhlIG1hcCBhc3NlbWJseS4=",
+      "The message says encryption is not the way forward. Try the map assembly.",
+      "This is a decoy challenge. The real path is through other pages.",
+      "Final hint: Visit map-assembly.html from the main Level 3 page."
+    ];
+    
+    function keyClick() {
+      keyClicks++;
+      if (keyClicks === 3) {
+        showHint("The key is a red herring. This entire cipher is a distraction.");
+      }
+    }
+    
+    function attemptDecode() {
+      attempts++;
+      document.getElementById('attemptCounter').textContent = `Attempts: ${attempts}/5`;
+      
+      const input = document.getElementById('decryptInput').value.toLowerCase();
+      
+      if (input.includes('encryption is not the way') || input.includes('map assembly')) {
+        showHint("Correct decode! But this path is a decoy. The real progress is elsewhere.");
+        setTimeout(() => {
+          alert('Challenge completed, but this was a distraction. Try the map assembly for real progress.');
+        }, 2000);
+      } else {
+        showHint(hints[Math.min(attempts - 1, hints.length - 1)]);
+      }
+      
+      if (attempts >= 5) {
+        setTimeout(() => {
+          alert('Max attempts reached. This challenge is a decoy - try other paths from Level 3.');
+        }, 1000);
+      }
+    }
+    
+    function showHint(text) {
+      document.getElementById('hintText').textContent = text;
+      document.getElementById('hintBox').style.display = 'block';
+    }
+  </script>
+</body>
+</html>

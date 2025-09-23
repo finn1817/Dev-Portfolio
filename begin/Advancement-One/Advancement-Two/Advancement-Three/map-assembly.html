@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Map Assembly — Level 3</title>
+  <style>
+    :root{--bg:#1a051a;--card:#2b132b;--accent:#f093fb;--text:#fff;--secondary:#f5576c}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#1a051a 0%,#2b132b 100%);color:var(--text);min-height:100vh;padding:2rem}
+    .container{max-width:1000px;margin:0 auto;background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));border-radius:16px;padding:2.5rem;border:1px solid rgba(240,147,251,0.08)}
+    
+    h1{margin:0 0 1rem;font-size:2.2rem;color:var(--accent);text-align:center}
+    .subtitle{text-align:center;color:var(--secondary);margin-bottom:2rem}
+    .progress-indicator{text-align:center;margin:1rem 0;color:var(--accent);font-weight:bold}
+    
+    .map-workspace{background:rgba(0,0,0,0.3);border:2px solid rgba(240,147,251,0.3);border-radius:10px;padding:2rem;margin:2rem 0;min-height:300px}
+    .fragment-slots{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:2rem}
+    .fragment-slot{border:2px dashed rgba(240,147,251,0.5);border-radius:10px;padding:2rem;text-align:center;min-height:100px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+    .fragment-slot.filled{border-style:solid;background:rgba(240,147,251,0.1)}
+    
+    .lol-image{text-align:center;margin:2rem 0}
+    .lol-image img{max-width:200px;border:3px solid rgba(240,147,251,0.3);border-radius:10px;cursor:pointer;transition:transform 0.3s ease}
+    .lol-image img:hover{transform:scale(1.05)}
+    
+    .assembly-controls{display:flex;gap:1rem;justify-content:center;margin:2rem 0;flex-wrap:wrap}
+    .control-btn{background:linear-gradient(90deg,var(--accent),var(--secondary));border:none;padding:1rem 1.5rem;border-radius:8px;color:#001;font-weight:700;cursor:pointer}
+    
+    .progress-log{background:rgba(240,147,251,0.08);border:1px solid rgba(240,147,251,0.25);border-radius:10px;padding:1rem;margin:2rem 0;font-family:monospace;font-size:0.9rem}
+    
+    .back-btn{display:inline-block;margin-top:2rem;background:transparent;border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:0.8rem 1.5rem;border-radius:8px;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🗺️ Map Assembly</h1>
+    <div class="subtitle">Piece together the map fragments to reveal the path forward.</div>
+    <div class="progress-indicator">ADVANCEMENT PROGRESS: Stage 2 of 3</div>
+    
+    <div class="map-workspace">
+      <div class="fragment-slots" id="fragmentSlots">
+        <div class="fragment-slot" onclick="placeFragment(1)">
+          <div>Fragment A</div>
+        </div>
+        <div class="fragment-slot" onclick="placeFragment(2)">
+          <div>Fragment B</div>
+        </div>
+        <div class="fragment-slot" onclick="placeFragment(3)">
+          <div>Fragment C</div>
+        </div>
+        <div class="fragment-slot" onclick="placeFragment(4)">
+          <div>Fragment D</div>
+        </div>
+      </div>
+      
+      <div class="lol-image" onclick="lolClick()">
+        <img src="https://github.com/finn1817/Dev-Portfolio/blob/main/Images/lol.png?raw=true" alt="Map Key" id="lolImage">
+        <div style="margin-top:1rem;font-size:0.9rem;opacity:0.7;">Central Navigation Key (Click to analyze)</div>
+      </div>
+    </div>
+    
+    <div class="assembly-controls">
+      <button class="control-btn" onclick="autoAssemble()">Auto-Assembly</button>
+      <button class="control-btn" onclick="analyzeFragments()">Analyze Fragments</button>
+      <button class="control-btn" onclick="validateMap()">Validate Map</button>
+      <button class="control-btn" onclick="clearAssembly()">Clear Assembly</button>
+    </div>
+    
+    <div class="progress-log" id="progressLog">
+      MAP ASSEMBLY LOG v2.3<br>
+      Status: Waiting for user input...<br>
+      Fragments loaded: 4/4<br>
+      Assembly progress: 0%<br>
+    </div>
+    
+    <div style="text-align:center;">
+      <a class="back-btn" href="index.html">← Return to Level Three</a>
+    </div>
+  </div>
+
+  <script>
+    let fragmentsPlaced = [];
+    let lolClicks = 0;
+    let assemblyAttempts = 0;
+    
+    function addLog(message) {
+      const log = document.getElementById('progressLog');
+      log.innerHTML += `<br>${new Date().toLocaleTimeString()}: ${message}`;
+      log.scrollTop = log.scrollHeight;
+    }
+    
+    function placeFragment(fragmentNum) {
+      if (fragmentsPlaced.includes(fragmentNum)) {
+        addLog(`Fragment ${String.fromCharCode(64 + fragmentNum)} already placed.`);
+        return;
+      }
+      
+      fragmentsPlaced.push(fragmentNum);
+      const slot = document.querySelectorAll('.fragment-slot')[fragmentNum - 1];
+      slot.classList.add('filled');
+      slot.innerHTML = `<div>Fragment ${String.fromCharCode(64 + fragmentNum)} ✓</div>`;
+      
+      addLog(`Fragment ${String.fromCharCode(64 + fragmentNum)} placed successfully.`);
+      
+      if (fragmentsPlaced.length === 4) {
+        setTimeout(() => {
+          addLog('All fragments placed. Ready for assembly validation.');
+          addLog('SYSTEM: Stage 2 verification in progress...');
+        }, 1000);
+      }
+    }
+    
+    function lolClick() {
+      lolClicks++;
+      
+      if (lolClicks === 1) {
+        addLog('Central key activated. Scanning for hidden patterns...');
+        document.getElementById('lolImage').style.filter = 'brightness(1.3) contrast(1.2)';
+      } else if (lolClicks === 3) {
+        addLog('KEY ANALYSIS: Contains encoded route data.');
+        addLog('DECODED MESSAGE: "Stage 2 complete. Proceed to secret-vault.html"');
+        setTimeout(() => {
+          alert('Map analysis complete! Stage 2 verification successful. Navigate to secret-vault.html to continue.');
+        }, 2000);
+      } else if (lolClicks === 5) {
+        addLog('ADVANCED SCAN: Direct path revealed.');
+        addLog('SYSTEM: Redirecting to Stage 3...');
+        setTimeout(() => {
+          window.location.href = 'secret-vault.html?stage=2';
+        }, 3000);
+      }
+    }
+    
+    function autoAssemble() {
+      assemblyAttempts++;
+      addLog('Initiating auto-assembly sequence...');
+      
+      // Auto-place all fragments
+      for (let i = 1; i <= 4; i++) {
+        if (!fragmentsPlaced.includes(i)) {
+          setTimeout(() => placeFragment(i), i * 500);
+        }
+      }
+      
+      setTimeout(() => {
+        addLog('Auto-assembly complete. Map reconstruction at 75%.');
+        addLog('WARNING: Manual validation required for full reconstruction.');
+      }, 3000);
+    }
+    
+    function analyzeFragments() {
+      addLog('Analyzing fragment authenticity...');
+      setTimeout(() => {
+        addLog('Fragment A: AUTHENTIC - Contains coordinate data');
+        addLog('Fragment B: AUTHENTIC - Route markers identified');
+        addLog('Fragment C: AUTHENTIC - Elevation data present');
+        addLog('Fragment D: AUTHENTIC - Destination coordinates found');
+        addLog('CONCLUSION: All fragments lead to secret vault access.');
+      }, 2000);
+    }
+    
+    function validateMap() {
+      if (fragmentsPlaced.length < 4) {
+        addLog('ERROR: Not all fragments placed. Cannot validate incomplete map.');
+        return;
+      }
+      
+      addLog('Validating complete map assembly...');
+      setTimeout(() => {
+        addLog('VALIDATION SUCCESSFUL: Map leads to secret vault.');
+        addLog('STAGE 2 COMPLETE: Proceed to secret-vault.html for Stage 3.');
+        addLog('ADVANCEMENT PATH: secret-vault.html?stage=2');
+        
+        // Show completion message
+        setTimeout(() => {
+          alert('Map validation complete! Stage 2 finished. Go to secret-vault.html to continue to Stage 3.');
+        }, 1000);
+      }, 2500);
+    }
+    
+    function clearAssembly() {
+      fragmentsPlaced = [];
+      document.querySelectorAll('.fragment-slot').forEach((slot, index) => {
+        slot.classList.remove('filled');
+        slot.innerHTML = `<div>Fragment ${String.fromCharCode(65 + index)}</div>`;
+      });
+      addLog('Assembly cleared. Ready for new attempt.');
+    }
+  </script>
+</body>
+</html>
