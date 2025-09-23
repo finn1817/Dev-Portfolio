@@ -24,13 +24,24 @@
 </head>
 <body>
   <div class="auth-status" id="authStatus">Not signed in</div>
-  <div class="hunt-progress" id="huntProgress">Level: Two</div>
+  <div class="hunt-progress" id="huntProgress" data-secret-path="Advancement-Three/index.html" title="Hover for intel">Level: Two</div>
   
   <div class="card">
     <h1>🎯 Advancement Two</h1>
-    <p>Excellent progress! You've successfully navigated to the second advancement level. Your detective skills are paying off. Click the button to continue to the third advancement.</p>
-    <button class="btn" id="nextBtn">→ Advancement Three</button>
-    <div class="meta">Progress: 2 / 4 | Hunt Level: Two</div>
+    <p>Interesting, you've passed the first level... You're at least barely past beginner in my eyes. But Level 2? That's where things get spicy. Multiple paths ahead, but only one leads forward. Choose wisely.</p>
+    
+    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;justify-content:center;margin-top:1.5rem;">
+      <button class="btn" id="pathA">Path Alpha →</button>
+      <button class="btn" id="pathB">Path Beta →</button>
+      <button class="btn" id="pathC" style="background:linear-gradient(90deg,#ff6b6b,#ff8e53);">Path Gamma →</button>
+    </div>
+    
+    <div class="meta">Progress: 2 / 4 | Hunt Level: Two | Paths: Multiple</div>
+    
+    <!-- Hidden real path - only visible on hover over the progress indicator -->
+    <div id="secretHint" style="margin-top:1rem;opacity:0;transition:opacity 0.3s;font-size:0.85rem;color:#9fe8ff;">
+      Hover the progress bar for advanced intel...
+    </div>
   </div>
   
   <script type="module">
@@ -68,10 +79,32 @@
     document.addEventListener('DOMContentLoaded', function() {
       updateAuthStatus();
       trackProgress();
+      
+      // Add hover effect to show secret hint
+      const huntProgress = document.getElementById('huntProgress');
+      const secretHint = document.getElementById('secretHint');
+      
+      huntProgress.addEventListener('mouseenter', () => {
+        secretHint.style.opacity = '1';
+        secretHint.innerHTML = 'Real path: Right-click the "Hunt Level: Two" text and inspect element. Look for the hidden data attribute.';
+      });
+      
+      huntProgress.addEventListener('mouseleave', () => {
+        secretHint.style.opacity = '0';
+      });
     });
 
-    document.getElementById('nextBtn').addEventListener('click', ()=>{
-      window.location.href = 'Advancement-Three/index.html';
+    // Path buttons - two go to dummy pages, one has the real clue
+    document.getElementById('pathA').addEventListener('click', () => {
+      window.location.href = 'index-fake.html';
+    });
+    
+    document.getElementById('pathB').addEventListener('click', () => {
+      window.location.href = 'index-html.html';
+    });
+    
+    document.getElementById('pathC').addEventListener('click', () => {
+      alert('Path Gamma is under construction. Try the other paths or look for hidden clues on this page.');
     });
   </script>
 </body>

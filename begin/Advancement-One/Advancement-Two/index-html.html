@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Path Beta — Almost There</title>
+  <style>
+    :root{--bg:#051a2a;--card:#0b2b3f;--accent:#4dabf7;--text:#eaf6f3;--secondary:#69db7c}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#041620 0%,#082435 100%);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center}
+    .container{max-width:950px;width:92%;background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.01));border-radius:16px;padding:2.5rem;border:1px solid rgba(77,171,247,0.08);box-shadow:0 20px 50px rgba(5,15,25,0.7)}
+    
+    h1{margin:0 0 1rem;font-size:2.2rem;color:var(--accent);text-align:center}
+    .subtitle{text-align:center;color:var(--secondary);margin-bottom:2rem;font-weight:600}
+    
+    .terminal{background:#000;border-radius:8px;padding:1rem;margin:1.5rem 0;font-family:monospace;border:1px solid rgba(77,171,247,0.2)}
+    .terminal-header{color:#69db7c;margin-bottom:0.5rem}
+    .terminal-line{color:#4dabf7;margin:0.2rem 0}
+    .terminal-input{background:transparent;border:none;color:#fff;font-family:inherit;width:100%;outline:none}
+    
+    .actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin:2rem 0}
+    .action-btn{background:linear-gradient(90deg,var(--accent),var(--secondary));border:none;padding:1rem 1.5rem;border-radius:10px;color:#001;font-weight:700;cursor:pointer;transition:transform 0.2s}
+    .action-btn:hover{transform:translateY(-2px)}
+    
+    .status{background:rgba(77,171,247,0.08);border:1px solid rgba(77,171,247,0.25);border-radius:10px;padding:1rem;margin:1.5rem 0;color:#9ccfff}
+    
+    .back-options{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:2rem}
+    .back-btn{background:transparent;border:1px solid rgba(255,255,255,0.08);color:var(--text);padding:0.7rem 1.2rem;border-radius:8px;text-decoration:none;opacity:0.6}
+    .back-btn:hover{opacity:1;border-color:rgba(255,255,255,0.2)}
+    
+    footer{text-align:center;margin-top:2rem;color:rgba(255,255,255,0.3);font-size:0.85rem}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚡ Path Beta</h1>
+    <div class="subtitle">Almost there! Beta pathway is more sophisticated than Alpha.</div>
+    
+    <div class="terminal">
+      <div class="terminal-header">beta-pathway-console v2.1</div>
+      <div class="terminal-line">$ checking_alpha_correlation...</div>
+      <div class="terminal-line">$ cross_referencing_data...</div>
+      <div class="terminal-line">$ status: <span style="color:#69db7c">LINKED_TO_ALPHA</span></div>
+      <div class="terminal-line">$ enter command: <input type="text" class="terminal-input" id="terminalInput" placeholder="help"></div>
+      <div id="terminalOutput"></div>
+    </div>
+    
+    <div class="actions">
+      <button class="action-btn" onclick="runDeepScan()">Deep System Scan</button>
+      <button class="action-btn" onclick="crossRefAlpha()">Cross-Ref Alpha</button>
+      <button class="action-btn" onclick="showAdvanced()">Advanced Options</button>
+      <button class="action-btn" onclick="simulateProgress()">Simulate Progress</button>
+    </div>
+    
+    <div class="status" id="statusMsg" style="display:none;">
+      <strong>Status Update:</strong> <span id="statusText"></span>
+    </div>
+    
+    <div class="back-options">
+      <a class="back-btn" href="index-fake.html">← Return to Alpha</a>
+      <a class="back-btn" href="index.html">← Back to Level Two</a>
+      <a class="back-btn" onclick="showEasterEgg()">Debug Mode</a>
+    </div>
+    
+    <footer>
+      Path Beta • Difficulty: Advanced • Status: <span id="loopStatus">Analyzing Loop</span>
+    </footer>
+  </div>
+
+  <script>
+    let attempts = 0;
+    let fromAlpha = window.location.search.includes('from=alpha');
+    
+    if (fromAlpha) {
+      document.getElementById('loopStatus').textContent = 'Loop Detected';
+      showStatus('Incoming from Alpha pathway. Loop mechanism active.');
+    }
+    
+    function showStatus(text) {
+      document.getElementById('statusText').textContent = text;
+      document.getElementById('statusMsg').style.display = 'block';
+      setTimeout(() => {
+        document.getElementById('statusMsg').style.display = 'none';
+      }, 5000);
+    }
+    
+    function runDeepScan() {
+      attempts++;
+      showStatus('Deep scan initiated... Found circular references to Alpha pathway.');
+      if (attempts >= 2) {
+        setTimeout(() => showStatus('Hint: Both paths are decoys. Check the Level Two hub page source code for the real route.'), 3000);
+      }
+    }
+    
+    function crossRefAlpha() {
+      showStatus('Cross-referencing... Redirecting to Alpha for comparison.');
+      setTimeout(() => {
+        window.location.href = 'index-fake.html?from=beta';
+      }, 2000);
+    }
+    
+    function showAdvanced() {
+      showStatus('Advanced mode: Try typing "escape" or "quit" in the terminal to break the loop.');
+    }
+    
+    function simulateProgress() {
+      showStatus('Simulating advancement... ERROR: Both Alpha and Beta are simulation pathways.');
+    }
+    
+    function showEasterEgg() {
+      alert('Debug: You\'re stuck in the Alpha ↔ Beta loop! The real Level 3 path is hidden in the Level Two hub page. Hint: inspect the "Hunt Level: Two" element.');
+    }
+    
+    // Terminal functionality
+    document.getElementById('terminalInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        const command = this.value.toLowerCase().trim();
+        const output = document.getElementById('terminalOutput');
+        
+        if (command === 'help') {
+          output.innerHTML += '<div class="terminal-line">Available: escape, quit, status, level3</div>';
+        } else if (command === 'escape' || command === 'quit') {
+          output.innerHTML += '<div class="terminal-line" style="color:#69db7c">Breaking loop... Return to Level Two hub.</div>';
+          setTimeout(() => window.location.href = 'index.html', 1500);
+        } else if (command === 'status') {
+          output.innerHTML += '<div class="terminal-line">Status: Trapped in Alpha-Beta loop. Real path hidden in hub.</div>';
+        } else if (command === 'level3') {
+          output.innerHTML += '<div class="terminal-line" style="color:#ffd43b">Hint: Right-click "Hunt Level: Two" and inspect element for data attribute.</div>';
+        } else {
+          output.innerHTML += '<div class="terminal-line" style="color:#ff6b6b">Unknown command. Type "help" for options.</div>';
+        }
+        
+        this.value = '';
+        output.scrollTop = output.scrollHeight;
+      }
+    });
+  </script>
+</body>
+</html>
