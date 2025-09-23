@@ -1051,22 +1051,6 @@
                 console.error('Error code:', error.code);
                 console.error('Error message:', error.message);
                 
-                // Save to localStorage as backup
-                try {
-                    const backups = JSON.parse(localStorage.getItem('contactBackups') || '[]');
-                    const backup = {
-                        ...messageData,
-                        timestamp: new Date().toISOString(),
-                        error: error.message,
-                        errorCode: error.code
-                    };
-                    backups.push(backup);
-                    localStorage.setItem('contactBackups', JSON.stringify(backups));
-                    console.log('💾 Message saved to localStorage backup');
-                } catch (backupError) {
-                    console.error('❌ Backup also failed:', backupError);
-                }
-                
                 throw error; // Re-throw to show user the error
             }
         }
