@@ -19,11 +19,21 @@
     .auth-status.signed-in{border-color:var(--accent);color:var(--accent)}
     .auth-status.signed-out{opacity:0.6;color:#ffd23f}
     
+    /* Hidden image reveal system */
+    .secret-reveal{position:absolute;top:1.5rem;right:1.5rem;z-index:100;cursor:pointer}
+    .secret-image{width:120px;height:auto;border-radius:8px;transition:opacity 0.3s ease;border:2px solid rgba(0,255,136,0.3)}
+    .secret-image:hover{opacity:0.3}
+    .secret-text{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;background:rgba(15,42,63,0.95);border-radius:8px;color:var(--accent);font-size:0.8rem;font-weight:600;opacity:0;transition:opacity 0.3s ease;pointer-events:none;text-align:center;padding:0.8rem;line-height:1.3;border:2px solid var(--accent);word-break:break-all;min-width:200px}
+    .secret-reveal:hover .secret-text{opacity:1}
+    
     .hunt-progress{position:absolute;top:1.5rem;left:1.5rem;background:var(--card);border:1px solid rgba(255,107,53,0.3);border-radius:20px;padding:0.6rem 1.2rem;font-size:0.85rem;z-index:100;color:var(--secondary)}
   </style>
 </head>
 <body>
-  <div class="auth-status" id="authStatus">Not signed in</div>
+  <div class="secret-reveal" id="secretReveal">
+    <img src="https://github.com/finn1817/Dev-Portfolio/blob/main/Images/Tag.jpg?raw=true" alt="Secret" class="secret-image">
+    <div class="secret-text">https://dfinn.me/Dev-Portfolio/begin/Advancement-One/Advancement-Two/index.html</div>
+  </div>
   <div class="hunt-progress" id="huntProgress">Level: One</div>
   
   <div class="card">
@@ -50,12 +60,6 @@
       return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
     }
 
-    function updateAuthStatus() {
-      const authStatus = document.getElementById('authStatus');
-      authStatus.textContent = 'Local tracking';
-      authStatus.className = 'auth-status signed-out';
-    }
-
     async function trackProgress() {
       const uid = USER_ID;
       if (!localDB.progress[uid]) localDB.progress[uid] = [];
@@ -66,12 +70,11 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-      updateAuthStatus();
       trackProgress();
     });
 
     document.getElementById('nextBtn').addEventListener('click', ()=>{
-      window.location.href = 'Advancement-Two/index.html';
+      window.location.href = 'dummy.html';
     });
   </script>
 </body>
