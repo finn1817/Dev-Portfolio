@@ -3,19 +3,83 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Wrong Way</title>
+  <title>Waypoint — Dead End</title>
   <style>
-    body{margin:0;background:#0b1220;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;font-family:system-ui,Segoe UI,Roboto,Arial}
-    h1{font-size:3rem;color:#ff6b6b;text-align:center;padding:2rem}
-    .btn{display:inline-block;margin-top:1.5rem;padding:0.8rem 1.6rem;border-radius:10px;background:#00ff88;color:#001;font-weight:700;text-decoration:none}
+    :root{--bg:#071428;--paper:#0f1720;--ink:#cfeee3;--accent:#ffd166;--muted:#9fd8c7}
+    html,body{height:100%;}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:radial-gradient(1200px 600px at 10% 10%, rgba(0,0,0,0.25), transparent),linear-gradient(180deg,#071428 0%,#041b29 100%);color:var(--ink);display:flex;align-items:center;justify-content:center}
+    .wrap{max-width:880px;width:92%;background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:14px;padding:2rem;border:1px solid rgba(255,255,255,0.03);box-shadow:0 18px 48px rgba(2,10,20,0.6)}
+    .header{display:flex;align-items:center;gap:1rem}
+    .compass{width:64px;height:64px;border-radius:12px;background:linear-gradient(180deg,#0f2a3f,#071726);display:flex;align-items:center;justify-content:center;border:2px solid rgba(255,209,102,0.08)}
+    .compass::after{content:'🧭';font-size:32px}
+    h1{margin:0;font-size:1.6rem;color:var(--accent)}
+    p.lead{margin:0.25rem 0 1rem;color:var(--muted)}
+
+    .map{margin-top:1rem;background:linear-gradient(180deg,#0b2130,#07141a);border-radius:10px;padding:1rem;border:1px solid rgba(0,0,0,0.25);display:flex;gap:1rem}
+    .map .panel{flex:1}
+    .parch{background:linear-gradient(180deg,#0c1b15,#08120d);padding:1rem;border-radius:10px;border:1px solid rgba(255,209,102,0.06)}
+    .clue{background:rgba(0,0,0,0.18);padding:.6rem;border-radius:8px;margin-bottom:.6rem}
+    .clue strong{color:var(--accent)}
+
+    .actions{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1rem}
+    .btn{background:linear-gradient(90deg,#00ff88,#ffb86b);border:none;padding:.7rem 1.1rem;border-radius:999px;color:#001;font-weight:800;text-decoration:none;cursor:pointer}
+    .ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:.6rem .9rem;border-radius:8px;text-decoration:none}
+
+    .notice{margin-top:1rem;padding:1rem;border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,0.02),transparent);border:1px solid rgba(255,255,255,0.03);color:var(--muted)}
+    .big-return{display:inline-block;margin-top:.75rem;background:#ff6b6b;color:#001;text-decoration:none;font-weight:800;padding:.8rem 1.1rem;border-radius:12px}
+
+    footer{margin-top:1.25rem;text-align:center;color:rgba(255,255,255,0.18);font-size:.85rem}
+
+    /* small responsive tweaks */
+    @media (max-width:600px){.map{flex-direction:column}.header{gap:.6rem}.compass{width:52px;height:52px}}
   </style>
 </head>
 <body>
-  <div>
-    <h1>YOU WENT THE WRONG WAY, GO BACK!</h1>
-    <div style="text-align:center">
-      <a class="btn" href="index.html">← Back to Hunt</a>
+  <div class="wrap">
+    <div class="header">
+      <div class="compass"></div>
+      <div>
+        <h1>Waypoint • Dead End</h1>
+        <p class="lead">This looks promising, but the trail led to a U-turn. Mind the false paths — this hunt is going to mislead you at every chance.</p>
+      </div>
     </div>
+
+    <div class="map">
+      <div class="panel">
+        <div class="parch">
+          <div class="clue"><strong>Marker A:</strong> Looks promising, doesn't it? Plot twist: nope.</div>
+          <div class="clue"><strong>Marker B:</strong> That arrow's dramatic — it mostly points you backwards. Wild, I know.</div>
+          <div class="clue"><strong>Marker C:</strong> Want the fast-track? Type "back" in the console like the clever legend you are.</div>
+          <div class="actions">
+            <a href="#" class="btn" id="exploreBtn">Explore</a>
+            <a href="#" class="ghost" id="scanBtn">Scan Area</a>
+            <a href="#" class="ghost" id="digBtn">Dig Here</a>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="parch">
+          <h3 style="margin-top:0;color:var(--accent)">Local Log</h3>
+          <p style="margin:0;color:var(--muted)">Recent activity: footprints, a torn map corner, humming at odd intervals.</p>
+          <div class="notice">Most of this is smoke and mirrors. Real move: turn around and head back — that's the flex.</div>
+          <a class="big-return" href="index.html">← Return to Advancement One</a>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Tip: Sometimes the power move is walking back. You're welcome.
+    </footer>
   </div>
+
+  <script>
+    // Make decoy buttons tease without navigating
+    document.getElementById('exploreBtn').addEventListener('click',e=>{
+      e.preventDefault();
+      alert('You poke around. Nothing but vibes. Nice hustle — now go back.');
+    });
+    document.getElementById('scanBtn').addEventListener('click',e=>{ e.preventDefault(); alert('Scanners pick up ego and disappointment. Try turning back.'); });
+    document.getElementById('digBtn').addEventListener('click',e=>{ e.preventDefault(); alert('You dig. You find dust. Respect. Return to the last page to keep the hunt moving.'); });
+  </script>
 </body>
 </html>
