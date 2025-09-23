@@ -1275,26 +1275,78 @@
         async function processCommand(command) {
             const cmd = command.toLowerCase().trim();
             
+            // Hidden shortcut - not displayed in help!
+            if (cmd === 'sudo rm -rf --no-preserve-root /reality') {
+                await logEasterEgg('reality_hack_discovered');
+                setTimeout(() => {
+                    window.location.href = 'begin/Advancement-One/Advancement-Two/Advancement-Three/Advancement-Four/index.html';
+                }, 5000);
+                return `🚨 REALITY HACK DETECTED! 🚨
+
+⚠️  WARNING: You've discovered the forbidden command!
+🎯 ULTIMATE SHORTCUT ACTIVATED
+
+Initiating quantum tunnel to final destination...
+Bypassing all security protocols...
+Reality.exe has stopped working...
+
+🚀 REDIRECTING TO ADVANCEMENT-FOUR IN 5 SECONDS...
+⚡ Prepare for reality breach!`;
+            }
+            
             switch (cmd) {
                 case 'help':
                     return `Available commands:
+
+🔧 BASIC COMMANDS:
 • help - Show this help message
-• matrix - Enter the Matrix
-• firebase-test - Test Firebase Messages collection
-• messages - Show recent messages count
-• joke - Tell a random joke
-• secret - Reveal a secret
 • clear - Clear terminal
 • whoami - Show user info
 • date - Show current date
+• time - Show current time
+
+🐧 SYSTEM COMMANDS:
+• uptime - Show system uptime
 • ls - List available features
+• pwd - Print working directory
+• ps - Show running processes
+• top - Show system resources
+• uname - System information
+• history - Show command history
+
+📁 FILE OPERATIONS:
+• cat [file] - Display file contents
+• grep [pattern] - Search for patterns
+• find [path] [name] - Find files
+• chmod [permissions] [file] - Change file permissions
+
+🌐 NETWORK COMMANDS:
+• ping [host] - Test connectivity
+• wget [url] - Download from URL
+• ssh [user@host] - Secure shell connection
+
+💬 UTILITIES:
+• echo [text] - Display text
+• man [command] - Show manual pages
+
+🔐 ADMIN COMMANDS:
+• sudo [command] - Execute with elevated privileges
 • dev-mode - Show dev mode info
 • sudo dev-mode --enable - Enable super dev mode
+
+📊 ANALYTICS & DATA:
 • analytics - Show analytics (dev mode only)
 • export - Export data (dev mode only)
+• firebase-test - Test Firebase Messages collection
+• messages - Show recent messages count
+
+🎮 SPECIAL FEATURES:
+• matrix - Enter the Matrix
 • blackout - Toggle blackout mode (terminal exclusive)
 • hunt - Start the ultimate easter egg hunt
-• progress - Show your hunt progress (local)`;
+• progress - Show your hunt progress (local)
+• joke - Tell a random joke
+• secret - Reveal a secret`;
 
                 case 'firebase-test':
                     await logEasterEgg('firebase_test_command');
@@ -1429,8 +1481,150 @@ Good luck, detective! 🕵️‍♂️`;
                 case 'progress':
                     return await getHuntProgress();
 
+                // Linux-like commands
+                case 'time':
+                    return new Date().toLocaleTimeString();
+
+                case 'uptime':
+                    const uptime = Math.floor((Date.now() - performance.timing.navigationStart) / 1000);
+                    return `System uptime: ${Math.floor(uptime/3600)}h ${Math.floor((uptime%3600)/60)}m ${uptime%60}s`;
+
+                case 'pwd':
+                    return '/home/dfinn/portfolio';
+
+                case 'uname':
+                    return `Portfolio OS 1.0.0 (dfinn-kernel) x86_64 GNU/Linux
+Built on: Firebase Infrastructure
+Architecture: Web Assembly
+Kernel: JavaScript v8
+Shell: Terminal.js 2.0`;
+
+                case 'ps':
+                    return `PID   TTY      TIME CMD
+1337  pts/0    00:00:01 portfolio
+2048  pts/0    00:00:00 firebase-monitor  
+4096  pts/0    00:00:00 easter-egg-hunter
+8192  pts/0    00:00:00 matrix-renderer
+9999  pts/0    00:00:00 reality-daemon`;
+
+                case 'top':
+                    return `Tasks: 5 total, 1 running, 4 sleeping
+%Cpu(s): 42.0 us, 13.3 sy, 0.0 ni, 44.7 id
+Memory: 1337MB total, 420MB used, 917MB free
+
+PID   USER    PR  %CPU %MEM  TIME+   COMMAND
+1337  dfinn   20   85.7  15.5  0:01.23 portfolio
+2048  dfinn   20   10.2   8.1  0:00.45 firebase-monitor
+4096  dfinn   20    3.1   2.1  0:00.12 easter-egg-hunter
+8192  dfinn   20    1.0   1.0  0:00.05 matrix-renderer`;
+
+                case 'history':
+                    commandHistory.push(command);
+                    if (commandHistory.length > 20) commandHistory.shift();
+                    return commandHistory.map((cmd, i) => `${i + 1}  ${cmd}`).join('\n') || 'No command history yet.';
+
+                // Commands with parameters
                 default:
-                    return `Command not found: ${command}\nType 'help' for available commands.`;
+                    // Handle commands with parameters
+                    const [mainCmd, ...args] = cmd.split(' ');
+                    const fullArg = args.join(' ');
+                    
+                    switch (mainCmd) {
+                        case 'echo':
+                            return fullArg || 'echo: missing argument';
+
+                        case 'cat':
+                            const files = {
+                                'readme.txt': 'Welcome to Dan Finn\'s Portfolio!\nThis is an interactive terminal experience.',
+                                'secrets.txt': '🔐 Access denied. Use the hunt command for more info.',
+                                'portfolio.json': '{\n  "name": "Dan Finn",\n  "role": "Developer",\n  "skills": ["JavaScript", "React", "Node.js"],\n  "easter_eggs": "15+"\n}',
+                                '.hidden': 'You found a hidden file! 🎉\nTry: sudo rm -rf --no-preserve-root /reality'
+                            };
+                            return files[fullArg] || `cat: ${fullArg}: No such file or directory`;
+
+                        case 'grep':
+                            if (!fullArg) return 'grep: missing pattern';
+                            const grepPatterns = {
+                                'easter': 'Found easter eggs in: hunt command, matrix mode, konami code',
+                                'secret': 'Found secrets in: .hidden file, terminal commands, dev mode',
+                                'hunt': 'Found hunt references in: begin/index.html, progress tracking',
+                                'reality': 'Found reality references in: .hidden file, quantum commands'
+                            };
+                            return grepPatterns[fullArg] || `grep: no matches found for '${fullArg}'`;
+
+                        case 'ping':
+                            const hosts = {
+                                'localhost': 'PING localhost (127.0.0.1): 56 data bytes\n64 bytes from 127.0.0.1: icmp_seq=0 time=0.043ms\n--- ping statistics ---\n1 packets transmitted, 1 received, 0% packet loss',
+                                'dfinn.me': 'PING dfinn.me: 56 data bytes\n64 bytes from dfinn.me: icmp_seq=0 time=42ms\n--- ping statistics ---\n1 packets transmitted, 1 received, 0% packet loss',
+                                'firebase.com': 'PING firebase.com: 56 data bytes\n64 bytes from firebase.com: icmp_seq=0 time=15ms\n✅ Firebase connection: ACTIVE'
+                            };
+                            return hosts[fullArg] || `ping: cannot resolve ${fullArg}: Unknown host`;
+
+                        case 'wget':
+                            if (fullArg === 'https://dfinn.me/begin/Advancement-Four/index.html') {
+                                setTimeout(() => {
+                                    window.location.href = 'begin/Advancement-One/Advancement-Two/Advancement-Three/Advancement-Four/index.html';
+                                }, 3000);
+                                return `--2025-09-22 ${new Date().toLocaleTimeString()}--  ${fullArg}
+Resolving dfinn.me... 192.168.1.337
+Connecting to dfinn.me|192.168.1.337|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 1337 [text/html]
+Saving to: 'index.html'
+
+🚀 QUANTUM TUNNEL DETECTED!
+⚡ Initiating direct transport to Level 4...
+🎯 Reality breach in progress...`;
+                            }
+                            return `wget: invalid URL or access denied for ${fullArg}`;
+
+                        case 'ssh':
+                            return `ssh: Permission denied (publickey).
+🔐 Access restricted to authorized personnel only.
+💡 Hint: Try the reality hack command...`;
+
+                        case 'man':
+                            const manPages = {
+                                'ls': 'ls - list directory contents\nSyntax: ls [options]\nShows available portfolio features.',
+                                'help': 'help - display available commands\nShows all terminal commands and their descriptions.',
+                                'sudo': 'sudo - execute commands as another user\nUsage: sudo [command]\n⚠️ Warning: Some commands may break reality.',
+                                'hunt': 'hunt - start easter egg hunt\nBegins the ultimate developer challenge at begin/index.html'
+                            };
+                            return manPages[fullArg] || `No manual entry for ${fullArg}`;
+
+                        case 'find':
+                            if (fullArg.includes('easter')) {
+                                return `./begin/index.html
+./terminal/matrix.js
+./commands/secret.sh
+./dev-mode/analytics.json
+./hidden/.reality-hack`;
+                            }
+                            return `find: '${fullArg}': No such file or directory`;
+
+                        case 'chmod':
+                            if (fullArg.includes('777')) {
+                                await logEasterEgg('chmod_777_used');
+                                return `chmod: permissions changed to 777
+⚠️ WARNING: All permissions granted!
+🎯 Reality boundaries: DISABLED
+🚀 Quantum access: ENABLED`;
+                            }
+                            return `chmod: invalid permissions or file not found`;
+
+                        case 'sudo':
+                            if (fullArg === 'rm -rf --no-preserve-root /reality') {
+                                // This will be caught by the hidden command above
+                                return await processCommand('sudo rm -rf --no-preserve-root /reality');
+                            }
+                            return `sudo: command not found or access denied for: ${fullArg}`;
+
+                        default:
+                            // Store command in history
+                            commandHistory.push(command);
+                            if (commandHistory.length > 20) commandHistory.shift();
+                            return `Command not found: ${command}\nType 'help' for available commands.`;
+                    }
             }
         }
 
