@@ -35,6 +35,8 @@
   .rick-button{background:linear-gradient(90deg,var(--accent),#ffb86b);border:none;padding:1rem 2.25rem;border-radius:40px;color:#001;cursor:pointer;font-weight:800;font-size:1.05rem;box-shadow:0 12px 30px rgba(0,0,0,0.45);transition:transform 0.16s ease, box-shadow 0.16s ease}
   .rick-button:hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,0.55)}
   .rick-button:active{transform:translateY(1px)}
+  /* separate the sneaky proceed button from the rick-roll for better spacing */
+  .proceed-container{margin-top:1.75rem;display:flex;justify-content:center}
   </style>
 </head>
 <body>
@@ -53,6 +55,10 @@
     <!-- Rick-roll button area (moved inside card so it sits below the modal content) -->
     <div class="rick-button-container" style="margin-top:1.5rem;">
       <button id="rickBtn" class="rick-button">Click Me!</button>
+    </div>
+    <!-- Sneaky path to a fake level two page -->
+    <div class="proceed-container">
+      <a id="proceedBtn" class="btn" href="dummy-two.html">Proceed to level two →</a>
     </div>
   </div>
   </div>

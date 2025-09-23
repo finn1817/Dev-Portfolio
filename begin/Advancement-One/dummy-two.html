@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>Advancement Two — Or Is It?</title>
+	<style>
+		:root{--bg:#071428;--card:#0f2a3f;--accent:#00ff88;--text:#eaf6f3;--secondary:#ff6b35}
+		*{box-sizing:border-box}
+		body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:linear-gradient(180deg,#04101a 0%,#06202b 100%);color:var(--text);min-height:100vh}
+		header{position:sticky;top:0;background:rgba(5,18,28,0.9);backdrop-filter:blur(6px);border-bottom:1px solid rgba(0,255,136,0.15);z-index:50}
+		.container{max-width:980px;margin:0 auto;padding:1.2rem}
+		.brand{display:flex;align-items:center;gap:.75rem}
+		.dot{width:10px;height:10px;border-radius:999px;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+		h1{margin:0;font-size:1.35rem;color:var(--accent)}
+		.sub{opacity:.8;font-size:.9rem}
+		nav{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.75rem}
+		.tab{background:rgba(255,255,255,0.04);border:1px solid rgba(0,255,136,0.12);color:var(--text);padding:.5rem .8rem;border-radius:999px;font-weight:600;text-decoration:none}
+		.tab:hover{border-color:rgba(0,255,136,0.35)}
+
+		/* Hero */
+		.hero{padding:2rem 1.2rem 1rem}
+		.card{background:var(--card);padding:2rem;border-radius:16px;border:1px solid rgba(0,255,136,0.08);box-shadow:0 12px 34px rgba(0,0,0,0.45)}
+		.hero h2{margin:.2rem 0 0.5rem;font-size:2rem;color:var(--accent)}
+		.hero p{margin:0;opacity:.9}
+		.cta{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1rem}
+		.btn{background:linear-gradient(90deg,var(--accent),#ffb86b);border:none;padding:.85rem 1.4rem;border-radius:999px;color:#001;font-weight:800;text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;cursor:pointer}
+		.btn:hover{filter:brightness(1.05)}
+
+		/* Fake sections */
+		section{padding:1.2rem}
+		.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+		.tile{background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));border:1px solid rgba(0,255,136,0.08);border-radius:14px;padding:1rem}
+		.tile h3{margin:.2rem 0 .4rem;color:#93f6c9}
+		.tile p{margin:0;opacity:.85;font-size:.95rem}
+
+		/* Maze footer reveal */
+		.footer{padding:2rem 1.2rem 3rem}
+		.reveal{margin-top:1rem;background:rgba(10,22,30,0.9);border:1px dashed rgba(0,255,136,0.25);border-radius:12px;padding:1rem;position:relative}
+		details summary{cursor:pointer;list-style:none}
+		details summary::-webkit-details-marker{display:none}
+		details[open] .hint{opacity:1}
+		.hint{opacity:.9;color:#ffd23f;margin-top:.6rem}
+		.only-way{margin-top:1rem;padding:1rem;background:rgba(255,107,53,0.08);border:1px solid rgba(255,107,53,0.35);border-radius:12px;color:#ffb38a}
+		.back-btn{display:inline-block;margin-top:.75rem;background:#ff6b6b;color:#001;text-decoration:none;font-weight:800;padding:.8rem 1.2rem;border-radius:12px}
+		.back-btn:hover{filter:brightness(1.05)}
+
+		/* Playful distractions */
+		.fake-links{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.6rem}
+		.fake{background:rgba(255,255,255,0.05);border:1px solid rgba(0,255,136,0.12);border-radius:8px;padding:.4rem .6rem;color:#b7ffdf;text-decoration:none}
+		.fake:hover{border-color:rgba(0,255,136,0.35)}
+	</style>
+</head>
+<body>
+	<header>
+		<div class="container">
+			<div class="brand">
+				<div class="dot"></div>
+				<div>
+					<h1>Advancement Two</h1>
+					<div class="sub">Status: Verified • Access Level: 2</div>
+				</div>
+			</div>
+			<nav>
+				<a class="tab" href="#overview">Overview</a>
+				<a class="tab" href="#stats">Stats</a>
+				<a class="tab" href="#artifacts">Artifacts</a>
+				<a class="tab" href="#console">Console</a>
+				<a class="tab" href="#unlock">Unlocks</a>
+			</nav>
+		</div>
+	</header>
+
+	<main>
+		<div class="container hero">
+			<div class="card">
+				<h2>Welcome to Level Two</h2>
+				<p>Nice work. Most explorers don't get this far. Take a moment to explore your new toolkit below.</p>
+				<div class="cta">
+					<a class="btn" href="#unlock">Claim Reward</a>
+					<a class="btn" href="#artifacts">View Artifacts</a>
+					<a class="btn" href="#console">Open Console</a>
+				</div>
+			</div>
+		</div>
+
+		<section id="overview" class="container">
+			<div class="grid">
+				<div class="tile"><h3>Tier</h3><p>II - Initiate</p></div>
+				<div class="tile"><h3>Signal</h3><p>Stable • 3/4 nodes</p></div>
+				<div class="tile"><h3>Credits</h3><p>+120 XP</p></div>
+				<div class="tile"><h3>Bonus</h3><p>+1 Artifact Slot</p></div>
+			</div>
+		</section>
+
+		<section id="stats" class="container">
+			<div class="grid">
+				<div class="tile"><h3>Uptime</h3><p>99.98%</p></div>
+				<div class="tile"><h3>Latency</h3><p>42ms</p></div>
+				<div class="tile"><h3>Entropy</h3><p>Increasing</p></div>
+				<div class="tile"><h3>Luck</h3><p>Rolling…</p></div>
+			</div>
+		</section>
+
+		<section id="artifacts" class="container">
+			<div class="tile">
+				<h3>Artifacts</h3>
+				<p>Three containers detected. Opening any of these seems promising… or is it?</p>
+				<div class="fake-links">
+					<a class="fake" href="#">Artifact A</a>
+					<a class="fake" href="#">Artifact B</a>
+					<a class="fake" href="#">Artifact C</a>
+				</div>
+			</div>
+		</section>
+
+		<section id="console" class="container">
+			<div class="tile">
+				<h3>Console</h3>
+				<p>Type a command below. Try: help, next, or unlock.</p>
+				<input id="cmd" placeholder=">_" style="width:100%;margin-top:.6rem;padding:.7rem;border-radius:10px;border:1px solid rgba(0,255,136,0.25);background:rgba(255,255,255,0.04);color:var(--text)">
+				<div id="out" style="margin-top:.6rem;opacity:.9"></div>
+			</div>
+		</section>
+
+		<section id="unlock" class="container footer">
+			<div class="card">
+				<h2>Unlocks</h2>
+				<p>It looks like something is hidden here…</p>
+				<div class="reveal">
+					<details>
+						<summary>Hint 1: The shortest path often loops.</summary>
+						<div class="hint">Sometimes forward is actually back. Keep following the thread…</div>
+					</details>
+					<details>
+						<summary>Hint 2: The real path is not in front of you.</summary>
+						<div class="hint">Level two isn't here. The only correct path points back where you came from.</div>
+					</details>
+					<div class="only-way">
+						Final Hint: The authentic route to progress is to return to the previous node.
+						<br>
+						<a class="back-btn" href="index.html">← Return to Advancement One</a>
+					</div>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<script>
+		// Make all fake links inert and teasing
+		document.querySelectorAll('.fake').forEach(a=>{
+			a.addEventListener('click',e=>{
+				e.preventDefault();
+				const out=document.getElementById('out');
+				if(out){ out.textContent = 'Nope. That was a decoy.'; }
+			});
+		});
+
+		// Tiny fake console
+		const cmd=document.getElementById('cmd');
+		const out=document.getElementById('out');
+		if(cmd && out){
+			cmd.addEventListener('keydown',e=>{
+				if(e.key==='Enter'){
+					const v=(cmd.value||'').trim().toLowerCase();
+					if(['help','?'].includes(v)) out.textContent='Commands: help, next, unlock, back';
+					else if(v==='next'||v==='unlock') out.textContent='Access denied: pathway loops. Try "back".';
+					else if(v==='back') out.innerHTML='Correct. <a href="index.html" style="color:#93f6c9">Return to Advancement One</a>';
+					else out.textContent='Unknown command';
+					cmd.value='';
+				}
+			});
+		}
+	</script>
+</body>
+</html>
