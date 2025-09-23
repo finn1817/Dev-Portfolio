@@ -85,6 +85,7 @@
         <div class="terminal-line terminal-output">Stages 1-2 verification: COMPLETE</div>
         <div class="terminal-line terminal-output">Stage 3 debug mode: ACTIVE</div>
         <div class="terminal-line terminal-output">Execute code blocks to proceed...</div>
+        <div class="terminal-line terminal-warning">HINT: After executing all blocks, type "unlock" then "advance"</div>
         <div class="terminal-line">
           <span class="terminal-prompt">debug> </span>
           <input type="text" class="terminal-input" id="terminalInput" onkeypress="handleTerminalInput(event)" placeholder="Enter debug commands...">
@@ -190,7 +191,7 @@
         
         switch(command) {
           case 'help':
-            addTerminalLine('Available: status, execute, level4, complete, clear');
+            addTerminalLine('Available: status, execute, level4, complete, clear, unlock, advance');
             break;
           case 'status':
             addTerminalLine(`Executed blocks: ${executedBlocks.length}/4`);
@@ -199,10 +200,30 @@
           case 'execute':
             addTerminalLine('Use code blocks above to execute debug sequences.');
             break;
+          case 'unlock':
+            if (executedBlocks.length === 4) {
+              addTerminalLine('UNLOCK SEQUENCE INITIATED...', 'terminal-success');
+              addTerminalLine('Level 4 gateway: ACTIVATED', 'terminal-success');
+              addTerminalLine('Type "advance" to proceed to Level 4', 'terminal-success');
+            } else {
+              addTerminalLine('UNLOCK DENIED: Execute all 4 code blocks first', 'terminal-error');
+              addTerminalLine(`Progress: ${executedBlocks.length}/4 blocks completed`, 'terminal-error');
+            }
+            break;
+          case 'advance':
+            if (executedBlocks.length === 4) {
+              addTerminalLine('ADVANCING TO LEVEL 4...', 'terminal-success');
+              setTimeout(() => {
+                window.location.href = 'Advancement-Four/index.html';
+              }, 2000);
+            } else {
+              addTerminalLine('ADVANCE DENIED: Type "unlock" first', 'terminal-error');
+            }
+            break;
           case 'level4':
             if (executedBlocks.length === 4) {
               addTerminalLine('Level 4 access: AVAILABLE');
-              addTerminalLine('Use the advancement gateway to proceed.');
+              addTerminalLine('Type "unlock" then "advance" to proceed.');
             } else {
               addTerminalLine('Level 4 access: DENIED (execute all code blocks first)');
             }

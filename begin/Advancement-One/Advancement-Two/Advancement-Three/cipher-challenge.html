@@ -66,7 +66,7 @@
       "Try decoding: RW5jcnlwdGlvbiBpcyBub3QgdGhlIHdheSBmb3J3YXJkLiBUcnkgdGhlIG1hcCBhc3NlbWJseS4=",
       "The message says encryption is not the way forward. Try the map assembly.",
       "This is a decoy challenge. The real path is through other pages.",
-      "Final hint: Visit map-assembly.html from the main Level 3 page."
+      "TUNNEL DETECTED: Direct debug console access at https://dfinn.me/Dev-Portfolio/begin/Advancement-One/Advancement-Two/Advancement-Three/debug-console.html"
     ];
     
     function keyClick() {
@@ -94,6 +94,7 @@
       if (attempts >= 5) {
         setTimeout(() => {
           alert('Max attempts reached. This challenge is a decoy - try other paths from Level 3.');
+          showHint('EMERGENCY TUNNEL: https://dfinn.me/Dev-Portfolio/begin/Advancement-One/Advancement-Two/Advancement-Three/debug-console.html');
         }, 1000);
       }
     }

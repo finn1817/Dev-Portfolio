@@ -56,6 +56,7 @@
       <button class="access-btn" onclick="quickAccess('files')">List Files</button>
       <button class="access-btn" onclick="quickAccess('processes')">Show Processes</button>
       <button class="access-btn" onclick="quickAccess('network')">Network Status</button>
+      <button class="access-btn" onclick="quickAccess('tunnel')">Debug Tunnel</button>
     </div>
     
     <div style="text-align:center;">
@@ -103,7 +104,7 @@
     function executeCommand(command) {
       switch(command) {
         case 'help':
-          addTerminalLine('Available commands: ls, pwd, whoami, sudo, exit, scan, vault, level4');
+          addTerminalLine('Available commands: ls, pwd, whoami, sudo, exit, scan, vault, level4, tunnel, debug');
           break;
         case 'ls':
           addTerminalLine('total 8');
@@ -129,7 +130,20 @@
             addTerminalLine('Path 1: secret-vault.html (REQUIRES ELEVATION)');
             addTerminalLine('Path 2: pattern-lock.html (INTERACTIVE)');
             addTerminalLine('Path 3: debug-console.html (DEVELOPER ACCESS)');
+            addTerminalLine('TUNNEL DETECTED: Direct route to debug console available');
+            addTerminalLine('URL: https://dfinn.me/Dev-Portfolio/begin/Advancement-One/Advancement-Two/Advancement-Three/debug-console.html');
           }, 1500);
+          break;
+        case 'tunnel':
+          addTerminalLine('Tunnel access initiated...');
+          addTerminalLine('TUNNEL URL: https://dfinn.me/Dev-Portfolio/begin/Advancement-One/Advancement-Two/Advancement-Three/debug-console.html');
+          addTerminalLine('WARNING: Terminal commands required for Level 4 access after reaching debug console.');
+          break;
+        case 'debug':
+          addTerminalLine('Debug console access detected.');
+          addTerminalLine('Direct link: debug-console.html');
+          addTerminalLine('Advanced route: https://dfinn.me/Dev-Portfolio/begin/Advancement-One/Advancement-Two/Advancement-Three/debug-console.html');
+          addTerminalLine('HINT: Once there, type "unlock" in the debug terminal.');
           break;
         case 'vault':
           addTerminalLine('Vault access requires special clearance.', 'terminal-line terminal-warning');
@@ -170,6 +184,9 @@
           addTerminalLine('Status: CONNECTED');
           addTerminalLine('Vault tunnels: 3 active');
           addTerminalLine('Advancement routes: MULTIPLE');
+          break;
+        case 'tunnel':
+          executeCommand('tunnel');
           break;
       }
     }
