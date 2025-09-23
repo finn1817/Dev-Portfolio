@@ -1018,64 +1018,56 @@
             }
         }
 
-        // Save message to Firebase Messages collection - SIMPLIFIED VERSION
         async function saveMessage(messageData) {
             try {
-                console.log('� Saving simplified message to Firebase...');
+                console.log('💾 Attempting to save message to Firebase...');
                 
                 if (!db) {
-                    console.error('❌ Firestore database not initialized');
                     throw new Error('Database not initialized');
                 }
 
-                // Only save the essential contact form data as requested
-                const essentialData = {
+                // Create the message with client timestamp as fallback
+                const messageToSave = {
                     name: String(messageData.name || '').trim(),
-                    email: String(messageData.email || '').trim(),
+                    email: String(messageData.email || '').trim(), 
                     message: String(messageData.message || '').trim(),
-                    timestamp: serverTimestamp()
+                    timestamp: new Date(), // Use client timestamp instead of serverTimestamp()
+                    userAgent: navigator.userAgent,
+                    submitted: new Date().toISOString(),
+                    source: 'portfolio_contact_form'
                 };
 
-                console.log('📝 Saving essential data only:', essentialData);
+                console.log('📝 Saving message data:', messageToSave);
 
-                // Save to Firebase Messages collection
+                // Try to save to Firebase Messages collection
                 const messagesRef = collection(db, 'Messages');
-                const docRef = await addDoc(messagesRef, essentialData);
+                const docRef = await addDoc(messagesRef, messageToSave);
                 
                 console.log('✅ Message saved successfully with ID:', docRef.id);
                 return docRef.id;
                 
             } catch (error) {
-                console.error('❌❌❌ SAVE MESSAGE ERROR ❌❌❌');
-                console.error('Error type:', typeof error);
-                console.error('Error name:', error.name);
-                console.error('Error message:', error.message);
+                console.error('❌ Firebase save failed:', error);
                 console.error('Error code:', error.code);
-                console.error('Error stack:', error.stack);
-                console.error('Full error object:', error);
+                console.error('Error message:', error.message);
                 
-                // Simple backup to localStorage
-                console.log('💾 Attempting localStorage backup...');
+                // Save to localStorage as backup
                 try {
-                    const backup = {
-                        name: messageData.name,
-                        email: messageData.email,
-                        message: messageData.message,
-                        timestamp: new Date().toISOString(),
-                        error: error.message
-                    };
-                    
                     const backups = JSON.parse(localStorage.getItem('contactBackups') || '[]');
+                    const backup = {
+                        ...messageData,
+                        timestamp: new Date().toISOString(),
+                        error: error.message,
+                        errorCode: error.code
+                    };
                     backups.push(backup);
                     localStorage.setItem('contactBackups', JSON.stringify(backups));
-                    
-                    console.log('✅ Backup saved to localStorage:', backup);
+                    console.log('💾 Message saved to localStorage backup');
                 } catch (backupError) {
-                    console.error('❌ Backup failed:', backupError);
+                    console.error('❌ Backup also failed:', backupError);
                 }
                 
-                console.log('🔥🔥🔥 SAVE MESSAGE DEBUG END - ERROR 🔥🔥🔥');
-                throw error; // Re-throw to handle in form submit
+                throw error; // Re-throw to show user the error
             }
         }
 
