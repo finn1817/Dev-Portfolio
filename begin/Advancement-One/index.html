@@ -28,6 +28,13 @@
   .secret-reveal:hover .secret-text{opacity:1}
     
     .hunt-progress{position:absolute;top:1.5rem;left:1.5rem;background:var(--card);border:1px solid rgba(255,107,53,0.3);border-radius:20px;padding:0.6rem 1.2rem;font-size:0.85rem;z-index:100;color:var(--secondary)}
+  /* Stack container to keep card + button vertically aligned */
+  .main-stack{display:flex;flex-direction:column;align-items:center;gap:1.5rem;width:100%;max-width:900px;margin:0 auto}
+  /* Rick-roll button area (centered below the card) */
+  .rick-button-container{position:relative;display:flex;justify-content:center;margin-top:0;z-index:50}
+  .rick-button{background:linear-gradient(90deg,var(--accent),#ffb86b);border:none;padding:1rem 2.25rem;border-radius:40px;color:#001;cursor:pointer;font-weight:800;font-size:1.05rem;box-shadow:0 12px 30px rgba(0,0,0,0.45);transition:transform 0.16s ease, box-shadow 0.16s ease}
+  .rick-button:hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,0.55)}
+  .rick-button:active{transform:translateY(1px)}
   </style>
 </head>
 <body>
@@ -37,11 +44,17 @@
   </div>
   <div class="hunt-progress" id="huntProgress">Level: One</div>
   
+  <div class="main-stack">
   <div class="card">
     <h1>🎯 Advancement One</h1>
     <p>Congratulations! You've made it to the first advancement level. This means you're successfully navigating the easter egg hunt. Press the button below when you're ready to move on to the next challenge.</p>
     <button class="btn" id="nextBtn">→ Advancement Two</button>
     <div class="meta">Progress: 1 / 4 | Hunt Level: One</div>
+    <!-- Rick-roll button area (moved inside card so it sits below the modal content) -->
+    <div class="rick-button-container" style="margin-top:1.5rem;">
+      <button id="rickBtn" class="rick-button">Click Me!</button>
+    </div>
+  </div>
   </div>
   
   <script type="module">
@@ -76,6 +89,13 @@
 
     document.getElementById('nextBtn').addEventListener('click', ()=>{
       window.location.href = 'dummy.html';
+    });
+
+    // Rick-roll button click handler
+    document.getElementById('rickBtn').addEventListener('click', ()=>{
+      // open rickroll in a new tab
+      const url = 'https://www.youtube.com/watch?v=xvFZjo5PgG0&list=RDxvFZjo5PgG0&start_radio=1';
+      window.open(url, '_blank', 'noopener');
     });
   </script>
 </body>
